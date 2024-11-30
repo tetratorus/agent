@@ -2,7 +2,46 @@ import llms
 import re
 import zlib
 
+
 class Agent:
+  """A flexible agent framework that manages conversations with an LLM while handling tool calls and memory management.
+
+  This class implements an autonomous agent that calls an LLM in a loop to generate responses,
+  execute tools based on the model's responses, and maintain a memory context. For debugging reasons, it also tracks
+  a history of all memory states in _memory_trace.
+
+  Execution loop:
+  1. Call the LLM to generate a response
+  2. Store the LLM's response in memory
+  3. Check for tool calls in the LLM's response
+  4. If a tool call is detected, call the tool and store the result in memory
+  5. Check if the agent should end
+  6. If the agent should end, return the final memory state
+  7. Repeat steps 1-6 until the agent ends
+
+  Args:
+      model_name (str): Name of the language model to use
+      tools (dict, optional): Dictionary mapping tool names to their callable implementations.
+          Each tool should be a function that takes a string input and returns a string result.
+      end_detection (callable, optional): Function that determines when to end the agent loop.
+          Takes the current request context and returns a boolean. If None, ends when no tool is called.
+      tool_detection (Union[str, callable], optional): Method to detect tool calls in LLM responses.
+          Can be either a regex pattern string with two capture groups (tool name and input),
+          or a function that takes response text and returns (tool_name, tool_input) tuple.
+      memory_management (callable, optional): Function to process and potentially transform memory
+          before storing. Takes the new text and returns processed text. If None, stores text as is.
+      manifesto (str, optional): Static context provided to the LLM in every request.
+      memory (str, optional): Initial memory/context for the conversation.
+
+  Attributes:
+      memory (str): Current conversation context
+      _memory_trace (list): Compressed history of all memory states
+      _last_tool_called (str): Name of the last tool that was called, or None if no tool was called
+
+  The agent maintains its conversation history in two forms:
+  1. Current memory (uncompressed) for immediate access
+  2. Complete history trace (compressed using zlib) for efficient storage
+  """
 
   def __init__(self,
                model_name,

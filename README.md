@@ -28,7 +28,7 @@ agent = Agent(
 )
 
 # Run the agent
-result = await agent.run()
+result = agent.run()
 ```
 
 ## Architecture

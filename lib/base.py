@@ -1,6 +1,5 @@
 from typing import Dict, Optional, Tuple, Callable, List, Any, Union
 import llms
-import re
 import zlib
 from .debug import debug
 
@@ -27,6 +26,7 @@ class Agent:
       end_detection: Optional[Callable[[str], bool]] = None,
       tool_detection: Optional[Callable[[str], Tuple[Optional[str], Optional[str]]]] = None,
       memory_management: Optional[Callable[[str], Optional[str]]] = None,
+      memory_tracing: bool = False,
   ):
     """Initialize the agent with a manifesto and optional tools and functions.
 
@@ -48,6 +48,7 @@ class Agent:
     self.memory_management = memory_management
     self._memory_trace: List[bytes] = []
     self._last_tool_called: Optional[str] = None
+    self.memory_tracing = memory_tracing
 
   def get_memory_trace(self) -> List[str]:
     return [self._decompress_bytes(trace) if isinstance(trace, bytes) else trace for trace in self._memory_trace]
@@ -59,6 +60,17 @@ class Agent:
     return zlib.decompress(compressed_bytes).decode('utf-8')
 
   def update_memory(self, text: str) -> None:
+    # if memory tracing is not enabled, update memory directly
+
+    if not self.memory_tracing:
+      if callable(self.memory_management):
+        self.memory = self.memory_management(text)
+      else:
+        self.memory = text
+      return
+
+    # else update memory and memory trace
+
     # Decompress existing traces if they exist
     decompressed_traces = [self._decompress_bytes(trace) if isinstance(trace, bytes) else trace for trace in self._memory_trace]
     decompressed_traces.append(self.memory)

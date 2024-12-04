@@ -23,7 +23,6 @@ def main():
     )
     result = agent.run()
     print("Final Result:", result)
-    print("Memory Trace:", agent.get_memory_trace())
 
 if __name__ == "__main__":
     main()

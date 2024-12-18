@@ -10,7 +10,7 @@ class Agent:
   a history of all memory states in _memory_trace.
 
   The agent is initialized with a manifesto that is provided to the LLM in every request, and a dictionary of tools that the agent can use.
-  It also has access to tools, which are custom functions that the agent can call to perform actions.
+  It has access to tools, which are custom functions that the agent can call to perform actions.
   The agent can also be configured with an end_detection function that determines when the agent should end its loop,
   a tool_detection function that determines when the agent should call a tool,
   and a memory_management function that processes and potentially updates the agent's memory after each interaction.
@@ -63,7 +63,7 @@ class Agent:
 
     # else update memory and memory trace
     self._memory_trace.append(self.memory)
-    
+
     # Update memory based on memory management function
     if callable(self.memory_management):
       self.memory = self.memory_management(text)

@@ -1,0 +1,3 @@
+{
+  "text": "This is a sample long text that needs to be summarized. It contains multiple sentences and paragraphs that would typically exceed the context window of an LLM. The text would contain important information, dates, names, and other critical details that need to be preserved in the summary. This is just a placeholder - in practice, this would be replaced with the actual text that needs summarization."
+}

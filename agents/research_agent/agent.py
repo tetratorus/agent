@@ -17,7 +17,7 @@ class ResearchAgent(Agent):
 
     Args:
         research_topic: The research topic to gather information about.
-        manifesto: Custom instructions for the agent. If not provided, uses default research instructions.
+        manifesto: Custom instructions for the agent.
         memory: Initial memory/context for the conversation
     """
 

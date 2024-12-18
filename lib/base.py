@@ -23,7 +23,7 @@ class Agent:
       manifesto: str,
       memory: str = "",
       tools: Optional[Dict[str, Callable]] = None,
-      end_detection: Optional[Callable[[str], bool]] = None,
+      end_detection: Optional[Callable[[str, str], bool]] = None,
       tool_detection: Optional[Callable[[str], Tuple[Optional[str], Optional[str]]]] = None,
       memory_management: Optional[Callable[[str], Optional[str]]] = None,
       memory_tracing: bool = False,
@@ -108,7 +108,7 @@ class Agent:
   @debug()
   def end(self) -> bool:
     if callable(self.end_detection):
-      return self.end_detection(self.compose_request())
+      return self.end_detection(self.manifesto, self.memory)
     elif self._last_tool_called is None:
       return True
 
@@ -123,6 +123,7 @@ class Agent:
       self._last_tool_called = None
       response = self.llm_call(self.compose_request())
       self.update_memory(self.memory + "\nAssistant: " + response)
+
       # tool_detection
       tool_name, tool_args = self.tool_detection(response)
       if tool_name:

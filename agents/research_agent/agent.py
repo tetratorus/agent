@@ -59,8 +59,8 @@ class ResearchAgent(Agent):
         )
 
     @debug()
-    def _end_detection(self, text: str) -> bool:
-        if "<TASK_COMPLETED>" in text:
+    def _end_detection(self, manifesto: str, memory: str) -> bool:
+        if "<TASK_COMPLETED>" in memory:
             return True
         else:
             return False

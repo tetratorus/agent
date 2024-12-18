@@ -1,6 +1,5 @@
 from typing import Dict, Optional, Tuple, Callable, List, Any, Union
 import llms
-import zlib
 from .debug import debug
 
 class Agent:
@@ -46,22 +45,15 @@ class Agent:
     self.end_detection = end_detection
     self.tool_detection = tool_detection
     self.memory_management = memory_management
-    self._memory_trace: List[bytes] = []
+    self._memory_trace: List[str] = []
     self._last_tool_called: Optional[str] = None
     self.memory_tracing = memory_tracing
 
   def get_memory_trace(self) -> List[str]:
-    return [self._decompress_bytes(trace) if isinstance(trace, bytes) else trace for trace in self._memory_trace]
-
-  def _compress_text(self, text: str) -> bytes:
-    return zlib.compress(text.encode('utf-8'))
-
-  def _decompress_bytes(self, compressed_bytes: bytes) -> str:
-    return zlib.decompress(compressed_bytes).decode('utf-8')
+    return self._memory_trace
 
   def update_memory(self, text: str) -> None:
     # if memory tracing is not enabled, update memory directly
-
     if not self.memory_tracing:
       if callable(self.memory_management):
         self.memory = self.memory_management(text)
@@ -70,12 +62,8 @@ class Agent:
       return
 
     # else update memory and memory trace
-
-    # Decompress existing traces if they exist
-    decompressed_traces = [self._decompress_bytes(trace) if isinstance(trace, bytes) else trace for trace in self._memory_trace]
-    decompressed_traces.append(self.memory)
-    # Compress all traces
-    self._memory_trace = [self._compress_text(trace) for trace in decompressed_traces]
+    self._memory_trace.append(self.memory)
+    
     # Update memory based on memory management function
     if callable(self.memory_management):
       self.memory = self.memory_management(text)

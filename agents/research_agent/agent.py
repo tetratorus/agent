@@ -53,9 +53,17 @@ class ResearchAgent(Agent):
             model_name=model_name,
             tools=tools,
             tool_detection=self._detect_tool,
+            end_detection=self._end_detection,
             manifesto=manifesto,
             memory="\nResearch Topic: " + research_topic + "\n" + memory
         )
+
+    @debug()
+    def _end_detection(self, text: str) -> bool:
+        if "<TASK_COMPLETED>" in text:
+            return True
+        else:
+            return False
 
     @debug()
     def _detect_tool(self, text: str) -> Tuple[Optional[str], Optional[str]]:

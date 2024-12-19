@@ -7,10 +7,10 @@ def main():
     variables_dir = os.path.join(os.path.dirname(__file__), "../variables")
 
     with open(os.path.join(variables_dir, "text.json")) as f:
-        text = json.load(f)["text"]
+        text = json.load(f)[0]
 
     with open(os.path.join(variables_dir, "manifesto.json")) as f:
-        manifesto = json.load(f)["manifesto"]
+        manifesto = json.load(f)[0]
 
     # Initialize and run the agent
     agent = TextSummaryAgent(

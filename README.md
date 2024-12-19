@@ -71,6 +71,50 @@ agent/
 
 ----
 
+## Quick Agent Generation
+
+If you're using an AI-powered editor, use this prompt to generate your agent's code structure:
+
+```
+Generate a new agent implementation by:
+1. Reading and analyzing:
+   - This entire README.md for architecture and implementation guidelines
+   - lib/base.py to understand the core Agent class
+   - Existing agents in agents/ directory for implementation patterns
+
+2. Creating the following structure:
+   - agent.py (extending lib.base.Agent with required methods)
+   - test/test_runner.py
+   - variables/ directory (empty)
+```
+
+## Setting Up Runtime Variables
+
+The `variables/` folders are intentionally ignored by code editors due to their size and runtime-specific nature. You'll need to set these up manually after generating your agent's code. Here's how:
+
+1. Create a `variables/` directory in your agent's folder
+
+2. Use this prompt to generate copyable JSON content for your runtime files:
+```
+Analyze the newly generated agent.py to understand:
+- What tools the agent uses
+- What runtime variables it references
+- Its core behavior and requirements
+
+Then generate copyable JSON content (using [content] array format) for:
+1. manifesto.json - containing the agent's:
+   - Personality and behavior definitions
+   - Tool usage patterns
+   - Response formats
+2. Any other runtime variables referenced in agent.py
+
+Output the JSON in a way that can be directly copied into the respective files.
+```
+
+Note: The AI code editor cannot create these files directly, but it can generate content that you can copy and paste into your manually created files.
+
+----
+
 <details>
 <summary>🤖 Agent Implementation Guidelines (click to expand)</summary>
 

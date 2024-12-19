@@ -19,38 +19,43 @@ class SummaryAgent(Agent):
 
     def __init__(self,
                  manifesto: str,
+                 text: str,
+                 target_length: int,
+                 chunk_size: int = 8000,
                  memory: str = "",
-                 chunk_size: int = 8000,  # Default chunk size set to 8000 chars
-                 text: Optional[str] = None):  # Optional text parameter for testing
+    ):
 
         if manifesto is None:
             raise ValueError("Manifesto must be provided")
 
-        model_name = "claude-3-5-sonnet-20240620"
-
-        # Use provided text or load from JSON
         if text is None:
-            variables_dir = os.path.join(os.path.dirname(__file__), "variables")
-            with open(os.path.join(variables_dir, "input_text.json"), 'r') as f:
-                self.text = json.load(f)["text"]
-        else:
-            self.text = text
+            raise ValueError("Text must be provided")
 
-        self.chunk_size = chunk_size
+        if target_length is None:
+            raise ValueError("Target length must be provided")
+
+        self.text = text
+        self.chunks = self._split_into_chunks(text, chunk_size)
         self.current_chunk_index = 0
-        self.chunks = self._split_into_chunks(self.text)
+        self.target_length = target_length
+
+        model_name = "claude-3-5-sonnet-20240620"
 
         # Initialize base agent
         super().__init__(
             model_name=model_name,
-            tools={'GET_NEXT_CHUNK': lambda _: self._get_next_chunk()},
+            tools={
+                'GET_NEXT_CHUNK': lambda _: self._get_next_chunk(),
+                'CHECK_SUMMARY_LENGTH': lambda _: self._check_summary_length()
+            },
             tool_detection=self._detect_tool,
             end_detection=self._end_detection,
             manifesto=manifesto,
             memory=memory
         )
 
-    def _split_into_chunks(self, text: str) -> list[str]:
+    @debug()
+    def _split_into_chunks(self, text: str, chunk_size: int) -> list[str]:
         """Split the input text into chunks of approximately chunk_size characters.
         Tries to split at sentence boundaries where possible."""
         chunks = []
@@ -58,7 +63,7 @@ class SummaryAgent(Agent):
         sentences = text.split(". ")  # Simple sentence splitting
 
         for sentence in sentences:
-            if len(current_chunk) + len(sentence) > self.chunk_size:
+            if len(current_chunk) + len(sentence) > chunk_size:
                 chunks.append(current_chunk.strip())
                 current_chunk = sentence
             else:
@@ -69,14 +74,24 @@ class SummaryAgent(Agent):
 
         return chunks
 
+    @debug()
     def _get_next_chunk(self) -> str:
         """Return the next chunk of text to be summarized."""
         if self.current_chunk_index >= len(self.chunks):
             return "<NO_MORE_CHUNKS>"
-        
+
         chunk = self.chunks[self.current_chunk_index]
         self.current_chunk_index += 1
         return f"CHUNK {self.current_chunk_index}/{len(self.chunks)}:\n{chunk}"
+
+    @debug()
+    def _check_summary_length(self) -> str:
+        """Check if the summary exceeds the target length."""
+        summary_length = len(self.memory)
+        if summary_length > self.target_length:
+            return "<SUMMARY_TOO_LONG>"
+        else:
+            return "<SUMMARY_OK>"
 
     @debug()
     def _end_detection(self, manifesto: str, memory: str) -> bool:

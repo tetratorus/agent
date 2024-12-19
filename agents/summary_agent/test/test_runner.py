@@ -16,7 +16,8 @@ def main():
     agent = SummaryAgent(
         manifesto=manifesto,
         memory="",
-        text=text
+        text=text,
+        target_length=1000
     )
     result = agent.run()
     print("Final Result:", result)

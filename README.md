@@ -71,8 +71,8 @@ agent/
 
 ----
 
-#### (you can read the stuff below if you want but it's mostly here for your code editor so you can just autogen a new agent based on these guidelines)
-
+<details>
+<summary>🤖 Agent Implementation Guidelines (click to expand)</summary>
 
 ## Agent Architecture Guidelines
 
@@ -149,3 +149,5 @@ Each agent in the `agents/` directory MUST follow these conventions:
    - MUST NOT read files directly, all inputs through constructor
    - MUST use `@debug()` decorator on all methods
    - MUST implement `_detect_tool` and `_end_detection`
+
+</details>

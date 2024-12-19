@@ -70,6 +70,7 @@ agent/
 ```
 
 ## Agent Architecture Guidelines
+#### (you can read this if you want but it's mostly here for your code editor so you can just autogen a new agent based on these guidelines)
 
 Each agent in the `agents/` directory follows a modular architecture designed for prompt engineering and automated generation:
 

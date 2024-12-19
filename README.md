@@ -69,6 +69,7 @@ agent/
 └── README.md
 ```
 
+----
 
 #### (you can read the stuff below if you want but it's mostly here for your code editor so you can just autogen a new agent based on these guidelines)
 

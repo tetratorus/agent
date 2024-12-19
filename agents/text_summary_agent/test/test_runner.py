@@ -1,6 +1,6 @@
 import os
 import json
-from ..agent import SummaryAgent
+from ..agent import TextSummaryAgent
 
 def main():
     # Read from JSON files in variables directory
@@ -13,7 +13,7 @@ def main():
         manifesto = json.load(f)["manifesto"]
 
     # Initialize and run the agent
-    agent = SummaryAgent(
+    agent = TextSummaryAgent(
         manifesto=manifesto,
         memory="",
         text=text,

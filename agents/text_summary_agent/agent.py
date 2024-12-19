@@ -4,7 +4,7 @@ import json
 from lib.debug import debug
 from lib.base import Agent
 
-class SummaryAgent(Agent):
+class TextSummaryAgent(Agent):
     """An agent specialized for summarizing large amounts of text that exceed context windows.
 
     This agent receives text input that's too large for a single context window and breaks it down

@@ -87,7 +87,7 @@ You will help to generate a new agent implementation by:
    - test/test_runner.py
    - variables/ directory (empty)
 
-Read and analyse the files first. Thenask me questions iteratively about what I want the agent to do. Keep asking follow-up questions until you have a crystal clear understanding of what I want. Ask one question at a time.
+Read and analyse the files first. Then ask me questions iteratively about what I want the agent to do. Keep asking follow-up questions until you have a crystal clear understanding of what I want. Ask one question at a time.
 
 IMPORTANT:
 - Use ONLY standard library modules unless absolutely necessary

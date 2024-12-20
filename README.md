@@ -1,13 +1,26 @@
-# Autonomous Agent Framework
+# AI Agent Meta-Optimization Framework
 
-A lightweight and flexible framework for building autonomous agents powered by Large Language Models (LLMs). This framework enables agents to engage in conversations, execute tools, and maintain context memory efficiently.
+A minimalist framework for developing and optimizing AI agents through automated prompt engineering. The core thesis is that manually coding complex agent behaviors and hand-tuning prompts doesn't scale - instead, we should create minimal, flexible frameworks that let AI optimize itself.
+
+## Philosophy
+
+Most AI agent development time is spent on:
+1. Debugging complex agent execution steps
+2. Manual prompt engineering and tuning
+3. Writing intricate code to handle edge cases
+
+This framework takes a different approach:
+1. Implement the simplest possible agent loop
+2. Make every decision point prompt-driven and tunable
+3. Let AI optimize the prompts and generate tools
 
 ## Key Features
 
-- **Flexible Tool Integration**: Easily integrate custom tools that agents can use during execution
-- **Memory Management**: Built-in memory compression for efficient storage of conversation history
-- **Configurable Behavior**: Customize tool detection, end conditions, and memory management
-- **LLM Agnostic**: Works with any LLM that implements the basic completion interface
+- **Minimal Base Agent**: Simple, debuggable agent loop with configurable decision points
+- **Debug Tracing**: Comprehensive tracking of agent decisions and memory states
+- **Auto-Tool Generation**: AI-driven generation of new agent capabilities
+- **Multi-Model Support**: Test prompts across different LLM providers
+- **Memory Tracing**: Track and analyze how different prompting strategies affect agent behavior
 
 ## Basic Usage
 

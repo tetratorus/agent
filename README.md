@@ -5,14 +5,16 @@ A minimalist framework for developing and optimizing AI agents through automated
 ## Philosophy
 
 Most AI agent development time is spent on:
+
 1. Debugging complex agent execution steps
 2. Manual prompt engineering and tuning
 3. Writing intricate code to handle edge cases
 
 This framework takes a different approach:
+
 1. Implement the simplest possible agent loop
 2. Make every decision point prompt-driven and tunable
-3. Let AI optimize the prompts and generate tools
+3. Let AI optimize the prompts
 
 ## Key Features
 
@@ -46,14 +48,29 @@ result = agent.run()
 
 ## Architecture
 
-The agent operates in a simple loop:
+The agent operates in a minimal, prompt-driven loop:
 
-1. Generate response using LLM
-2. Store response in memory
-3. Check for tool calls
-4. Execute tools if detected
-5. Check end conditions
-6. Repeat until end conditions are met
+1. **Compose Request**:
+   - The manifesto (constant instructions) is combined with current memory
+   - The manifesto defines the agent's personality and capabilities
+   - Memory contains the conversation history and tool results
+
+2. **LLM Call**:
+   - Send composed request to LLM
+   - Response is appended to memory with "Assistant: " prefix
+
+3. **Tool Detection**:
+   - Check if LLM response contains tool calls
+   - Tool detection is customizable per agent (e.g. regex patterns)
+   - If tool is found and exists, execute it
+   - Tool result is appended to memory with "Tool Result: " prefix
+
+4. **End Detection**:
+   - Check if agent should stop (customizable per agent)
+   - Default behavior: end if no tool was called
+   - Agents can define custom end conditions (e.g. "<TASK_COMPLETED>")
+
+This minimal loop is completely prompt-driven - the manifesto and memory are the only state, and all decision points (tool detection, end conditions) can be tuned through prompts rather than code.
 
 ## Installation
 
@@ -74,8 +91,8 @@ agent/
 │   │   ├── test/
 │   │   │   └── test_runner.py # Test runner
 │   │   └── variables/         # Runtime variables and prompts
-│   │       ├── manifesto.json # Agent instructions
-│   │       └── *.json        # Other runtime state
+│   │       ├── manifesto.json # Agent custom instructions
+│   │       └── *.json        # Other tunable prompts passed to the agent
 │   └── text_summary_agent/
 │       └── ...               # Same structure as above
 ├── tools/           # Tool implementations

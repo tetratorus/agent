@@ -84,17 +84,36 @@ Generate a new agent implementation by:
 
 2. Creating the following structure:
    - agent.py (extending lib.base.Agent with required methods)
-   - test/test_runner.py
+   - test/test_runner.py 
    - variables/ directory (empty)
+
+IMPORTANT:
+- Use ONLY standard library modules unless absolutely necessary
+- Keep implementation simple and minimal
+- Do not add external dependencies without explicit justification
 ```
 
 ## Setting Up Runtime Variables
 
-The `variables/` folders are intentionally ignored by code editors due to their size and runtime-specific nature. You'll need to set these up manually after generating your agent's code. Here's how:
+The `variables/` folders are intentionally ignored by code editors due to their size and runtime-specific nature. You'll need to set these up manually after generating your agent's code.
+
+All variable files in the `variables/` directory must be JSON files with a specific format:
+- Content must be a JSON array containing a single string
+- The string contains the entire content/instructions/prompt
+- No additional fields or nested objects are allowed
+
+Example format:
+```json
+[
+  "You are an agent that does X. Your instructions are:\n1. Do this\n2. Then do that\n\nWhen responding:\n- Format like this\n- Include these details"
+]
+```
+
+To set up your agent's variables:
 
 1. Create a `variables/` directory in your agent's folder
-
-2. Use this prompt to generate copyable JSON content for your runtime files:
+2. Create your JSON files (e.g. `manifesto.json`) following the format above
+3. Use this prompt to generate the content for your files:
 ```
 Analyze the newly generated agent.py to understand:
 - What tools the agent uses
@@ -103,15 +122,11 @@ Analyze the newly generated agent.py to understand:
 
 Then generate copyable JSON content (using [content] array format) for:
 1. manifesto.json - containing the agent's:
-   - Personality and behavior definitions
+   - Personality and behavior definitions 
    - Tool usage patterns
    - Response formats
 2. Any other runtime variables referenced in agent.py
-
-Output the JSON in a way that can be directly copied into the respective files.
 ```
-
-Note: The AI code editor cannot create these files directly, but it can generate content that you can copy and paste into your manually created files.
 
 ----
 

@@ -76,7 +76,7 @@ agent/
 If you're using an AI-powered editor, use this prompt to generate your agent's code structure:
 
 ```
-Generate a new agent implementation by:
+You will help to generate a new agent implementation by:
 1. Reading and analyzing:
    - This entire README.md for architecture and implementation guidelines
    - lib/base.py to understand the core Agent class
@@ -84,13 +84,16 @@ Generate a new agent implementation by:
 
 2. Creating the following structure:
    - agent.py (extending lib.base.Agent with required methods)
-   - test/test_runner.py 
+   - test/test_runner.py
    - variables/ directory (empty)
+
+Read and analyse the files first. Thenask me questions iteratively about what I want the agent to do. Keep asking follow-up questions until you have a crystal clear understanding of what I want. Ask one question at a time.
 
 IMPORTANT:
 - Use ONLY standard library modules unless absolutely necessary
 - Keep implementation simple and minimal
 - Do not add external dependencies without explicit justification
+
 ```
 
 ## Setting Up Runtime Variables
@@ -120,12 +123,17 @@ Analyze the newly generated agent.py to understand:
 - What runtime variables it references
 - Its core behavior and requirements
 
-Then generate copyable JSON content (using [content] array format) for:
-1. manifesto.json - containing the agent's:
-   - Personality and behavior definitions 
-   - Tool usage patterns
-   - Response formats
-2. Any other runtime variables referenced in agent.py
+Then generate copyable JSON content for manifesto.json:
+- Use EXACT format: ["content"]
+- All newlines as \\n
+- All quotes as \\\"
+- Output as a single line with NO formatting
+- NO explanations or markdown - just the raw JSON array
+- Content must define:
+  * Agent personality and behavior
+  * EXACT tool call formats with proper escaping
+  * Response format requirements
+  * Any other runtime requirements
 ```
 
 ----
@@ -178,6 +186,15 @@ Each agent in the `agents/` directory follows a modular architecture designed fo
    - Tool sets can be mixed: external APIs and internal functions
    - Custom tool detection patterns per agent
    - Memory management customizable per agent
+
+## Development Guidelines
+
+### Code Style
+
+- No default/hardcoded values for required parameters in variables folder
+- All variables defined in variables folder must be explicitly passed
+- No default/hardcoded values for required parameters in agent constructor
+- Clear documentation of all required parameters
 
 ## Agent Implementation Guidelines
 

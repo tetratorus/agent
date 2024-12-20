@@ -78,7 +78,7 @@ If you're using an AI-powered editor, use this prompt to generate your agent's c
 ```
 You will help to generate a new agent implementation by:
 1. Reading and analyzing:
-   - This entire README.md for architecture and implementation guidelines
+   - README
    - lib/base.py to understand the core Agent class
    - Existing agents in agents/ directory for implementation patterns
 
@@ -118,6 +118,8 @@ To set up your agent's variables:
 2. Create your JSON files (e.g. `manifesto.json`) following the format above
 3. Use this prompt to generate the content for your files:
 ```
+Read the README.
+
 Analyze the newly generated agent.py to understand:
 - What tools the agent uses
 - What runtime variables it references

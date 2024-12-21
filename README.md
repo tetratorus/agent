@@ -16,15 +16,9 @@ This framework takes a different approach:
 2. Make every decision point prompt-driven and tunable
 3. Let AI optimize the prompts
 
-## Key Features
-
-- **Minimal Base Agent**: Simple, debuggable agent loop with configurable decision points
-- **Debug Tracing**: Comprehensive tracking of agent decisions and memory states
-- **Auto-Tool Generation**: AI-driven generation of new agent capabilities
-- **Multi-Model Support**: Test prompts across different LLM providers
-- **Memory Tracing**: Track and analyze how different prompting strategies affect agent behavior
-
 ## Basic Usage
+
+`python main.py`
 
 ```python
 from lib.base import Agent

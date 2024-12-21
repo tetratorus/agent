@@ -37,16 +37,29 @@ class ToolGenerationAgent(Agent):
         except Exception as e:
             return f"Error creating directory {path}: {str(e)}"
 
-    def _write_file(self, args: str) -> str:
+    def _write_file(self, args: Tuple[str, str]) -> str:
         """Write content to a file, creating parent directories if needed."""
         try:
-            path, content = args.split("|||", 1)
+            path, content = args
+            if not path or not content:
+                return "Error: Both path and content must be provided"
+
             os.makedirs(os.path.dirname(path), exist_ok=True)
-            with open(path, "w") as f:
+            with open(path, "w", encoding='utf-8') as f:
                 f.write(content)
+            
+            # Verify the file was written correctly
+            if not os.path.exists(path):
+                return f"Error: File {path} was not created"
+                
+            with open(path, 'r', encoding='utf-8') as f:
+                written_content = f.read()
+                if written_content.strip() != content.strip():
+                    return f"Error: File {path} content verification failed"
+                    
             return f"Wrote file: {path}"
         except Exception as e:
-            return f"Error writing file {path}: {str(e)}"
+            return f"Error writing file: {str(e)}"
 
     def _check_path_exists(self, path: str) -> str:
         """Check if a path exists."""
@@ -64,13 +77,40 @@ class ToolGenerationAgent(Agent):
     def _detect_tool(self, text: str) -> Tuple[Optional[str], Optional[str]]:
         """Detect tool calls in the LLM's response."""
         lines = text.split("\n")
-        for line in lines:
-            if line.startswith("CREATE_DIRECTORY:"):
-                return "CREATE_DIRECTORY", line.split(":", 1)[1].strip()
+        current_tool = None
+        current_path = None
+        current_content = []
+        
+        for i, line in enumerate(lines):
+            line = line.strip()
+            if not line:
+                continue
+                
+            # Handle single-line tool calls
+            if line.startswith(("CREATE_DIRECTORY:", "CHECK_PATH_EXISTS:", "GET_USER_INPUT:")):
+                if current_tool == "WRITE_FILE" and current_path and current_content:
+                    # Found a new tool call, return the previous WRITE_FILE
+                    return "WRITE_FILE", (current_path, "\n".join(current_content))
+                    
+                tool, args = line.split(":", 1)
+                return tool, args.strip()
+                
+            # Start of a WRITE_FILE block
             elif line.startswith("WRITE_FILE:"):
-                return "WRITE_FILE", line.split(":", 1)[1].strip()
-            elif line.startswith("CHECK_PATH_EXISTS:"):
-                return "CHECK_PATH_EXISTS", line.split(":", 1)[1].strip()
-            elif line.startswith("GET_USER_INPUT:"):
-                return "GET_USER_INPUT", line.split(":", 1)[1].strip()
+                if current_tool == "WRITE_FILE" and current_path and current_content:
+                    # Found a new WRITE_FILE, return the previous one
+                    return "WRITE_FILE", (current_path, "\n".join(current_content))
+                    
+                current_tool = "WRITE_FILE"
+                current_path = line.split(":", 1)[1].strip()
+                current_content = []
+                
+            # Content lines for WRITE_FILE
+            elif current_tool == "WRITE_FILE" and current_path:
+                current_content.append(line)
+        
+        # Return final WRITE_FILE if we were building one
+        if current_tool == "WRITE_FILE" and current_path and current_content:
+            return "WRITE_FILE", (current_path, "\n".join(current_content))
+            
         return None, None

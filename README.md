@@ -18,26 +18,78 @@ This framework takes a different approach:
 
 ## Basic Usage
 
-`python main.py`
+The simplest way to run an agent is through the CLI:
+```bash
+python main.py
+```
+
+To implement your own agent:
 
 ```python
+from typing import Optional, Tuple
+import re
 from lib.base import Agent
+from lib.debug import debug
 
-# Define your tools
-tools = {
-    "calculator": lambda x: str(eval(x)),
-    "search": lambda q: search_web(q)
-}
+class MyAgent(Agent):
+    """A custom agent that does X.
 
-# Create an agent
-agent = Agent(
-    model_name="your-llm-model",
-    tools=tools,
-    manifesto="You are a helpful assistant that can use tools."
-)
+    Args:
+        manifesto: Custom instructions for the agent
+        memory: Initial memory/context for the conversation
+    """
 
-# Run the agent
-result = agent.run()
+    @debug()
+    def __init__(self, manifesto: str, memory: str = ""):
+        if manifesto is None:
+            raise ValueError("Manifesto must be provided")
+
+        super().__init__(
+            model_name="gpt-4o",
+            manifesto=manifesto,
+            memory=memory,
+            tools={
+                "search": self._search,
+                "process": self._process
+            },
+            tool_detection=self._detect_tool
+        )
+
+    @debug()
+    def _search(self, query: str) -> str:
+        """Search for information."""
+        try:
+            # Implement search logic
+            return f"Results for: {query}"
+        except Exception as e:
+            return f"Error searching: {e}"
+
+    @debug()
+    def _process(self, data: str) -> str:
+        """Process the data."""
+        try:
+            # Implement processing logic
+            return f"Processed: {data}"
+        except Exception as e:
+            return f"Error processing: {e}"
+
+    @debug()
+    def _detect_tool(self, text: str) -> Tuple[Optional[str], Optional[str]]:
+        """Detect tool calls in the agent's response."""
+        pattern = r'<TOOL: ([A-Z_]+)>(.*?)</TOOL>'
+        match = re.search(pattern, text)
+        if match:
+            tool_name = match.group(1).lower()
+            tool_input = match.group(2)
+            return tool_name, tool_input
+        return None, None
+```
+
+Then create your agent's variables in `variables/manifesto.json`:
+```json
+[
+  "You are an agent that does X. When you need information:\n- Use <TOOL: SEARCH>query</TOOL> to search\n- Use <TOOL: PROCESS>data</TOOL> to process\n\nFormat your responses clearly and end when done."
+]
 ```
 
 ## Architecture
@@ -78,22 +130,35 @@ pip install -r requirements.txt
 ```bash
 agent/
 ├── lib/
-│   └── base.py      # Core agent implementation
+│   ├── base.py      # Core agent implementation
+│   └── debug.py     # Debug decorator and logging
 ├── agents/          # Specific agent implementations
 │   ├── research_agent/
 │   │   ├── agent.py           # Agent implementation
-│   │   ├── run/
-│   │   │   └── runner.py      # Runner script
 │   │   └── variables/         # Runtime variables and prompts
-│   │       ├── manifesto.json # Agent custom instructions
-│   │       └── *.json        # Other tunable prompts passed to the agent
-│   └── text_summary_agent/
-│       └── ...               # Same structure as above
-├── tools/           # Tool implementations
-└── README.md
+│   ├── text_summary_agent/
+│   │   ├── agent.py
+│   │   └── variables/
+│   ├── logging_summary_agent/
+│   │   ├── agent.py
+│   │   └── variables/
+│   └── variable_generation_agent/
+│       ├── agent.py
+│       └── variables/
+├── main.py         # Main runner with CLI interface
+└── requirements.txt
 ```
 
-----
+Each agent follows a simple structure:
+- `agent.py`: Main implementation extending `lib.base.Agent`
+- `variables/`: Directory containing JSON files for runtime variables
+  - `manifesto.json`: Agent's core instructions
+  - Other JSON files specific to the agent
+
+All agents use the same standardized XML format for tool calls:
+```
+<TOOL: TOOL_NAME>arguments</TOOL>
+```
 
 ## Quick Agent Generation
 
@@ -108,7 +173,6 @@ You will help to generate a new agent implementation by:
 
 2. Creating the following structure:
    - agent.py (extending lib.base.Agent with required methods)
-   - run/runner.py
    - variables/ directory (empty)
 
 Read and analyse the files first. Then ask me questions iteratively about what I want the agent to do. Keep asking follow-up questions until you have a crystal clear understanding of what I want. Ask one question at a time.

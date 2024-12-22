@@ -32,7 +32,7 @@ class ResearchAgent(Agent):
         if memory is None:
             raise ValueError("Memory must be provided")
 
-        model_name = "claude-3-5-sonnet-20240620"
+        model_name = "gpt-4o"
 
         self.serpapi_key = os.environ.get("SERPAPI_API_KEY")
         if not self.serpapi_key:

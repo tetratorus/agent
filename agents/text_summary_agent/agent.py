@@ -39,7 +39,7 @@ class TextSummaryAgent(Agent):
         self.current_chunk_index = 0
         self.target_length = target_length
 
-        model_name = "claude-3-5-sonnet-20240620"
+        model_name = "gpt-4o"
 
         # Initialize base agent
         super().__init__(

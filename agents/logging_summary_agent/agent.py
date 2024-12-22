@@ -35,7 +35,7 @@ class LoggingSummaryAgent(Agent):
         self.current_chunk_index = 0
 
         # Initialize with a model that has strong text analysis capabilities
-        model_name = "claude-3-5-sonnet-20240620"
+        model_name = "gpt-4o"
 
         # Initialize base agent with tools for log analysis
         super().__init__(

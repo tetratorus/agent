@@ -82,8 +82,8 @@ agent/
 ├── agents/          # Specific agent implementations
 │   ├── research_agent/
 │   │   ├── agent.py           # Agent implementation
-│   │   ├── test/
-│   │   │   └── test_runner.py # Test runner
+│   │   ├── run/
+│   │   │   └── runner.py      # Runner script
 │   │   └── variables/         # Runtime variables and prompts
 │   │       ├── manifesto.json # Agent custom instructions
 │   │       └── *.json        # Other tunable prompts passed to the agent
@@ -108,7 +108,7 @@ You will help to generate a new agent implementation by:
 
 2. Creating the following structure:
    - agent.py (extending lib.base.Agent with required methods)
-   - test/test_runner.py
+   - run/runner.py
    - variables/ directory (empty)
 
 Read and analyse the files first. Then ask me questions iteratively about what I want the agent to do. Keep asking follow-up questions until you have a crystal clear understanding of what I want. Ask one question at a time.
@@ -117,6 +117,7 @@ IMPORTANT:
 - Use ONLY standard library modules unless absolutely necessary
 - Keep implementation simple and minimal
 - Do not add external dependencies without explicit justification
+- For tool detection prefer to use XML-like tags
 
 ```
 
@@ -170,6 +171,8 @@ After that, generate copyable JSON content for other variables, following the sa
 <details>
 <summary>🤖 Agent Implementation Guidelines (click to expand)</summary>
 
+If you're an AI you MUST follow these guidelines below to implement an agent:
+
 ## Agent Architecture Guidelines
 
 Each agent in the `agents/` directory follows a modular architecture designed for prompt engineering and automated generation:
@@ -192,10 +195,10 @@ Each agent in the `agents/` directory follows a modular architecture designed fo
    - Variables directory designed for automated prompt optimization
    - Each agent manages own memory compression strategy
 
-4. **Testing and Execution**:
-   - Test runners handle all I/O and environment setup
+4. **Execution**:
+   - Runners handle all I/O and environment setup
    - Agents receive clean inputs through constructor
-   - Environment variables (API keys etc) handled by test runner
+   - Environment variables (API keys etc) handled by runner
    - All methods decorated with `@debug()` for monitoring
 
 5. **Prompt Engineering**:
@@ -232,7 +235,7 @@ Each agent in the `agents/` directory MUST follow these conventions:
 1. **Directory Structure**:
    - Agent directory name should be descriptive (e.g., `research_agent`, `text_summary_agent`)
    - Main implementation MUST be in `agent.py` (not named after the agent)
-   - MUST have `test/test_runner.py` for running the agent
+   - MUST have `run/runner.py` for running the agent
    - MUST have `variables/` directory for runtime state
 
 2. **Variables Format**:
@@ -240,7 +243,7 @@ Each agent in the `agents/` directory MUST follow these conventions:
    - Example: `{"text": "content"}` is WRONG, `["content"]` is CORRECT
    - `manifesto.json` MUST exist and follow this format
 
-3. **Test Runner**:
+3. **Runner**:
    - MUST read all variables using array index `[0]`
    - Example: `json.load(f)[0]` not `json.load(f)["key"]`
    - MUST handle all file I/O, agent implementation should only take clean inputs

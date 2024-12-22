@@ -33,13 +33,13 @@ def get_available_agents() -> List[Tuple[str, str, Optional[str]]]:
         if not os.path.isdir(agent_dir):
             continue
 
-        # Check if test runner exists
-        test_runner = os.path.join(agent_dir, 'test', 'test_runner.py')
-        if os.path.exists(test_runner):
+        # Check if runner exists
+        runner = os.path.join(agent_dir, 'run', 'runner.py')
+        if os.path.exists(runner):
             # Get agent description from class docstring
             agent_class = get_agent_class(item)
             description = inspect.getdoc(agent_class) if agent_class else None
-            agents.append((item, f"agents.{item}.test.test_runner", description))
+            agents.append((item, f"agents.{item}.run.runner", description))
 
     return sorted(agents)
 

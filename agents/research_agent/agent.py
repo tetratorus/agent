@@ -16,19 +16,15 @@ class ResearchAgent(Agent):
     It continues to format and synthesize the information it has gathered until it has satisfied the research topic.
 
     Args:
-        research_topic: The research topic to gather information about.
         manifesto: Custom instructions for the agent.
         memory: Initial memory/context for the conversation
     """
 
     def __init__(self,
-                 research_topic: str,
                  manifesto: str,
                  memory: str):
 
         # check if all required parameters are provided
-        if research_topic is None:
-            raise ValueError("Research topic must be provided")
 
         if manifesto is None:
             raise ValueError("Manifesto must be provided")
@@ -44,6 +40,7 @@ class ResearchAgent(Agent):
 
         # Create tools dictionary with proper typing
         tools: Dict[str, Callable[[str], str]] = {
+            'GET_RESEARCH_TOPIC': lambda _: self._get_research_topic(),
             'SEARCH': lambda q: self._search(q),
             'OPEN_URL': lambda o: self._open_url(o)
         }
@@ -55,8 +52,13 @@ class ResearchAgent(Agent):
             tool_detection=self._detect_tool,
             end_detection=self._end_detection,
             manifesto=manifesto,
-            memory="\nResearch Topic: " + research_topic + "\n" + memory
+            memory=memory
         )
+
+    @debug()
+    def _get_research_topic(self) -> str:
+        # get research topic from user by getting user input from the terminal
+        return input("Enter your research topic: ")
 
     @debug()
     def _end_detection(self, manifesto: str, memory: str) -> bool:

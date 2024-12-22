@@ -13,7 +13,7 @@ def get_agent_class(agent_name: str) -> Optional[type]:
         module = importlib.import_module(f"agents.{agent_name}.agent")
         # Find the agent class (usually the only class that inherits from Agent)
         for name, obj in inspect.getmembers(module):
-            if inspect.isclass(obj) and name.endswith('Agent'):
+            if inspect.isclass(obj) and name.endswith('Agent') and obj.__module__ == module.__name__:
                 return obj
     except ImportError:
         return None
@@ -21,36 +21,26 @@ def get_agent_class(agent_name: str) -> Optional[type]:
 
 def get_available_agents() -> List[Tuple[str, str, Optional[str]]]:
     """Get list of available agents, their runner paths, and descriptions."""
-    agents_dir = os.path.join(os.path.dirname(__file__), 'agents')
     agents = []
-
-    # Look through agents directory
+    agents_dir = os.path.join(os.path.dirname(__file__), "agents")
     for item in os.listdir(agents_dir):
-        if item.startswith('__'):
-            continue
-
-        agent_dir = os.path.join(agents_dir, item)
-        if not os.path.isdir(agent_dir):
-            continue
-
-        # Check if runner exists
-        runner = os.path.join(agent_dir, 'run', 'runner.py')
-        if os.path.exists(runner):
-            # Get agent description from class docstring
+        if os.path.isdir(os.path.join(agents_dir, item)) and not item.startswith('__'):
             agent_class = get_agent_class(item)
-            description = inspect.getdoc(agent_class) if agent_class else None
+            # Get docstring directly from class to avoid inheriting base Agent docstring
+            description = agent_class.__doc__ if agent_class and agent_class.__doc__ else None
             agents.append((item, f"agents.{item}.run.runner", description))
 
-    return sorted(agents)
+    agents.sort(key=lambda x: x[0])  # Simple alphabetical sort
+    return agents
 
 def print_agents(agents: List[Tuple[str, str, Optional[str]]]) -> None:
     """Print available agents in a nice format."""
     print("\nAvailable Agents:")
     print("----------------")
-    for i, (name, _, description) in enumerate(agents, 1):
+    for i, (name, _, description) in enumerate(agents):
         # Convert snake_case to Title Case for display
         display_name = ' '.join(word.capitalize() for word in name.split('_'))
-        print(f"{i}. {display_name}")
+        print(f"{i+1}. {display_name}")
     print()
 
 def show_agent_details(agent: Tuple[str, str, Optional[str]]) -> None:

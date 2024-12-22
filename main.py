@@ -13,14 +13,14 @@ class StreamingLogger:
     def __init__(self, log_file: TextIO):
         self.terminal = sys.stdout
         self.log_file = log_file
-    
+
     def write(self, message: str):
         self.terminal.write(message)
         self.log_file.write(message)
         # Flush both to ensure real-time output
         self.terminal.flush()
         self.log_file.flush()
-    
+
     def flush(self):
         self.terminal.flush()
         self.log_file.flush()
@@ -45,7 +45,7 @@ def get_available_agents() -> List[Tuple[str, Optional[str]]]:
             agent_class = get_agent_class(item)
             description = agent_class.__doc__ if agent_class and agent_class.__doc__ else None
             agents.append((item, description))
-    
+
     agents.sort(key=lambda x: x[0])  # Simple alphabetical sort
     return agents
 
@@ -91,7 +91,7 @@ def load_all_variations(var_dir: str) -> Tuple[List[Dict[str, str]], int]:
     Returns tuple of (list of variable combinations, number of variations)"""
     variations = {}
     num_variations = None
-    
+
     # Load all variations from each file
     for filename in os.listdir(var_dir):
         if filename.endswith('.json'):
@@ -99,16 +99,16 @@ def load_all_variations(var_dir: str) -> Tuple[List[Dict[str, str]], int]:
             with open(os.path.join(var_dir, filename)) as f:
                 var_list = json.load(f)
                 variations[var_name] = var_list
-                
+
                 # Check all files have same number of variations
                 if num_variations is None:
                     num_variations = len(var_list)
                 elif len(var_list) != num_variations:
                     raise ValueError(f"Mismatched number of variations in {filename}. Expected {num_variations}, got {len(var_list)}")
-    
+
     if not num_variations:
         raise ValueError("No variations found")
-        
+
     return variations, num_variations
 
 def run_agent(agent_class: Type, variables: Dict[str, Any]) -> Any:
@@ -123,39 +123,37 @@ def run_agent_with_logging(agent_class: Type, variables: Dict[str, Any], run_dir
         try:
             agent = agent_class(**variables)
             result = agent.run()
-            
-            with open(os.path.join(run_dir, "variables.json"), "w") as f:
-                json.dump(variables, f, indent=2)
-            with open(os.path.join(run_dir, "result.json"), "w") as f:
+
+            with open(os.path.join(run_dir, "results"), "w") as f:
                 json.dump({"result": result}, f, indent=2)
-            
+
             return result
         finally:
             sys.stdout = sys.__stdout__
 
 def optimize_agent(agent_name: str, agent_class: Type):
-    """Optimize agent by trying different variable combinations."""
+    """Optimize agent by trying different variables"""
     print(f"\nOptimizing {agent_name}...")
-    
+
     # Setup directories
     agent_dir = os.path.join(os.path.dirname(__file__), "agents", agent_name)
     var_dir = os.path.join(agent_dir, "variables")
-    
+
     # Load all variations
     variations, num_variations = load_all_variations(var_dir)
     print(f"\nFound {num_variations} variations to test")
-    
+
     # Try each variation set
     for i in range(num_variations):
         print(f"\nTesting variation set {i+1}/{num_variations}:")
-        
+
         # Build variables for this variation
         test_vars = {}
         for var_name, var_list in variations.items():
             test_vars[var_name] = var_list[i]
             preview = var_list[i][:200] + "..." if len(var_list[i]) > 200 else var_list[i]
             print(f"{var_name}: {preview}")
-        
+
         # Run with these variables
         run_dir = create_run_folder(agent_dir)
         try:
@@ -172,10 +170,10 @@ def main():
     if not agents:
         print("No agents found!")
         return
-    
+
     # Show agents
     print_agents(agents)
-    
+
     # Select agent
     while True:
         try:
@@ -185,20 +183,20 @@ def main():
             print("Invalid choice, try again")
         except ValueError:
             print("Please enter a number")
-    
+
     agent_name, description = agents[choice]
     show_agent_details(agent_name, description)
-    
+
     agent_class = get_agent_class(agent_name)
     if not agent_class:
         print(f"Could not load agent class for {agent_name}")
         return
-    
+
     # Select mode
     print("\nModes:")
     print("1. Run agent")
     print("2. Optimize agent")
-    
+
     while True:
         try:
             mode = int(input("\nSelect mode: "))
@@ -207,7 +205,7 @@ def main():
             print("Invalid choice, try again")
         except ValueError:
             print("Please enter a number")
-    
+
     if mode == 1:
         # Run mode - console output only
         agent_dir = os.path.join(os.path.dirname(__file__), "agents", agent_name)
@@ -215,7 +213,7 @@ def main():
         variables = load_variables(var_dir)
         result = run_agent(agent_class, variables)
         print(f"\nRun completed.")
-        
+
     else:
         # Optimize mode - with logging
         optimize_agent(agent_name, agent_class)

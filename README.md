@@ -160,6 +160,9 @@ Then generate copyable JSON content for manifesto.json:
   * EXACT tool call formats with proper escaping
   * Response format requirements
   * Any other runtime requirements
+Note: if there is no end_detection defined, the agent will end if no tool is called! So keep that in mind when generating the manifesto.
+
+After that, generate copyable JSON content for other variables, following the same format.
 ```
 
 ----
@@ -179,8 +182,8 @@ Each agent in the `agents/` directory follows a modular architecture designed fo
 
 2. **Tool Protocol**:
    - Tools are stateless functions that take string input and return string output
-   - Tool detection patterns are agent-specific (regex/string matching)
-   - Each agent defines its own tool response format in manifesto
+   - Tool calls must use XML format: `<TOOL: TOOL_NAME>arguments</TOOL>`
+   - Multi-line arguments are supported through the XML format
    - Tools should be pure functions with no side effects
 
 3. **State Management**:

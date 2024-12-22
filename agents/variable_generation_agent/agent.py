@@ -132,7 +132,7 @@ Core Files Read:
         except Exception as e:
             return f"Error listing variables: {str(e)}"
 
-    @debug("ARE WE EHEREEE")
+    @debug()
     def add_variation(self, variable_and_content: str) -> str:
         """Add a variation for a variable file."""
         # Split the input into variable name and content
@@ -150,15 +150,10 @@ Core Files Read:
             with open(target_path, "r") as f:
                 data = json.load(f)
         except (FileNotFoundError, json.JSONDecodeError):
-            data = []
+            return "Error reading variable file"
 
         # Add new content to list
-        try:
-            new_content = json.loads(content)
-        except json.JSONDecodeError:
-            return "Error: Invalid JSON content"
-
-        data.append(new_content)
+        data.append(content)
 
         # Write back to file
         with open(target_path, "w") as f:

@@ -93,11 +93,11 @@ class LoggingSummaryAgent(Agent):
         # Check for next chunk request
         if "GET_NEXT_LOG_CHUNK" in text:
             return "GET_NEXT_LOG_CHUNK", ""
-            
+
         # Check for analysis complete marker
         if "MARK_ANALYSIS_COMPLETE" in text:
             return "MARK_ANALYSIS_COMPLETE", ""
-            
+
         return None, None
 
     @debug()

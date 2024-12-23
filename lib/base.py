@@ -41,7 +41,14 @@ class Agent:
     self.llm = llms.init(model_name)
     self.manifesto = manifesto
     self.memory = memory
-    self.tools = tools or {}
+    self._ask_user_impl = lambda q: input(q + "\nYour response: ")
+
+    # Merge provided tools with built-in tools
+    self.tools = {
+        "ASK_USER": self.ask_user,
+        **(tools or {})
+    }
+
     self.end_detection = end_detection
     self.tool_detection = tool_detection
     self.memory_management = memory_management
@@ -127,3 +134,11 @@ class Agent:
         break
 
     return self.memory
+
+  def ask_user(self, question: str) -> str:
+    """Ask the user a question and return their response."""
+    return self._ask_user_impl(question)
+
+  def override_ask_user(self, new_impl: Callable[[str], str]) -> None:
+    """Override the ask_user implementation."""
+    self._ask_user_impl = new_impl

@@ -22,15 +22,12 @@ class ResearchAgent(Agent):
 
     def __init__(self,
                  manifesto: str,
-                 memory: str):
+                 memory: str = ""):
 
         # check if all required parameters are provided
 
         if manifesto is None:
             raise ValueError("Manifesto must be provided")
-
-        if memory is None:
-            raise ValueError("Memory must be provided")
 
         model_name = "gpt-4o"
 
@@ -40,7 +37,6 @@ class ResearchAgent(Agent):
 
         # Create tools dictionary with proper typing
         tools: Dict[str, Callable[[str], str]] = {
-            'GET_RESEARCH_TOPIC': lambda _: self._get_research_topic(),
             'SEARCH': lambda q: self._search(q),
             'OPEN_URL': lambda o: self._open_url(o)
         }
@@ -57,8 +53,15 @@ class ResearchAgent(Agent):
 
     @debug()
     def _get_research_topic(self) -> str:
-        # get research topic from user by getting user input from the terminal
-        return input("Enter your research topic: ")
+        """Get the research topic from memory."""
+        # Extract research topic from memory if present
+        if hasattr(self, '_research_topic'):
+            return self._research_topic
+
+        # Ask user for research topic
+        topic = self.ask_user("What would you like me to research?")
+        self._research_topic = topic
+        return topic
 
     @debug()
     def _end_detection(self, manifesto: str, memory: str) -> bool:
@@ -75,6 +78,9 @@ class ResearchAgent(Agent):
         if match:
             tool_name = match.group(1)
             tool_input = match.group(2)
+            # Map ASK_USER to the base agent's ask_user tool
+            if tool_name == 'ASK_USER':
+                return 'ask_user', tool_input
             return tool_name, tool_input
         else:
             return None, None

@@ -59,10 +59,10 @@ Core Files Read:
             manifesto=manifesto,
             memory=initial_memory,
             tools={
-                "list_variables": self._list_variables,
-                "add_variation": self.add_variation,
-                "ask_user": self.ask_user,
-                "copy_last_entry": self.copy_last_entry
+                "LIST_VARIABLES": self._list_variables,
+                "ADD_VARIATION": self.add_variation,
+                "ASK_USER": self.ask_user,
+                "COPY_LAST_ENTRY": self.copy_last_entry
             },
             tool_detection=self._detect_tool,
             end_detection=self._end_detection

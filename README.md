@@ -51,6 +51,7 @@ class MyAgent(Agent):
             tools={
                 "search": self._search,
                 "process": self._process
+                # ask_user tool is built-in and available automatically
             },
             tool_detection=self._detect_tool
         )
@@ -88,9 +89,17 @@ class MyAgent(Agent):
 Then create your agent's variables in `variables/manifesto.json`:
 ```json
 [
-  "You are an agent that does X. When you need information:\n- Use <TOOL: SEARCH>query</TOOL> to search\n- Use <TOOL: PROCESS>data</TOOL> to process\n\nFormat your responses clearly and end when done."
+  "You are an agent that does X. When you need information:\n- Use <TOOL: SEARCH>query</TOOL> to search\n- Use <TOOL: PROCESS>data</TOOL> to process\n- Use <TOOL: ASK_USER>question</TOOL> to ask the user questions\n\nFormat your responses clearly and end when done."
 ]
 ```
+
+## Built-in Tools
+
+The base Agent provides some built-in tools that all agents can use:
+
+1. **ask_user**: Ask the user a question and get their response
+   - Usage: `<TOOL: ASK_USER>What is your preference?</TOOL>`
+   - Can be overridden for testing: `agent.override_ask_user(lambda q: "test response")`
 
 ## Architecture
 
@@ -321,5 +330,6 @@ Each agent in the `agents/` directory MUST follow these conventions:
    - MUST NOT read files directly, all inputs through constructor
    - MUST use `@debug()` decorator on all methods
    - MUST implement `_detect_tool` and `_end_detection`
+   - MUST follow naming convention: directory `xxx_agent` (e.g. `research_agent`) and class `XxxAgent` (e.g. `ResearchAgent`)
 
 </details>

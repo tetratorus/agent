@@ -78,9 +78,6 @@ class ResearchAgent(Agent):
         if match:
             tool_name = match.group(1)
             tool_input = match.group(2)
-            # Map ASK_USER to the base agent's ask_user tool
-            if tool_name == 'ASK_USER':
-                return 'ask_user', tool_input
             return tool_name, tool_input
         else:
             return None, None

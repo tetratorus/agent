@@ -20,7 +20,7 @@ class TextSummaryAgent(Agent):
     def __init__(self,
                  manifesto: str,
                  text: str,
-                 target_length: int,
+                 target_length: int = 30000,
                  chunk_size: int = 8000,
                  memory: str = "",
     ):
@@ -30,9 +30,6 @@ class TextSummaryAgent(Agent):
 
         if text is None:
             raise ValueError("Text must be provided")
-
-        if target_length is None:
-            raise ValueError("Target length must be provided")
 
         self.text = text
         self.chunks = self._split_into_chunks(text, chunk_size)

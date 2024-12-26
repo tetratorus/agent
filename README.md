@@ -69,7 +69,7 @@ IMPORTANT:
 - Use ONLY standard library modules unless absolutely necessary
 - Keep implementation simple and minimal
 - Do not add external dependencies without explicit justification
-- For tool detection prefer to use XML-like tags i.e. <TOOL: TOOL_NAME>arguments</TOOL>
+- Tools MUST follow the format => <TOOL: TOOL_NAME>optional_tool_input</TOOL>
 - For arguments with no promptable defaults, prefer user input, by using the base ask_user tool - `<TOOL: ASK_USER>What is the |input_var|?</TOOL>`
 ```
 
@@ -110,7 +110,8 @@ Then generate copyable JSON content for manifesto.json:
 - NO explanations or markdown - just the raw JSON array
 - Content must define:
   * Agent personality and behavior
-  * EXACT tool call formats with proper escaping
+  * All tools available to the agent
+  * EXACT tool call formats with proper escaping, (IMPORTANT! MUST INCLUDE IN MANIFESTO THAT TOOL CALLS FOLLOW THE FORMAT => <TOOL:TOOL_NAME>optional_tool_input</TOOL> MUST REMEMBER THE CLOSING TAG!!!!)
   * Must include that the agent may only call 1 tool at a time in the manifesto
   * Response format requirements
   * Any other runtime requirements

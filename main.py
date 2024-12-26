@@ -180,18 +180,6 @@ def generate_variables(agent_name: str, agent_class: Type):
 
     pass
 
-def run_variations(agent_name: str, agent_class: Type):
-    # TO DO: implement run variations
-    pass
-
-def score_results(agent_name: str):
-    # TO DO: implement score results
-    pass
-
-def view_results(agent_name: str):
-    # TO DO: implement view results
-    pass
-
 def main():
     # Get available agents
     agents = get_available_agents()
@@ -223,15 +211,13 @@ def main():
     # Select mode
     print("\nModes:")
     print("1. Run agent")
-    print("2. Generate variables")
-    print("3. Run variations")
-    print("4. Score results")
-    print("5. View results")
+    print("2. Run agent (debug mode)")
+    print("3. Generate variables")
 
     while True:
         try:
             mode = int(input("\nSelect mode: "))
-            if mode in [1, 2, 3, 4, 5]:
+            if mode in [1, 2, 3]:
                 break
             print("Invalid choice, try again")
         except ValueError:
@@ -245,13 +231,16 @@ def main():
         result = run_agent(agent_class, variables)
         print(f"\nRun completed.")
     elif mode == 2:
-        generate_variables(agent_name, agent_class)
-    elif mode == 3:
-        run_variations(agent_name, agent_class)
-    elif mode == 4:
-        score_results(agent_name)
+        # Run mode with debug verbose
+        from lib.debug import set_debug_verbosity
+        set_debug_verbosity(True)
+        agent_dir = os.path.join(os.path.dirname(__file__), "agents", agent_name)
+        var_dir = os.path.join(agent_dir, "variables")
+        variables = load_variables(var_dir)
+        result = run_agent(agent_class, variables)
+        print(f"\nRun completed.")
     else:
-        view_results(agent_name)
+        generate_variables(agent_name, agent_class)
 
 if __name__ == "__main__":
     try:

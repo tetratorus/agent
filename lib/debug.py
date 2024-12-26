@@ -3,15 +3,22 @@ from functools import wraps
 import time
 import json
 
-def debug(*, label: str = "", verbose: bool = False) -> Callable:
+# Global debug verbosity setting
+DEBUG_VERBOSE = False
+
+def set_debug_verbosity(verbose: bool) -> None:
+    """Set the global debug verbosity level."""
+    global DEBUG_VERBOSE
+    DEBUG_VERBOSE = verbose
+
+def debug(*, label: str = "") -> Callable:
     """A decorator that prints function arguments and return values for debugging.
     
     Args:
         label: A string message to print before the debug log
-        verbose: If True, logs all details. If False, logs only function name and lengths.
     
     Usage:
-        @debug(label="Custom message", verbose=True)
+        @debug(label="Custom message")
         def my_function(x, y):
             return x + y
     """
@@ -30,7 +37,7 @@ def debug(*, label: str = "", verbose: bool = False) -> Callable:
             execution_time = time.time() - start_time
             result_length = len(json.dumps(result))
 
-            if verbose:
+            if DEBUG_VERBOSE:
                 if label:
                     print(f"\n[DEBUG] {label}")
                 print(f"[DEBUG] Calling {func_name}")

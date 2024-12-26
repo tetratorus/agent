@@ -23,110 +23,6 @@ The simplest way to run an agent is through the CLI:
 python main.py
 ```
 
-To implement your own agent:
-
-```python
-from typing import Optional, Tuple
-import re
-from lib.base import Agent
-from lib.debug import debug
-
-class MyAgent(Agent):
-    """A custom agent that does X.
-
-    Args:
-        manifesto: Custom instructions for the agent
-        memory: Initial memory/context for the conversation
-    """
-
-    @debug()
-    def __init__(self, manifesto: str, memory: str = ""):
-        if manifesto is None:
-            raise ValueError("Manifesto must be provided")
-
-        super().__init__(
-            model_name="gpt-4o",
-            manifesto=manifesto,
-            memory=memory,
-            tools={
-                "search": self._search,
-                "process": self._process
-                # ask_user tool is built-in and available automatically
-            },
-            tool_detection=self._detect_tool
-        )
-
-    @debug()
-    def _search(self, query: str) -> str:
-        """Search for information."""
-        try:
-            # Implement search logic
-            return f"Results for: {query}"
-        except Exception as e:
-            return f"Error searching: {e}"
-
-    @debug()
-    def _process(self, data: str) -> str:
-        """Process the data."""
-        try:
-            # Implement processing logic
-            return f"Processed: {data}"
-        except Exception as e:
-            return f"Error processing: {e}"
-
-    @debug()
-    def _detect_tool(self, text: str) -> Tuple[Optional[str], Optional[str]]:
-        """Detect tool calls in the agent's response."""
-        pattern = r'<TOOL: ([A-Z_]+)>(.*?)</TOOL>'
-        match = re.search(pattern, text)
-        if match:
-            tool_name = match.group(1).lower()
-            tool_input = match.group(2)
-            return tool_name, tool_input
-        return None, None
-```
-
-Then create your agent's variables in `variables/manifesto.json`:
-```json
-[
-  "You are an agent that does X. When you need information:\n- Use <TOOL: SEARCH>query</TOOL> to search\n- Use <TOOL: PROCESS>data</TOOL> to process\n- Use <TOOL: ASK_USER>question</TOOL> to ask the user questions\n\nFormat your responses clearly and end when done."
-]
-```
-
-## Built-in Tools
-
-The base Agent provides some built-in tools that all agents can use:
-
-1. **ask_user**: Ask the user a question and get their response
-   - Usage: `<TOOL: ASK_USER>What is your preference?</TOOL>`
-   - Can be overridden for testing: `agent.override_ask_user(lambda q: "test response")`
-
-## Architecture
-
-The agent operates in a minimal, prompt-driven loop:
-
-1. **Compose Request**:
-   - The manifesto (constant instructions) is combined with current memory
-   - The manifesto defines the agent's personality and capabilities
-   - Memory contains the conversation history and tool results
-
-2. **LLM Call**:
-   - Send composed request to LLM
-   - Response is appended to memory with "Assistant: " prefix
-
-3. **Tool Detection**:
-   - Check if LLM response contains tool calls
-   - Tool detection is customizable per agent (e.g. regex patterns)
-   - If tool is found and exists, execute it
-   - Tool result is appended to memory with "Tool Result: " prefix
-
-4. **End Detection**:
-   - Check if agent should stop (customizable per agent)
-   - Default behavior: end if no tool was called
-   - Agents can define custom end conditions (e.g. "<TASK_COMPLETED>")
-
-This minimal loop is completely prompt-driven - the manifesto and memory are the only state, and all decision points (tool detection, end conditions) can be tuned through prompts rather than code.
-
 ## Installation
 
 ```bash
@@ -134,7 +30,7 @@ This minimal loop is completely prompt-driven - the manifesto and memory are the
 pip install -r requirements.txt
 ```
 
-## Project Structure
+## Project Tree
 
 ```bash
 agent/
@@ -142,31 +38,14 @@ agent/
 │   ├── base.py      # Core agent implementation
 │   └── debug.py     # Debug decorator and logging
 ├── agents/          # Specific agent implementations
-│   ├── research_agent/
+│   ├── agent1/
 │   │   ├── agent.py           # Agent implementation
 │   │   └── variables/         # Runtime variables and prompts
-│   ├── text_summary_agent/
+│   ├── agent2/
 │   │   ├── agent.py
 │   │   └── variables/
-│   ├── logging_summary_agent/
-│   │   ├── agent.py
-│   │   └── variables/
-│   └── variable_generation_agent/
-│       ├── agent.py
-│       └── variables/
 ├── main.py         # Main runner with CLI interface
 └── requirements.txt
-```
-
-Each agent follows a simple structure:
-- `agent.py`: Main implementation extending `lib.base.Agent`
-- `variables/`: Directory containing JSON files for runtime variables
-  - `manifesto.json`: Agent's core instructions
-  - Other JSON files specific to the agent
-
-All agents use the same standardized XML format for tool calls:
-```
-<TOOL: TOOL_NAME>arguments</TOOL>
 ```
 
 ## Quick Agent Generation
@@ -176,22 +55,22 @@ If you're using an AI-powered editor, use this prompt to generate your agent's c
 ```
 You will help to generate a new agent implementation by:
 1. Reading and analyzing:
-   - README
-   - lib/base.py to understand the core Agent class
+   - The full README (DO NOT SKIP ANYTHING!)
+   - The full implementation of lib/base.py to understand the core Agent class
    - Existing agents in agents/ directory for implementation patterns
 
 2. Creating the following structure:
    - agent.py (extending lib.base.Agent with required methods)
    - variables/ directory (empty)
 
-Read and analyse the files first. Then ask me questions iteratively about what I want the agent to do. Keep asking follow-up questions until you have a crystal clear understanding of what I want. Ask one question at a time.
+Read and analyse the files in their entirety first. Then ask me questions iteratively about what I want the agent to do. Keep asking follow-up questions until you have a crystal clear understanding of what I want. Ask one question at a time.
 
 IMPORTANT:
 - Use ONLY standard library modules unless absolutely necessary
 - Keep implementation simple and minimal
 - Do not add external dependencies without explicit justification
-- For tool detection prefer to use XML-like tags
-
+- For tool detection prefer to use XML-like tags i.e. <TOOL: TOOL_NAME>arguments</TOOL>
+- For arguments with no promptable defaults, prefer user input, by using the base ask_user tool - `<TOOL: ASK_USER>What is the |input_var|?</TOOL>`
 ```
 
 ## Setting Up Runtime Variables
@@ -232,6 +111,7 @@ Then generate copyable JSON content for manifesto.json:
 - Content must define:
   * Agent personality and behavior
   * EXACT tool call formats with proper escaping
+  * Must include that the agent may only call 1 tool at a time in the manifesto
   * Response format requirements
   * Any other runtime requirements
 Note: if there is no end_detection defined, the agent will end if no tool is called! So keep that in mind when generating the manifesto.

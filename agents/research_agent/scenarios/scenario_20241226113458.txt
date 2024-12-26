@@ -1,0 +1,1 @@
+The research_agent is tasked with conducting web research using SerpAPI, where it receives a research topic, searches for information, and synthesizes the gathered data until the research topic is thoroughly addressed.

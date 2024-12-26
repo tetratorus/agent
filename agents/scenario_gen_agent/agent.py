@@ -114,7 +114,7 @@ class ScenarioGenAgent(Agent):
 
             # Generate timestamp-based filename
             timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
-            filename = f"scenario_{timestamp}.txt"
+            filename = f"scenario_{timestamp}"
             filepath = os.path.join(scenarios_dir, filename)
 
             # Save scenario

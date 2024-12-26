@@ -1,8 +1,10 @@
 import os
+import sys
 from datetime import datetime
 from typing import Optional, Tuple, Dict, Callable
 from lib.base import Agent
 from lib.debug import debug
+import inspect
 
 class SimulateScenarioAgent(Agent):
     """An agent that simulates scenarios for other agents.
@@ -34,6 +36,7 @@ class SimulateScenarioAgent(Agent):
 
         self.target_agent = None
         self.scenario_text = None
+        self.target_agent_name = None
 
     @debug()
     def _get_target_agent(self, _: str = "") -> str:
@@ -64,17 +67,20 @@ class SimulateScenarioAgent(Agent):
             module = importlib.util.module_from_spec(spec)
             spec.loader.exec_module(module)
 
-            # Find the agent class (ends with 'Agent')
+            # Find the agent class (specific to this agent, not the base class)
             agent_class = None
             for attr in dir(module):
-                if attr.endswith('Agent'):
-                    agent_class = getattr(module, attr)
-                    break
+                if attr.endswith('Agent') and attr != 'Agent':
+                    obj = getattr(module, attr)
+                    if inspect.isclass(obj) and issubclass(obj, Agent):
+                        agent_class = obj
+                        break
 
             if not agent_class:
                 return f"ERROR: Could not find agent class in {agent_path}"
 
             self.target_agent = agent_class
+            self.target_agent_name = agent_name
             return f"Successfully loaded {agent_name}"
 
         except Exception as e:
@@ -87,14 +93,14 @@ class SimulateScenarioAgent(Agent):
             return "ERROR: Must get target agent first"
 
         # Get scenarios directory
-        agent_dir = os.path.dirname(self.target_agent.__file__)
-        scenarios_dir = os.path.join(agent_dir, "scenarios")
+        agents_dir = os.path.dirname(os.path.dirname(__file__))
+        scenarios_dir = os.path.join(agents_dir, self.target_agent_name, "scenarios")
 
         if not os.path.exists(scenarios_dir):
             return f"ERROR: No scenarios directory found at {scenarios_dir}"
 
         # List available scenarios
-        scenarios = [f for f in os.listdir(scenarios_dir) if f.endswith('.txt')]
+        scenarios = [f for f in os.listdir(scenarios_dir)]
         if not scenarios:
             return f"ERROR: No scenario files found in {scenarios_dir}"
 

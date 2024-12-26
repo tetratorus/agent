@@ -49,8 +49,6 @@ class Agent:
         **(tools or {})
     }
 
-    print("WHAT ARE TEH TOOLS", self.tools)
-
     self.end_detection = end_detection
     self.tool_detection = tool_detection
     self.memory_management = memory_management

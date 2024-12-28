@@ -14,12 +14,10 @@ class TextSummaryAgent(Agent):
         manifesto: Custom instructions for the agent
         memory: Initial memory/context for the conversation
         chunk_size: Optional size of text chunks to process at once (in characters)
-        text: Optional text to summarize (for testing). If not provided, loads from input_text.json
     """
 
     def __init__(self,
                  manifesto: str,
-                 text: str,
                  target_length: int = 30000,
                  chunk_size: int = 8000,
                  memory: str = "",
@@ -28,14 +26,10 @@ class TextSummaryAgent(Agent):
         if manifesto is None:
             raise ValueError("Manifesto must be provided")
 
-        if text is None:
-            raise ValueError("Text must be provided")
-
-        self.text = text
-        self.chunks = self._split_into_chunks(text, chunk_size)
-        self.current_chunk_index = 0
+        self.chunk_size = chunk_size
         self.target_length = target_length
-
+        self.current_chunk_index = 0
+        
         model_name = "gpt-4o"
 
         # Initialize base agent
@@ -50,6 +44,19 @@ class TextSummaryAgent(Agent):
             manifesto=manifesto,
             memory=memory
         )
+
+    def run(self) -> str:
+        """Run the summarization agent."""
+        # Get input text from user
+        text = self.ask_user("Please provide the text you would like me to summarize:")
+        if not text:
+            raise ValueError("Text must be provided")
+            
+        self.text = text
+        self.chunks = self._split_into_chunks(text, self.chunk_size)
+        
+        # Run the agent loop
+        return super().run()
 
     @debug()
     def _split_into_chunks(self, text: str, chunk_size: int) -> list[str]:

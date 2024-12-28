@@ -117,7 +117,7 @@ class Agent:
     while True:
       self._last_tool_called = None
       response = self.llm_call(self.compose_request())
-      self.update_memory(self.memory + "\nAssistant: " + response)
+      self.update_memory(self.memory + "\n" + self.__class__.__name__ + ": " + response)
 
       # tool_detection
       tool_name, tool_args = self.tool_detection(response)

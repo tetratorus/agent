@@ -5,8 +5,9 @@ from typing import Optional, Tuple, Dict, Callable
 from lib.base import Agent
 from lib.debug import debug
 import inspect
+import re
 
-class SimulateScenarioAgent(Agent):
+class User(Agent):
     """An agent that simulates scenarios for other agents.
 
     This agent asks the user which target agent, and also which scenario to simulate, reads the target agent and scenario file.
@@ -119,15 +120,18 @@ class SimulateScenarioAgent(Agent):
         try:
             with open(scenario_path, 'r') as f:
                 self.scenario_text = f.read()
-            return f"Successfully loaded scenario from {scenario_path}"
+            return f"Successfully loaded scenario from {scenario_path}, \n scenario text: {self.scenario_text}"
         except Exception as e:
             return f"ERROR: Failed to read scenario: {str(e)}"
 
     @debug()
     def _run_simulation(self, _: str = "") -> str:
         """Run the simulation with the selected agent and scenario."""
-        if not self.target_agent or not self.scenario_text:
-            return "ERROR: Must get target agent and scenario first"
+        if not self.target_agent:
+            return "ERROR: Must get target agent first"
+        if not self.scenario_text:
+            return "ERROR: Must get scenario first"
+
 
         try:
             # Create agent instance
@@ -136,21 +140,21 @@ class SimulateScenarioAgent(Agent):
             # Override ask_user to use LLM
             def simulated_ask_user(question: str) -> str:
                 # Update memory with question
-                self.update_memory(self.memory + "\nTarget Agent Question: " + question)
+                self.update_memory(self.memory + "\Question: " + question)
 
                 # Generate response using LLM
                 prompt = self.compose_request() + "\nBased on the above context and scenario, how should I respond to this question?"
                 response = self.llm_call(prompt)
 
                 # Update memory with response
-                self.update_memory(self.memory + "\nSimulated Response: " + response)
+                self.update_memory(self.memory + "\nUser response: " + response)
                 return response
 
             agent.override_ask_user(simulated_ask_user)
 
             # Run the agent
             result = agent.run()
-            return f"Simulation completed. Agent output:\n{result}"
+            return f"<SIMULATION_COMPLETED>. Agent output:\n{result}"
 
         except Exception as e:
             return f"ERROR: Simulation failed: {str(e)}"
@@ -158,15 +162,12 @@ class SimulateScenarioAgent(Agent):
     @debug()
     def _detect_tool(self, text: str) -> Tuple[Optional[str], Optional[str]]:
         """Detect which tool to call based on the agent's response."""
-        if "<TOOL: GET_TARGET_AGENT>" in text:
-            return "GET_TARGET_AGENT", ""
-        elif "<TOOL: GET_SCENARIO>" in text:
-            return "GET_SCENARIO", ""
-        elif "<TOOL: RUN_SIMULATION>" in text:
-            return "RUN_SIMULATION", ""
+        pattern = r'<TOOL: (GET_TARGET_AGENT|GET_SCENARIO|RUN_SIMULATION)></TOOL>'
+        if match := re.search(pattern, text):
+            return match.group(1), ""
         return None, None
 
     @debug()
     def _end_detection(self, manifesto: str, memory: str) -> bool:
         """End when simulation is complete."""
-        return "<TASK_COMPLETED>" in memory
+        return "<SIMULATION_COMPLETED>" in memory

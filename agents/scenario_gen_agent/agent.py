@@ -5,9 +5,9 @@ from lib.base import Agent
 from lib.debug import debug
 
 class ScenarioGenAgent(Agent):
-    """An agent that generates test scenarios for other agents by analyzing their docstrings.
+    """An agent that generates test scenarios for other agents by analyzing their code.
 
-    This agent asks the user which agent to generate a scenario for, reads that agent's docstring
+    This agent asks the user which agent to generate a scenario for, reads that agent's code
     to understand its purpose and capabilities, then generates an appropriate test scenario.
     The scenario is saved as a text file in the target agent's scenarios/ directory.
     """
@@ -27,7 +27,7 @@ class ScenarioGenAgent(Agent):
             memory=memory,
             tools={
                 'GET_TARGET_AGENT': self._get_target_agent,
-                'READ_DOCSTRING': self._read_docstring,
+                'READ_AGENT_INFO': self._read_agent_info,
                 'SAVE_SCENARIO': self._save_scenario
             },
             tool_detection=self._detect_tool,
@@ -60,8 +60,8 @@ class ScenarioGenAgent(Agent):
         return agent_name
 
     @debug()
-    def _read_docstring(self, agent_name: str) -> str:
-        """Extract docstring from the target agent class."""
+    def _read_agent_info(self, agent_name: str) -> str:
+        """read target agent code"""
         try:
             # Setup paths
             agents_dir = os.path.dirname(os.path.dirname(__file__))
@@ -82,24 +82,10 @@ class ScenarioGenAgent(Agent):
             self.target_agent_path = agent_path
             self.target_agent_class = agent_class
 
-            # Find the class definition
-            class_start = content.find(f"class {agent_class}")
-            if class_start == -1:
-                return f"ERROR: Could not find class {agent_class}"
-
-            # Find the docstring
-            docstring_start = content.find('"""', class_start)
-            if docstring_start == -1:
-                return f"ERROR: No docstring found for class {agent_class}"
-
-            docstring_end = content.find('"""', docstring_start + 3)
-            if docstring_end == -1:
-                return f"ERROR: Malformed docstring in class {agent_class}"
-
-            return content[docstring_start+3:docstring_end].strip()
+            return content
 
         except Exception as e:
-            return f"ERROR: Failed to read agent docstring: {str(e)}"
+            return f"ERROR: Failed to read agent code: {str(e)}"
 
     @debug()
     def _save_scenario(self, scenario_text: str) -> str:
@@ -134,11 +120,11 @@ class ScenarioGenAgent(Agent):
             end_idx = text.find(end_tag)
             if end_idx != -1:
                 return "GET_TARGET_AGENT", ""
-        elif "<TOOL: READ_DOCSTRING>" in text:
-            start = text.find("<TOOL: READ_DOCSTRING>") + len("<TOOL: READ_DOCSTRING>")
+        elif "<TOOL: READ_AGENT_INFO>" in text:
+            start = text.find("<TOOL: READ_AGENT_INFO>") + len("<TOOL: READ_AGENT_INFO>")
             end = text.find("</TOOL>", start)
             if start != -1 and end != -1:
-                return "READ_DOCSTRING", text[start:end].strip()
+                return "READ_AGENT_INFO", text[start:end].strip()
         elif "<TOOL: SAVE_SCENARIO>" in text:
             start = text.find("<TOOL: SAVE_SCENARIO>") + len("<TOOL: SAVE_SCENARIO>")
             end = text.find("</TOOL>")

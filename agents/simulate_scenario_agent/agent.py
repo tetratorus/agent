@@ -6,6 +6,7 @@ from lib.base import Agent
 from lib.debug import debug
 import inspect
 import re
+import json
 
 class User(Agent):
     """An agent that simulates scenarios for other agents.
@@ -35,9 +36,10 @@ class User(Agent):
             end_detection=self._end_detection
         )
 
-        self.target_agent = None
         self.scenario_text = None
+        self.target_agent = None
         self.target_agent_name = None
+        self.target_agent_manifesto = None
 
     @debug()
     def _get_target_agent(self, _: str = "") -> str:
@@ -123,6 +125,52 @@ class User(Agent):
             return f"Successfully loaded scenario from {scenario_path}, \n scenario text: {self.scenario_text}"
         except Exception as e:
             return f"ERROR: Failed to read scenario: {str(e)}"
+    @debug()
+    def _get_variables_set(self, _: str) -> str:
+        """ look through the variables folder of the target agent for a file called manifesto.json
+        (which is a json array) and return the length of that array. User then gets to pick which index.
+        """
+        # TODO: only selecting manifesto right now, might need to add other variables later on
+
+        if not self.target_agent:
+            return "ERROR: Must get target agent first"
+
+        # Get variables directory
+        agents_dir = os.path.dirname(os.path.dirname(__file__))
+        variables_dir = os.path.join(agents_dir, self.target_agent_name, "variables")
+
+        if not os.path.exists(variables_dir):
+            return f"ERROR: No variables directory found at {variables_dir}"
+
+        # Each variable in variables folder is a json file which is always a json array of strings
+        # List available indexs (0 to [length of array])
+        # Use manifesto.json
+        manifesto_path = os.path.join(variables_dir, "manifesto.json")
+        if not os.path.exists(manifesto_path):
+            return f"ERROR: Could not find manifesto file at {manifesto_path}"
+
+        # Read manifesto
+        try:
+            with open(manifesto_path, 'r') as f:
+                manifesto = json.load(f)
+        except Exception as e:
+            return f"ERROR: Failed to read manifesto: {str(e)}"
+
+        manifesto_length = len(manifesto)
+        if manifesto_length == 0:
+            return f"ERROR: Manifesto at {manifesto_path} is empty"
+
+        # Let user pick index, (1 to [length of array])
+        selected_index = self.ask_user(f"Which index would you like to use? Available indexs: 1 to {manifesto_length}")
+
+        # Get selected index
+        if not selected_index:
+            return "ERROR: No index provided"
+        selected_index = int(selected_index)
+        selected_manifesto = manifesto[selected_index - 1]
+        self.target_agent_manifesto = selected_manifesto
+
+        return f"Successfully loaded variables from {manifesto_path}, \n selected index: {selected_index}, \n selected manifesto: {selected_manifesto}"
 
     @debug()
     def _run_simulation(self, _: str = "") -> str:
@@ -131,23 +179,25 @@ class User(Agent):
             return "ERROR: Must get target agent first"
         if not self.scenario_text:
             return "ERROR: Must get scenario first"
+        if not self.target_agent_manifesto:
+            return "ERROR: Must get variables first"
 
 
         try:
             # Create agent instance
-            agent = self.target_agent(manifesto=self.scenario_text)
+            agent = self.target_agent(manifesto=self.target_agent_manifesto)
 
             # Override ask_user to use LLM
             def simulated_ask_user(question: str) -> str:
                 # Update memory with question
-                self.update_memory(self.memory + "\Question: " + question)
+                self.update_memory(self.memory + "\nQuestion: " + question)
 
-                # Generate response using LLM
-                prompt = self.compose_request() + "\nBased on the above context and scenario, how should I respond to this question?"
+                # Generate response using LLM based only on scenario
+                prompt = f"You are simulating a user according to this scenario:\n{self.scenario_text}\n\nThe user is asked: {question}\n\nRespond as this user would:"
                 response = self.llm_call(prompt)
 
                 # Update memory with response
-                self.update_memory(self.memory + "\nUser response: " + response)
+                self.update_memory(self.memory + "\n Response: " + response)
                 return response
 
             agent.override_ask_user(simulated_ask_user)

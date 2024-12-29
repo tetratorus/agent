@@ -13,26 +13,21 @@ class LoggingSummaryAgent(Agent):
 
     Args:
         manifesto: Custom instructions for the agent
-        logs: Raw debug logs to analyze
         chunk_size: Optional size of log chunks to process at once (in characters)
         memory: Initial memory/context for the conversation
     """
 
     def __init__(self,
                  manifesto: str,
-                 logs: str,
                  chunk_size: int = 8000,
                  memory: str = "",
     ):
         if manifesto is None:
             raise ValueError("Manifesto must be provided")
 
-        if logs is None:
-            raise ValueError("Logs must be provided")
-
-        self.logs = logs
-        self.chunks = self._split_into_chunks(logs, chunk_size)
-        self.current_chunk_index = 0
+        self.current_chunk_index = None
+        self.chunks = None
+        self.chunk_size = chunk_size
 
         # Initialize with a model that has strong text analysis capabilities
         model_name = "gpt-4o"
@@ -73,6 +68,12 @@ class LoggingSummaryAgent(Agent):
     @debug()
     def _get_next_chunk(self) -> str:
         """Return the next chunk of logs to be analyzed."""
+        if self.chunks is None:
+            # First time getting logs, ask user for them
+            logs = self.ask_user("Please provide the logs to analyze")
+            self.chunks = self._split_into_chunks(logs, self.chunk_size)
+            self.current_chunk_index = 0
+
         if self.current_chunk_index >= len(self.chunks):
             return "<NO_MORE_CHUNKS>"
 

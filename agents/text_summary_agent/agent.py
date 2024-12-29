@@ -18,8 +18,8 @@ class TextSummaryAgent(Agent):
 
     def __init__(self,
                  manifesto: str,
-                 target_length: int = 30000,
-                 chunk_size: int = 8000,
+                 target_length: int = 3000,
+                 chunk_size: int = 1000,
                  memory: str = "",
     ):
 
@@ -29,7 +29,7 @@ class TextSummaryAgent(Agent):
         self.chunk_size = chunk_size
         self.target_length = target_length
         self.current_chunk_index = 0
-        
+
         model_name = "gpt-4o"
 
         # Initialize base agent
@@ -51,10 +51,10 @@ class TextSummaryAgent(Agent):
         text = self.ask_user("Please provide the text you would like me to summarize:")
         if not text:
             raise ValueError("Text must be provided")
-            
+
         self.text = text
         self.chunks = self._split_into_chunks(text, self.chunk_size)
-        
+
         # Run the agent loop
         return super().run()
 

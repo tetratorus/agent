@@ -108,15 +108,15 @@ class Agent:
       return True
 
   @debug()
-  def llm_call(self, prompt: str) -> str:
-    return self.llm.complete(prompt).text
+  def llm_call(self, prompt: str, **kwargs) -> str:
+    return self.llm.complete(prompt, **kwargs).text
 
   @debug()
   def run(self) -> str:
     # agent loop
     while True:
       self._last_tool_called = None
-      response = self.llm_call(self.compose_request())
+      response = self.llm_call(self.compose_request(), max_tokens=8192)
       self.update_memory(self.memory + "\n" + self.__class__.__name__ + ": " + response)
 
       # tool_detection

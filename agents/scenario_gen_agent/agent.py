@@ -66,6 +66,10 @@ class ScenarioGenAgent(Agent):
             # Setup paths
             agents_dir = os.path.dirname(os.path.dirname(__file__))
             agent_path = os.path.join(agents_dir, agent_name, "agent.py")
+            print("WTH WTH WTH", agent_path, agent_name, agents_dir)
+
+            # Store these for later use when saving - do this before any potential errors
+            self.target_agent_path = agent_path
 
             with open(agent_path, 'r') as f:
                 content = f.read()
@@ -77,9 +81,6 @@ class ScenarioGenAgent(Agent):
                 return f"ERROR: Could not find agent class in {agent_path}"
 
             agent_class = class_match.group(1)
-
-            # Store these for later use when saving
-            self.target_agent_path = agent_path
             self.target_agent_class = agent_class
 
             return content
@@ -115,21 +116,12 @@ class ScenarioGenAgent(Agent):
     @debug()
     def _detect_tool(self, text: str) -> Tuple[Optional[str], Optional[str]]:
         """Detect which tool to call based on the agent's response."""
-        if "<TOOL: GET_TARGET_AGENT>" in text:
-            end_tag = "</TOOL>"
-            end_idx = text.find(end_tag)
-            if end_idx != -1:
-                return "GET_TARGET_AGENT", ""
-        elif "<TOOL: READ_AGENT_INFO>" in text:
-            start = text.find("<TOOL: READ_AGENT_INFO>") + len("<TOOL: READ_AGENT_INFO>")
-            end = text.find("</TOOL>", start)
-            if start != -1 and end != -1:
-                return "READ_AGENT_INFO", text[start:end].strip()
-        elif "<TOOL: SAVE_SCENARIO>" in text:
-            start = text.find("<TOOL: SAVE_SCENARIO>") + len("<TOOL: SAVE_SCENARIO>")
-            end = text.find("</TOOL>")
-            if start != -1 and end != -1:
-                return "SAVE_SCENARIO", text[start:end].strip()
+        import re
+        pattern = r'<TOOL:\s*([^>]+)>\s*(.*?)\s*</TOOL>'
+        match = re.search(pattern, text, re.DOTALL)
+        if match:
+            tool_name, args = match.groups()
+            return tool_name.strip(), args.strip()
         return None, None
 
     @debug()

@@ -8,7 +8,7 @@ import inspect
 import re
 import json
 
-class User(Agent):
+class SimulateScenarioAgent(Agent):
     """An agent that simulates scenarios for other agents.
 
     This agent asks the user which target agent, and also which scenario to simulate, reads the target agent and scenario file.
@@ -30,7 +30,8 @@ class User(Agent):
             tools={
                 'GET_TARGET_AGENT': self._get_target_agent,
                 'GET_SCENARIO': self._get_scenario,
-                'RUN_SIMULATION': self._run_simulation
+                'GET_VARIABLES': self._get_variables,
+                'RUN_SIMULATION': self._run_simulation,
             },
             tool_detection=self._detect_tool,
             end_detection=self._end_detection
@@ -126,7 +127,7 @@ class User(Agent):
         except Exception as e:
             return f"ERROR: Failed to read scenario: {str(e)}"
     @debug()
-    def _get_variables_set(self, _: str) -> str:
+    def _get_variables(self, _: str) -> str:
         """ look through the variables folder of the target agent for a file called manifesto.json
         (which is a json array) and return the length of that array. User then gets to pick which index.
         """
@@ -182,18 +183,18 @@ class User(Agent):
         if not self.target_agent_manifesto:
             return "ERROR: Must get variables first"
 
-
         try:
             # Create agent instance
             agent = self.target_agent(manifesto=self.target_agent_manifesto)
 
             # Override ask_user to use LLM
+            @debug()
             def simulated_ask_user(question: str) -> str:
                 # Update memory with question
                 self.update_memory(self.memory + "\nQuestion: " + question)
 
                 # Generate response using LLM based only on scenario
-                prompt = f"You are simulating a user according to this scenario:\n{self.scenario_text}\n\nThe user is asked: {question}\n\nRespond as this user would:"
+                prompt = f"You are simulating what a user might respond to the target agent, {self.target_agent_name}, according to this scenario:\n{self.scenario_text}\n\nThe user is asked: {question}\n\nRespond as this user would:"
                 response = self.llm_call(prompt)
 
                 # Update memory with response
@@ -212,9 +213,9 @@ class User(Agent):
     @debug()
     def _detect_tool(self, text: str) -> Tuple[Optional[str], Optional[str]]:
         """Detect which tool to call based on the agent's response."""
-        pattern = r'<TOOL: (GET_TARGET_AGENT|GET_SCENARIO|RUN_SIMULATION)></TOOL>'
+        pattern = r'<TOOL: (GET_TARGET_AGENT|GET_SCENARIO|GET_VARIABLES|RUN_SIMULATION)>([^<]*)</TOOL>'
         if match := re.search(pattern, text):
-            return match.group(1), ""
+            return match.group(1), match.group(2)
         return None, None
 
     @debug()

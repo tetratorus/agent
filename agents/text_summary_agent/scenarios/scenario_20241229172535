@@ -1,0 +1,29 @@
+You are a user named Alex, tasked with summarizing a large document using the TextSummaryAgent. The document is a research paper titled "The Impact of Climate Change on Global Agriculture". The paper is too large to fit into a single context window, so it needs to be broken down into chunks for summarization. The target length for the final summary is 30,000 characters, and each chunk should be approximately 8,000 characters. The document is structured as follows:
+
+1. **Introduction**: Discusses the importance of agriculture in the global economy and the potential threats posed by climate change.
+2. **Methodology**: Describes the research methods used to assess the impact of climate change on agriculture, including data collection and analysis techniques.
+3. **Findings**: Presents the results of the study, highlighting the regions most affected by climate change and the types of crops that are most vulnerable.
+4. **Discussion**: Analyzes the implications of the findings for global food security and suggests strategies for mitigating the negative impacts.
+5. **Conclusion**: Summarizes the key points and emphasizes the need for urgent action to address climate change.
+
+The document is provided in plain text format, and you will use the TextSummaryAgent to process it. The agent will ask you to provide the text, and you will input the entire document. The agent will then split the text into chunks and summarize each chunk. You will need to ensure that the final summary does not exceed the target length.
+
+**Document Text**:
+```
+Introduction: Agriculture is a cornerstone of the global economy, providing food, employment, and raw materials for various industries. However, climate change poses significant threats to agricultural productivity and food security. Rising temperatures, changing precipitation patterns, and increased frequency of extreme weather events are expected to impact crop yields and livestock production. This paper explores the potential impacts of climate change on global agriculture and suggests strategies for adaptation and mitigation.
+
+Methodology: The research involved a comprehensive review of existing literature on climate change and agriculture, as well as the analysis of climate models and agricultural data. Data was collected from various sources, including government reports, scientific journals, and international organizations. The analysis focused on identifying trends and patterns in climate data and their potential effects on agricultural systems.
+
+Findings: The study found that climate change is likely to have a profound impact on global agriculture, with some regions experiencing more severe effects than others. For example, tropical and subtropical regions are expected to face significant challenges due to increased temperatures and reduced rainfall. Crops such as wheat, rice, and maize are particularly vulnerable to climate change, with potential yield reductions of up to 30% in some areas. The study also highlighted the importance of developing climate-resilient crop varieties and improving water management practices.
+
+Discussion: The findings of this study have important implications for global food security. As climate change continues to affect agricultural productivity, there is a need for coordinated efforts to develop and implement strategies for adaptation and mitigation. This includes investing in research and development of climate-resilient crops, improving infrastructure for water management, and promoting sustainable agricultural practices. Policymakers must also consider the social and economic impacts of climate change on rural communities and work towards building resilience in these areas.
+
+Conclusion: Climate change poses a significant threat to global agriculture and food security. Urgent action is needed to address these challenges and ensure a sustainable future for agriculture. This includes implementing strategies for adaptation and mitigation, investing in research and development, and promoting sustainable agricultural practices. By taking proactive measures, we can reduce the negative impacts of climate change on agriculture and ensure food security for future generations.
+```
+
+**Scenario Artifacts**:
+- **Chunk Size**: 8,000 characters
+- **Target Summary Length**: 30,000 characters
+- **Document Structure**: Introduction, Methodology, Findings, Discussion, Conclusion
+
+Alex will input the entire document text when prompted by the TextSummaryAgent. The agent will then process the text, splitting it into chunks and summarizing each chunk. The final summary should not exceed the target length.

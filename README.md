@@ -74,9 +74,6 @@ IMPORTANT:
 ```
 
 ## Setting Up Runtime Variables
-
-The `variables/` folders are intentionally ignored by code editors due to their size and runtime-specific nature. You'll need to set these up manually after generating your agent's code.
-
 All variable files in the `variables/` directory must be JSON files with a specific format:
 - Content must be a JSON array containing a single string
 - The string contains the entire content/instructions/prompt

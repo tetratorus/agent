@@ -3,7 +3,6 @@ import sys
 from datetime import datetime
 from typing import Optional, Tuple, Dict, Callable
 from lib.base import Agent
-from lib.debug import debug
 import inspect
 import re
 import json
@@ -15,7 +14,6 @@ class SimulateScenarioAgent(Agent):
     This agent then runs the target agent, overriding ask_user where necessary and responding to the target agent based on the scenario.
     """
 
-    @debug()
     def __init__(self,
                  manifesto: str,
                  memory: str = ""):
@@ -42,7 +40,6 @@ class SimulateScenarioAgent(Agent):
         self.target_agent_name = None
         self.target_agent_manifesto = None
 
-    @debug()
     def _get_target_agent(self, _: str = "") -> str:
         """Ask user for agent name and return the selected agent."""
         # Get list of available agents
@@ -90,7 +87,6 @@ class SimulateScenarioAgent(Agent):
         except Exception as e:
             return f"ERROR: Failed to load agent: {str(e)}"
 
-    @debug()
     def _get_scenario(self, _: str = "") -> str:
         """Get the scenario file to simulate."""
         if not self.target_agent:
@@ -126,7 +122,7 @@ class SimulateScenarioAgent(Agent):
             return f"Successfully loaded scenario from {scenario_path}, \n scenario text: {self.scenario_text}"
         except Exception as e:
             return f"ERROR: Failed to read scenario: {str(e)}"
-    @debug()
+
     def _get_variables(self, _: str) -> str:
         """ look through the variables folder of the target agent for a file called manifesto.json
         (which is a json array) and return the length of that array. User then gets to pick which index.
@@ -173,7 +169,6 @@ class SimulateScenarioAgent(Agent):
 
         return f"Successfully loaded variables from {manifesto_path}, \n selected index: {selected_index}, \n selected manifesto: {selected_manifesto}"
 
-    @debug()
     def _run_simulation(self, _: str = "") -> str:
         """Run the simulation with the selected agent and scenario."""
         if not self.target_agent:
@@ -183,34 +178,15 @@ class SimulateScenarioAgent(Agent):
         if not self.target_agent_manifesto:
             return "ERROR: Must get variables first"
 
+        # TODO: run agent
         try:
-            # Create agent instance
-            agent = self.target_agent(manifesto=self.target_agent_manifesto)
-
-            # Override ask_user to use LLM
-            @debug()
-            def simulated_ask_user(question: str) -> str:
-                # Update memory with question
-                self.update_memory(self.memory + "\nQuestion: " + question)
-
-                # Generate response using LLM based only on scenario
-                prompt = f"You are simulating what a user might respond to the target agent, {self.target_agent_name}, according to this scenario:\n{self.scenario_text}\n\nThe user is asked: {question}\n\nRespond as this user would:"
-                response = self.llm_call(prompt)
-
-                # Update memory with response
-                self.update_memory(self.memory + "\n Response: " + response)
-                return response
-
-            agent.override_ask_user(simulated_ask_user)
-
-            # Run the agent
-            result = agent.run()
-            return f"<SIMULATION_COMPLETED>. Agent output:\n{result}"
-
+            target_agent = self.target_agent(self.target_agent_manifesto)
+            result = target_agent.run()
+            return f"Simulation completed with result: {result}"
         except Exception as e:
-            return f"ERROR: Simulation failed: {str(e)}"
+            return f"ERROR: Failed to run simulation: {str(e)}"
 
-    @debug()
+
     def _detect_tool(self, text: str) -> Tuple[Optional[str], Optional[str]]:
         """Detect which tool to call based on the agent's response."""
         pattern = r'<TOOL: (GET_TARGET_AGENT|GET_SCENARIO|GET_VARIABLES|RUN_SIMULATION)>([^<]*)</TOOL>'
@@ -218,7 +194,6 @@ class SimulateScenarioAgent(Agent):
             return match.group(1), match.group(2)
         return None, None
 
-    @debug()
     def _end_detection(self, manifesto: str, memory: str) -> bool:
         """End when simulation is complete."""
         return "<SIMULATION_COMPLETED>" in memory

@@ -2,7 +2,6 @@ import os
 from datetime import datetime
 from typing import Optional, Tuple
 from lib.base import Agent
-from lib.debug import debug
 
 class ScenarioGenAgent(Agent):
     """An agent that generates test scenarios for other agents by analyzing their code.
@@ -12,7 +11,6 @@ class ScenarioGenAgent(Agent):
     The scenario is saved as a text file in the target agent's scenarios/ directory.
     """
 
-    @debug()
     def __init__(self,
                  manifesto: str,
                  memory: str = ""):
@@ -35,7 +33,6 @@ class ScenarioGenAgent(Agent):
             end_detection=self._end_detection
         )
 
-    @debug()
     def _read_sim_agent_info(self, _: str) -> str:
         """read simulate scenario agent code"""
         try:
@@ -51,7 +48,6 @@ class ScenarioGenAgent(Agent):
         except Exception as e:
             return f"ERROR: Failed to read agent code: {str(e)}"
 
-    @debug()
     def _get_target_agent(self, _: str = "") -> str:
         """Ask user for agent name and return the selected agent name."""
         # Get list of available agents
@@ -76,7 +72,6 @@ class ScenarioGenAgent(Agent):
 
         return agent_name
 
-    @debug()
     def _read_agent_info(self, agent_name: str) -> str:
         """read target agent code"""
         try:
@@ -104,7 +99,6 @@ class ScenarioGenAgent(Agent):
         except Exception as e:
             return f"ERROR: Failed to read agent code: {str(e)}"
 
-    @debug()
     def _save_scenario(self, scenario_text: str) -> str:
         """Save the generated scenario to a file."""
         try:
@@ -129,7 +123,6 @@ class ScenarioGenAgent(Agent):
         except Exception as e:
             return f"ERROR: Failed to save scenario: {str(e)}"
 
-    @debug()
     def _detect_tool(self, text: str) -> Tuple[Optional[str], Optional[str]]:
         """Detect which tool to call based on the agent's response."""
         import re
@@ -140,7 +133,6 @@ class ScenarioGenAgent(Agent):
             return tool_name.strip(), args.strip()
         return None, None
 
-    @debug()
     def _end_detection(self, manifesto: str, memory: str) -> bool:
         """End when we see the scenario saved confirmation."""
         return "<TASK_COMPLETED>" in memory

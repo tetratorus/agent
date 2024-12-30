@@ -1,7 +1,6 @@
 from typing import Dict, Optional, Callable, Tuple
 import os
 import json
-from lib.debug import debug
 from lib.base import Agent
 
 class TextSummaryAgent(Agent):
@@ -58,7 +57,6 @@ class TextSummaryAgent(Agent):
         # Run the agent loop
         return super().run()
 
-    @debug()
     def _split_into_chunks(self, text: str, chunk_size: int) -> list[str]:
         """Split the input text into chunks of approximately chunk_size characters.
         Tries to split at sentence boundaries where possible."""
@@ -78,7 +76,6 @@ class TextSummaryAgent(Agent):
 
         return chunks
 
-    @debug()
     def _get_next_chunk(self) -> str:
         """Return the next chunk of text to be summarized."""
         if self.current_chunk_index >= len(self.chunks):
@@ -88,7 +85,6 @@ class TextSummaryAgent(Agent):
         self.current_chunk_index += 1
         return f"CHUNK {self.current_chunk_index}/{len(self.chunks)}:\n{chunk}"
 
-    @debug()
     def _check_summary_length(self) -> str:
         """Check if the summary exceeds the target length."""
         summary_length = len(self.memory)
@@ -97,12 +93,10 @@ class TextSummaryAgent(Agent):
         else:
             return "<SUMMARY_OK>"
 
-    @debug()
     def _end_detection(self, manifesto: str, memory: str) -> bool:
         """End when we see the final summary marker."""
         return "<FINAL_SUMMARY_COMPLETE>" in memory
 
-    @debug()
     def _detect_tool(self, text: str) -> Tuple[Optional[str], Optional[str]]:
         """Detect if we need to get the next chunk of text."""
         if "<REQUEST_NEXT_CHUNK>" in text:

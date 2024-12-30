@@ -1,10 +1,9 @@
 from typing import Dict, Optional, Callable, Tuple
 import os
 import json
-from lib.debug import debug
 from lib.base import Agent
 
-class LoggingSummaryAgent(Agent):
+class LoggingAnalysisAgent(Agent):
     """An agent specialized for analyzing debug logs from agent runs.
 
     This agent processes raw debug logs that may be too large for a single context window,
@@ -45,7 +44,6 @@ class LoggingSummaryAgent(Agent):
             memory=memory
         )
 
-    @debug()
     def _split_into_chunks(self, logs: str, chunk_size: int) -> list[str]:
         """Split the input logs into chunks of approximately chunk_size characters.
         Tries to split at newlines where possible to preserve log entry integrity."""
@@ -65,7 +63,6 @@ class LoggingSummaryAgent(Agent):
 
         return chunks
 
-    @debug()
     def _get_next_chunk(self) -> str:
         """Return the next chunk of logs to be analyzed."""
         if self.chunks is None:
@@ -81,12 +78,10 @@ class LoggingSummaryAgent(Agent):
         self.current_chunk_index += 1
         return f"LOG_CHUNK {self.current_chunk_index}/{len(self.chunks)}:\n{chunk}"
 
-    @debug()
     def _mark_analysis_complete(self) -> str:
         """Mark that the agent has completed its analysis of all chunks."""
         return "<ANALYSIS_COMPLETE>"
 
-    @debug()
     def _detect_tool(self, text: str) -> Optional[Tuple[str, str]]:
         """Detect if a tool needs to be called based on the agent's response.
         Returns a tuple of (tool_name, tool_input) if a tool should be called,
@@ -101,7 +96,6 @@ class LoggingSummaryAgent(Agent):
 
         return None, None
 
-    @debug()
     def _end_detection(self, manifesto: str, memory: str) -> bool:
         """End when we see the analysis complete marker."""
         return "<ANALYSIS_COMPLETE>" in memory

@@ -1,7 +1,6 @@
 from typing import Dict, Optional, Tuple, Callable, List, Any, Union
 import llms
 from .meta import AgentMeta
-from .debug import debug
 
 class Agent(metaclass=AgentMeta):
   """A flexible agent framework that manages conversations with an LLM while handling tool calls and memory management.
@@ -84,11 +83,9 @@ class Agent(metaclass=AgentMeta):
     else:
       self.memory = text
 
-  @debug()
   def compose_request(self) -> str:
     return self.manifesto + "\n" + self.memory
 
-  @debug()
   def tool_detection(self, text: str) -> Tuple[Optional[str], Optional[str]]:
     # no tool detection
     if not self.tool_detection:
@@ -107,18 +104,15 @@ class Agent(metaclass=AgentMeta):
     else:
       return None, None
 
-  @debug()
   def end(self) -> bool:
     if callable(self.end_detection):
       return self.end_detection(self.manifesto, self.memory)
     elif self._last_tool_called is None:
       return True
 
-  @debug()
   def llm_call(self, prompt: str, **kwargs) -> str:
     return self.llm.complete(prompt, **kwargs).text
 
-  @debug()
   def run(self) -> str:
     # agent loop
     while True:

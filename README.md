@@ -206,7 +206,6 @@ Each agent in the `agents/` directory MUST follow these conventions:
      3. Pay special attention to tool detection and end detection interfaces
    - MUST inherit from `lib.base.Agent`
    - MUST NOT read files directly, all inputs through constructor
-   - MUST use `@debug()` decorator on all methods
    - MUST implement `_detect_tool` and `_end_detection`
    - MUST follow naming convention: directory `xxx_agent` (e.g. `research_agent`) and class `XxxAgent` (e.g. `ResearchAgent`)
 

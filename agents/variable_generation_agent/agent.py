@@ -3,7 +3,6 @@ import json
 import re
 from typing import Dict, Optional, Tuple, Any
 from lib.base import Agent
-from lib.debug import debug
 
 class VariableGenerationAgent(Agent):
     """Agent that generates variations of another agent's variables.
@@ -17,7 +16,6 @@ class VariableGenerationAgent(Agent):
         memory: Initial memory/context for the conversation
     """
 
-    @debug()
     def __init__(
         self,
         manifesto: str,
@@ -68,12 +66,10 @@ Core Files Read:
             end_detection=self._end_detection
         )
 
-    @debug()
     def ask_user(self, question: str) -> str:
         """Ask the user a question and get their response."""
         return input(question + "\nYour response: ")
 
-    @debug()
     def _read_file(self, path: str) -> str:
         """Read a file's contents."""
         try:
@@ -91,7 +87,6 @@ Core Files Read:
         except Exception as e:
             return f"Error reading file: {str(e)}"
 
-    @debug()
     def _list_files(self, _: str = "") -> str:
         """List all files in the target agent's directory."""
         try:
@@ -115,7 +110,6 @@ Core Files Read:
         except Exception as e:
             return f"Error listing files: {str(e)}"
 
-    @debug()
     def _list_variables(self, _: str = "") -> str:
         """List all variable files in the variables directory."""
         try:
@@ -132,7 +126,6 @@ Core Files Read:
         except Exception as e:
             return f"Error listing variables: {str(e)}"
 
-    @debug()
     def add_variation(self, variable_and_content: str) -> str:
         """Add a variation for a variable file."""
         # Split the input into variable name and content
@@ -161,7 +154,6 @@ Core Files Read:
 
         return "Successfully added variation"
 
-    @debug()
     def copy_last_entry(self, variable: str) -> str:
         """Copy the last entry from a variable file."""
         # Append .json if not already present
@@ -185,7 +177,6 @@ Core Files Read:
         except Exception as e:
             return f"Error copying last entry: {str(e)}"
 
-    @debug()
     def _read_readme(self, _: str = "") -> str:
         """Read the README.md file from root directory."""
         try:
@@ -198,7 +189,6 @@ Core Files Read:
         except Exception as e:
             return f"Error reading README.md: {str(e)}"
 
-    @debug()
     def _read_base(self, _: str = "") -> str:
         """Read the base.py file from lib directory."""
         try:
@@ -211,7 +201,6 @@ Core Files Read:
         except Exception as e:
             return f"Error reading base.py: {str(e)}"
 
-    @debug()
     def _read_agent(self, _: str = "") -> str:
         """Read the agent.py file from target agent's directory."""
         try:
@@ -223,7 +212,6 @@ Core Files Read:
         except Exception as e:
             return f"Error reading agent.py: {str(e)}"
 
-    @debug()
     def _detect_tool(self, text: str) -> Tuple[Optional[str], Optional[str]]:
         """Detect tool calls in the agent's response."""
         pattern = r'<VAR_GEN_TOOL: ([A-Z_]+)>(.*?)</VAR_GEN_TOOL>'
@@ -234,7 +222,6 @@ Core Files Read:
             return tool_name, tool_input
         return None, None
 
-    @debug()
     def _end_detection(self, manifesto: str, memory: str) -> bool:
         if "<VAR_GEN_COMPLETED>" in memory:
             return True

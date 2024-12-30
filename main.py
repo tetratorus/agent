@@ -211,35 +211,41 @@ def main():
     # Select mode
     print("\nModes:")
     print("1. Run agent")
-    print("2. Run agent (debug mode)")
-    print("3. Generate variables")
+    print("2. Run agent (verbose)")
+    print("3. Optimize agent")
+    print("4. Generate variables")
 
     while True:
         try:
             mode = int(input("\nSelect mode: "))
-            if mode in [1, 2, 3]:
+            if mode in [1, 2, 3, 4]:
                 break
             print("Invalid choice, try again")
         except ValueError:
-            print("Please enter a number")
+            print("Invalid input, try again")
 
     if mode == 1:
-        # Run mode - console output only
+        # Run mode
         agent_dir = os.path.join(os.path.dirname(__file__), "agents", agent_name)
         var_dir = os.path.join(agent_dir, "variables")
         variables = load_variables(var_dir)
         result = run_agent(agent_class, variables)
+        print(f"\nResult:\n{result}")
         print(f"\nRun completed.")
     elif mode == 2:
-        # Run mode with debug verbose
-        from lib.debug import set_debug_verbosity
-        set_debug_verbosity(True)
+        # Run mode with verbose logging
         agent_dir = os.path.join(os.path.dirname(__file__), "agents", agent_name)
         var_dir = os.path.join(agent_dir, "variables")
         variables = load_variables(var_dir)
-        result = run_agent(agent_class, variables)
+        # Set debug_verbose before running
+        agent = agent_class(**variables)
+        agent.debug_verbose = True
+        result = agent.run()
+        print(f"\nResult:\n{result}")
         print(f"\nRun completed.")
-    else:
+    elif mode == 3:
+        optimize_agent(agent_name, agent_class)
+    elif mode == 4:
         generate_variables(agent_name, agent_class)
 
 if __name__ == "__main__":

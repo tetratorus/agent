@@ -3,9 +3,6 @@ from typing import Dict, Optional, Callable, Tuple
 import re
 import trafilatura
 
-# import debug
-from lib.debug import debug
-
 from serpapi import GoogleSearch
 from lib.base import Agent
 
@@ -51,7 +48,6 @@ class ResearchAgent(Agent):
             memory=memory
         )
 
-    @debug()
     def _get_research_topic(self) -> str:
         """Get the research topic from memory."""
         # Extract research topic from memory if present
@@ -63,14 +59,12 @@ class ResearchAgent(Agent):
         self._research_topic = topic
         return topic
 
-    @debug()
     def _end_detection(self, manifesto: str, memory: str) -> bool:
         if "<TASK_COMPLETED>" in memory:
             return True
         else:
             return False
 
-    @debug()
     def _detect_tool(self, text: str) -> Tuple[Optional[str], Optional[str]]:
         """Detect if there is a tool call in the text and return the tool name and input."""
         pattern = r'<TOOL: ([A-Z_]+)>(.*?)</TOOL>'
@@ -82,7 +76,6 @@ class ResearchAgent(Agent):
         else:
             return None, None
 
-    @debug()
     def _open_url(self, url: str) -> str:
         """Open a URL and return its content as clean text using trafilatura."""
         try:
@@ -98,7 +91,6 @@ class ResearchAgent(Agent):
         except Exception as e:
             return f"Error opening URL: {str(e)}"
 
-    @debug()
     def _search(self, query: str) -> str:
         """Execute a Google search using SerpAPI."""
         try:

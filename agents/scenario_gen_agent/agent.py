@@ -27,12 +27,29 @@ class ScenarioGenAgent(Agent):
             memory=memory,
             tools={
                 'GET_TARGET_AGENT': self._get_target_agent,
+                'READ_SIM_AGENT_INFO': self._read_sim_agent_info,
                 'READ_AGENT_INFO': self._read_agent_info,
                 'SAVE_SCENARIO': self._save_scenario
             },
             tool_detection=self._detect_tool,
             end_detection=self._end_detection
         )
+
+    @debug()
+    def _read_sim_agent_info(self, _: str) -> str:
+        """read simulate scenario agent code"""
+        try:
+            # Setup paths
+            agents_dir = os.path.dirname(os.path.dirname(__file__))
+            agent_path = os.path.join(agents_dir, "simulate_scenario_agent", "agent.py")
+
+            with open(agent_path, 'r') as f:
+                content = f.read()
+
+            return content
+
+        except Exception as e:
+            return f"ERROR: Failed to read agent code: {str(e)}"
 
     @debug()
     def _get_target_agent(self, _: str = "") -> str:
@@ -66,7 +83,6 @@ class ScenarioGenAgent(Agent):
             # Setup paths
             agents_dir = os.path.dirname(os.path.dirname(__file__))
             agent_path = os.path.join(agents_dir, agent_name, "agent.py")
-            print("WTH WTH WTH", agent_path, agent_name, agents_dir)
 
             # Store these for later use when saving - do this before any potential errors
             self.target_agent_path = agent_path

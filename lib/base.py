@@ -1,8 +1,9 @@
 from typing import Dict, Optional, Tuple, Callable, List, Any, Union
 import llms
+from .meta import AgentMeta
 from .debug import debug
 
-class Agent:
+class Agent(metaclass=AgentMeta):
   """A flexible agent framework that manages conversations with an LLM while handling tool calls and memory management.
 
   This class implements an autonomous agent that calls an LLM in a loop to generate responses,
@@ -14,6 +15,10 @@ class Agent:
   The agent can also be configured with an end_detection function that determines when the agent should end its loop,
   a tool_detection function that determines when the agent should call a tool,
   and a memory_management function that processes and potentially updates the agent's memory after each interaction.
+
+  Attributes:
+      debug_verbose: If True, logs detailed information about method calls including inputs and outputs.
+      debug_log_handler: Function that handles debug messages. Default prints to console. Can be overridden.
   """
 
   def __init__(
@@ -38,6 +43,8 @@ class Agent:
       tool_detection: An optional function that takes a string and returns a tuple of (tool_name, tool_args).
       memory_management: An optional function that takes a string and returns a string to update the agent's memory.
     """
+    self.debug_log_handler = lambda msg: print(msg)
+    self.debug_verbose = False
     self.llm = llms.init(model_name)
     self.manifesto = manifesto
     self.memory = memory

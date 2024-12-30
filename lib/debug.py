@@ -3,20 +3,26 @@ from functools import wraps
 import time
 import json
 
-# Global debug verbosity setting
+# Global debug settings
 DEBUG_VERBOSE = False
+DEBUG_LOG_HANDLER = None
 
 def set_debug_verbosity(verbose: bool) -> None:
     """Set the global debug verbosity level."""
     global DEBUG_VERBOSE
     DEBUG_VERBOSE = verbose
 
+def set_debug_log_handler(handler: Callable[[str], None]) -> None:
+    """Set the debug log handler function."""
+    global DEBUG_LOG_HANDLER
+    DEBUG_LOG_HANDLER = handler
+
 def debug(*, label: str = "") -> Callable:
     """A decorator that prints function arguments and return values for debugging.
-    
+
     Args:
         label: A string message to print before the debug log
-    
+
     Usage:
         @debug(label="Custom message")
         def my_function(x, y):
@@ -38,21 +44,30 @@ def debug(*, label: str = "") -> Callable:
             result_length = len(json.dumps(result))
 
             if DEBUG_VERBOSE:
+                messages = []
                 if label:
-                    print(f"\n[DEBUG] {label}")
-                print(f"[DEBUG] Calling {func_name}")
-                print(f"  Args: {args_to_show}")
-                print(f"  Args length: {args_length}")
+                    messages.append(f"\n[DEBUG] {label}")
+                messages.append(f"[DEBUG] Calling {func_name}")
+                messages.append(f"  Args: {args_to_show}")
+                messages.append(f"  Args length: {args_length}")
                 if kwargs:
-                    print(f"  Kwargs: {kwargs}")
-                    print(f"  Kwargs length: {kwargs_length}")
-                print(f"[DEBUG] {func_name} returned: {result}")
-                print(f"[DEBUG] Response length: {result_length}")
-                print(f"[DEBUG] Execution time: {execution_time:.4f} seconds\n")
+                    messages.append(f"  Kwargs: {kwargs}")
+                    messages.append(f"  Kwargs length: {kwargs_length}")
+                messages.append(f"[DEBUG] {func_name} returned: {result}")
+                messages.append(f"[DEBUG] Response length: {result_length}")
+                messages.append(f"[DEBUG] Execution time: {execution_time:.4f} seconds\n")
             else:
+                messages = []
                 if label:
-                    print(f"\n[DEBUG] {label}")
-                print(f"[DEBUG] {func_name} - args_len: {args_length}, kwargs_len: {kwargs_length}, response_len: {result_length}\n")
+                    messages.append(f"\n[DEBUG] {label}")
+                messages.append(f"[DEBUG] {func_name} - args_len: {args_length}, kwargs_len: {kwargs_length}, response_len: {result_length}\n")
+
+            if DEBUG_LOG_HANDLER:
+                for message in messages:
+                    DEBUG_LOG_HANDLER(message)
+            else:
+                for message in messages:
+                    print(message)
 
             return result
 

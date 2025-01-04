@@ -69,8 +69,9 @@ IMPORTANT:
 - Use ONLY standard library modules unless absolutely necessary
 - Keep implementation simple and minimal
 - Do not add external dependencies without explicit justification
+- When interacting with the user, the generated agent MUST use either the ask_user tool or the tell_user tool from base.py
 - Tools MUST follow the format => <TOOL: TOOL_NAME>optional_tool_input</TOOL>
-- For arguments with no promptable defaults, prefer user input, by using the base ask_user tool - `<TOOL: ASK_USER>What is the |input_var|?</TOOL>`
+- For arguments with no obvious defaults, prefer user input, by using the base ask_user tool - `<TOOL: ASK_USER>What is the |input_var|?</TOOL>`
 ```
 
 ## Setting Up Runtime Variables
@@ -99,7 +100,7 @@ Analyze the newly generated agent.py to understand:
 - What runtime variables it references
 - Its core behavior and requirements
 
-Then generate copyable JSON content for manifesto.json:
+Then write manifesto.json:
 - Use EXACT format: ["content"]
 - All newlines as \\n
 - All quotes as \\\"
@@ -114,7 +115,7 @@ Then generate copyable JSON content for manifesto.json:
   * Any other runtime requirements
 Note: if there is no end_detection defined, the agent will end if no tool is called! So keep that in mind when generating the manifesto.
 
-After that, generate copyable JSON content for other variables, following the same format.
+For other variables, follow the same format.
 ```
 
 ----

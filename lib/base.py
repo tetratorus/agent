@@ -117,7 +117,7 @@ class Agent(metaclass=AgentMeta):
     # agent loop
     while True:
       self._last_tool_called = None
-      response = self.llm_call(self.compose_request(), max_tokens=8192)
+      response = self.llm_call(self.compose_request())
       self.update_memory(self.memory + "\n" + self.__class__.__name__ + ": " + response)
 
       # tool_detection

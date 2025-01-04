@@ -59,16 +59,11 @@ Core Files Read:
             tools={
                 "LIST_VARIABLES": self._list_variables,
                 "ADD_VARIATION": self.add_variation,
-                "ASK_USER": self.ask_user,
                 "COPY_LAST_ENTRY": self.copy_last_entry
             },
             tool_detection=self._detect_tool,
             end_detection=self._end_detection
         )
-
-    def ask_user(self, question: str) -> str:
-        """Ask the user a question and get their response."""
-        return input(question + "\nYour response: ")
 
     def _read_file(self, path: str) -> str:
         """Read a file's contents."""

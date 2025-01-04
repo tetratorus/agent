@@ -17,7 +17,7 @@ class Agent(metaclass=AgentMeta):
 
   Attributes:
       debug_verbose: If True, logs detailed information about method calls including inputs and outputs.
-      debug_log_handler: Function that handles debug messages. Default prints to console. Can be overridden.
+      log_handler: Function that handles log messages. Default prints to console. Can be overridden.
   """
 
   def __init__(
@@ -42,16 +42,18 @@ class Agent(metaclass=AgentMeta):
       tool_detection: An optional function that takes a string and returns a tuple of (tool_name, tool_args).
       memory_management: An optional function that takes a string and returns a string to update the agent's memory.
     """
-    self.debug_log_handler = lambda msg: print(msg)
+    self.log_handler = lambda msg: print(msg)
     self.debug_verbose = False
     self.llm = llms.init(model_name)
     self.manifesto = manifesto
     self.memory = memory
     self._ask_user_impl = lambda q: input(q + "\nYour response: ")
+    self._tell_user_impl = lambda m: self.log_handler(m)
 
     # Merge provided tools with built-in tools
     self.tools = {
         "ASK_USER": self.ask_user,
+        "TELL_USER": self.tell_user,
         **(tools or {})
     }
 
@@ -64,6 +66,9 @@ class Agent(metaclass=AgentMeta):
 
   def get_memory_trace(self) -> List[str]:
     return self._memory_trace
+
+  def override_log_handler(self, new_impl: Callable[[str], None]) -> None:
+    self.log_handler = new_impl
 
   def update_memory(self, text: str) -> None:
     # if memory tracing is not enabled, update memory directly
@@ -140,6 +145,14 @@ class Agent(metaclass=AgentMeta):
     """Ask the user a question and return their response."""
     return self._ask_user_impl(question)
 
+  def tell_user(self, message: str) -> None:
+    """Tell the user a message."""
+    self._tell_user_impl(message)
+
   def override_ask_user(self, new_impl: Callable[[str], str]) -> None:
     """Override the ask_user implementation."""
     self._ask_user_impl = new_impl
+
+  def override_tell_user(self, new_impl: Callable[[str], None]) -> None:
+    """Override the tell_user implementation."""
+    self._tell_user_impl = new_impl

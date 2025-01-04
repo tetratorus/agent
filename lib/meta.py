@@ -17,10 +17,10 @@ class AgentMeta(type):
             class_name = self.__class__.__name__
             func_name = func.__name__
 
-            if not hasattr(self, 'debug_log_handler'):
-                raise AttributeError(f"Missing debug_log_handler in {class_name}. Did you forget to set it?")
-            if not callable(self.debug_log_handler):
-                raise TypeError(f"debug_log_handler in {class_name} must be callable, got {type(self.debug_log_handler)}")
+            if not hasattr(self, 'log_handler'):
+                raise AttributeError(f"Missing log_handler in {class_name}. Did you forget to set it?")
+            if not callable(self.log_handler):
+                raise TypeError(f"log_handler in {class_name} must be callable, got {type(self.log_handler)}")
             if not hasattr(self, 'debug_verbose'):
                 raise AttributeError(f"Missing debug_verbose in {class_name}. Did you forget to set it?")
 
@@ -51,7 +51,7 @@ class AgentMeta(type):
                 messages = [f"[{class_name}.{func_name}] inputs_len: {inputs_length}, result_len: {result_length}\n"]
 
             for message in messages:
-                self.debug_log_handler(message)
+                self.log_handler(message)
 
             return result
         return wrapper

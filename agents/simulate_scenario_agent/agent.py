@@ -8,10 +8,14 @@ import re
 import json
 
 class SimulateScenarioAgent(Agent):
-    """An agent that simulates scenarios for other agents.
+    """An agent that simulates responses for other target agents based on a scenario by providing human-like responses.
 
     This agent asks the user which target agent, and also which scenario to simulate, reads the target agent and scenario file.
-    This agent then runs the target agent, overriding ask_user where necessary and responding to the target agent based on the scenario.
+
+    This agent will then ask the user for what the target agent's next question is, and then provide a response to that question.
+
+    This agent will then repeat this process until the user indicates that the target agent has completed its task.
+
     """
 
     def __init__(self,
@@ -29,16 +33,18 @@ class SimulateScenarioAgent(Agent):
                 'GET_TARGET_AGENT': self._get_target_agent,
                 'GET_SCENARIO': self._get_scenario,
                 'GET_VARIABLES': self._get_variables,
-                'RUN_SIMULATION': self._run_simulation,
+                'GET_QUESTION': self._get_question,
+                'ANSWER_QUESTION': self._answer_question
             },
             tool_detection=self._detect_tool,
             end_detection=self._end_detection
         )
 
         self.scenario_text = None
-        self.target_agent = None
         self.target_agent_name = None
         self.target_agent_manifesto = None
+
+        self.target_agent_context_loaded_in_memory = False
 
     def _get_target_agent(self, _: str = "") -> str:
         """Ask user for agent name and return the selected agent."""
@@ -80,7 +86,6 @@ class SimulateScenarioAgent(Agent):
             if not agent_class:
                 return f"ERROR: Could not find agent class in {agent_path}"
 
-            self.target_agent = agent_class
             self.target_agent_name = agent_name
             return f"Successfully loaded {agent_name}"
 
@@ -89,7 +94,7 @@ class SimulateScenarioAgent(Agent):
 
     def _get_scenario(self, _: str = "") -> str:
         """Get the scenario file to simulate."""
-        if not self.target_agent:
+        if not self.target_agent_name:
             return "ERROR: Must get target agent first"
 
         # Get scenarios directory
@@ -129,7 +134,7 @@ class SimulateScenarioAgent(Agent):
         """
         # TODO: only selecting manifesto right now, might need to add other variables later on
 
-        if not self.target_agent:
+        if not self.target_agent_name:
             return "ERROR: Must get target agent first"
 
         # Get variables directory
@@ -157,39 +162,38 @@ class SimulateScenarioAgent(Agent):
         if manifesto_length == 0:
             return f"ERROR: Manifesto at {manifesto_path} is empty"
 
-        # Let user pick index, (1 to [length of array])
-        selected_index = self.ask_user(f"Which index would you like to use? Available indexs: 1 to {manifesto_length}")
+        # Let user pick index, (0 to [length of array - 1])
+        selected_index = self.ask_user(f"Which index would you like to use? Available indexs: 0 to {manifesto_length - 1}")
 
         # Get selected index
         if not selected_index:
             return "ERROR: No index provided"
         selected_index = int(selected_index)
-        selected_manifesto = manifesto[selected_index - 1]
+        selected_manifesto = manifesto[selected_index]
         self.target_agent_manifesto = selected_manifesto
 
         return f"Successfully loaded variables from {manifesto_path}, \n selected index: {selected_index}, \n selected manifesto: {selected_manifesto}"
 
-    def _run_simulation(self, _: str = "") -> str:
-        """Run the simulation with the selected agent and scenario."""
-        if not self.target_agent:
+    def _get_question(self, _: str = "") -> str:
+        """Get the next question from the target agent. Assume that it is passed in by the user."""
+        if not self.target_agent_name:
             return "ERROR: Must get target agent first"
-        if not self.scenario_text:
-            return "ERROR: Must get scenario first"
-        if not self.target_agent_manifesto:
-            return "ERROR: Must get variables first"
 
-        # TODO: run agent
-        try:
-            target_agent = self.target_agent(self.target_agent_manifesto)
-            result = target_agent.run()
-            return f"Simulation completed with result: {result}"
-        except Exception as e:
-            return f"ERROR: Failed to run simulation: {str(e)}"
+        question = self.ask_user(f"Please provide the next question for {self.target_agent_name}")
+        return question
+
+    def _answer_question(self, answer: str) -> str:
+        """Answer the question using the target agent."""
+        if not self.target_agent_name:
+            return "ERROR: Must get target agent first"
+
+        self.tell_user(f"Answering question for {self.target_agent_name}: {answer}")
+        return ""
 
 
     def _detect_tool(self, text: str) -> Tuple[Optional[str], Optional[str]]:
         """Detect which tool to call based on the agent's response."""
-        pattern = r'<TOOL: (GET_TARGET_AGENT|GET_SCENARIO|GET_VARIABLES|RUN_SIMULATION)>([^<]*)</TOOL>'
+        pattern = r'<TOOL: (GET_TARGET_AGENT|GET_SCENARIO|GET_VARIABLES|GET_QUESTION|ANSWER_QUESTION)>([^<]*)</TOOL>'
         if match := re.search(pattern, text):
             return match.group(1), match.group(2)
         return None, None

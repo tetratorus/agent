@@ -4,7 +4,25 @@ import os
 import sys
 import importlib.util
 import inspect
-from typing import Type, List, Tuple, Optional
+from typing import Type, List, Tuple, Optional, Dict, Any, TextIO
+import datetime
+
+class StreamingLogger:
+    """Logger that writes to both file and stdout in real-time."""
+    def __init__(self, log_file: TextIO):
+        self.terminal = sys.stdout
+        self.log_file = log_file
+
+    def write(self, message: str):
+        self.terminal.write(message)
+        self.log_file.write(message)
+        # Flush both to ensure real-time output
+        self.terminal.flush()
+        self.log_file.flush()
+
+    def flush(self):
+        self.terminal.flush()
+        self.log_file.flush()
 
 def get_agent_class(agent_name: str) -> Optional[Type]:
     """Import and return the agent class from an agent module."""
@@ -54,7 +72,7 @@ def main():
             print("Please enter a number")
 
     agent_name, description = agents[choice]
-    
+
     # Show agent details
     display_name = ' '.join(word.capitalize() for word in agent_name.split('_'))
     print(f"\n{display_name}")
@@ -73,7 +91,7 @@ def main():
     print("\nModes:")
     print("1. Run agent")
     print("2. Run agent (verbose)")
-    
+
     while True:
         try:
             mode = int(input("\nSelect mode: "))
@@ -86,7 +104,7 @@ def main():
     # List available manifestos
     manifesto_dir = os.path.join(os.path.dirname(__file__), "agents", agent_name, "manifestos")
     manifestos = [f for f in os.listdir(manifesto_dir) if not f.startswith('.')]
-    
+
     print("\nAvailable Manifestos:")
     print("-------------------")
     for i, name in enumerate(manifestos):
@@ -111,12 +129,23 @@ def main():
         print(f"Could not find manifesto at {manifesto_path}")
         return
 
-    agent = agent_class(manifesto=manifesto)
-    if mode == 2:
-        agent.debug_verbose = True
-    result = agent.run()
-    print(f"\nResult:\n{result}")
-    print("\nRun completed.")
+    # Create runs directory if it doesn't exist
+    runs_dir = os.path.join(os.path.dirname(__file__), "agents", agent_name, "runs")
+    os.makedirs(runs_dir, exist_ok=True)
+
+    # Create run log with timestamp
+    timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+    run_log = os.path.join(runs_dir, f"run_log_{timestamp}")
+
+    # Setup logging
+    with open(run_log, "w") as log_file:
+        logger = StreamingLogger(log_file)
+        agent = agent_class(manifesto=manifesto)
+        agent.log_handler = logger.write
+        if mode == 2:
+            agent.debug_verbose = True
+        result = agent.run()
+        log_file.write(result)
 
 if __name__ == "__main__":
     try:

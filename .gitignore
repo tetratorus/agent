@@ -1,5 +1,4 @@
 __pycache__/
-output
 .DS_Store
 agents/**/logs/*
 .windsurfrules

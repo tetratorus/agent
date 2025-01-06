@@ -47,8 +47,8 @@ class Agent(metaclass=AgentMeta):
     self.llm = llms.init(model_name)
     self.manifesto = manifesto
     self.memory = memory
-    self._ask_user_impl = lambda q: input(q + "\nYour response: ")
-    self._tell_user_impl = lambda m: self.log_handler(m)
+    self._ask_user_impl = lambda q: (self.log_handler(q), input("\nYour response: "))[1]
+    self._tell_user_impl = lambda m: (self.log_handler(m), "")[1]
 
     # Merge provided tools with built-in tools
     self.tools = {
@@ -145,14 +145,14 @@ class Agent(metaclass=AgentMeta):
     """Ask the user a question and return their response."""
     return self._ask_user_impl(question)
 
-  def tell_user(self, message: str) -> None:
+  def tell_user(self, message: str) -> str:
     """Tell the user a message."""
-    self._tell_user_impl(message)
+    return self._tell_user_impl(message)
 
   def override_ask_user(self, new_impl: Callable[[str], str]) -> None:
     """Override the ask_user implementation."""
     self._ask_user_impl = new_impl
 
-  def override_tell_user(self, new_impl: Callable[[str], None]) -> None:
+  def override_tell_user(self, new_impl: Callable[[str], str]) -> None:
     """Override the tell_user implementation."""
     self._tell_user_impl = new_impl

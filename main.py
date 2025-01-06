@@ -140,12 +140,13 @@ def main():
     # Setup logging
     with open(run_log, "w") as log_file:
         logger = StreamingLogger(log_file)
+        logger.write(f"Running Agent: {display_name}\n")
         agent = agent_class(manifesto=manifesto)
         agent.log_handler = logger.write
         if mode == 2:
             agent.debug_verbose = True
         result = agent.run()
-        log_file.write(result)
+        logger.write(result)
 
 if __name__ == "__main__":
     try:

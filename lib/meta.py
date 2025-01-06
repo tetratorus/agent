@@ -48,7 +48,7 @@ class AgentMeta(type):
                     f"  Time: {execution_time:.4f}s\n"
                 ]
             else:
-                messages = [f"[{class_name}.{func_name}] inputs_len: {inputs_length}, result_len: {result_length}\n"]
+                messages = [f"[{class_name}.{func_name}] inputs_len: {inputs_length}, result_len: {result_length}, time: {execution_time:.4f}s\n"]
 
             for message in messages:
                 self.log_handler(message)

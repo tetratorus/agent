@@ -1,7 +1,6 @@
-pyllms
-google-search-results
-mistralai==0.4.1
-reka-api==3.2.0
-together==1.3.5
 trafilatura
+serpapi==0.1.5
 lxml --only-binary :all:
+litellm==1.55.12
+--no-binary google-search-results
+google-search-results==2.4.2

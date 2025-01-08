@@ -69,17 +69,18 @@ agent/
 <details>
 <summary>🤖 Agent Implementation Guidelines (click to expand)</summary>
 
-If you're an AI, you **must** follow these guidelines to implement an agent:
+If you're an AI, you MUST follow these guidelines to implement an agent:
 
 ## **Agent Architecture**
 
-- Agents extend `lib.base.Agent`.
-  - `lib.base.Agent` implements a base agent loop, and has access to ASK_USER and TELL_USER tools.
-  - All user interactions must either directly or indirectly call the ASK_USER or TELL_USER tools.
-- Tools: Pure, stateless functions defined as `Dict[str, Callable[[str], str]]`.
-  - Tool calls should follow the format `<TOOL: TOOL_NAME>TOOL_INPUT</TOOL>`.
-  - Similarly, tool detection should be via regex pattern matching (e.g., `r'<TOOL: ([A-Z_]+)>(.*?)</TOOL>'`).
+- Agents MUST extend `lib.base.Agent`.
+- `lib.base.Agent` implements a base agent loop, and has access to ASK_USER, TELL_USER, and END_RUN tools.
+- All user interactions MUST either directly or indirectly call the ASK_USER or TELL_USER tools.
+- When the agent is complete, the agent MUST call the END_RUN tool.
+- Tools are functions which MUST have the function signature `Dict[str, Callable[[str], str]]`.
+- Tool calls MUST follow the format `<TOOL: TOOL_NAME>TOOL_INPUT</TOOL>`.
+- Similarly, tool detection MUST be via regex pattern matching (e.g., pattern = `r'<TOOL: ([A-Z_]+)>([\s\S]*?)</TOOL>'`).
 - Manifesto: Custom instructions for the agent.
-- Memory: Initial memory/context for the conversation.
+- Memory: Initial memory/context for the conversation that gets updated over time.
 
 </details>

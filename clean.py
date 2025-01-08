@@ -13,6 +13,7 @@ def get_agent_class(agent_name: str) -> Optional[Type]:
             if inspect.isclass(obj) and name.endswith('Agent') and obj.__module__ == module.__name__:
                 return obj
     except ImportError:
+        print(f"Could not load agent class for {agent_name}")
         return None
     return None
 

@@ -40,7 +40,7 @@ class AgentMeta(type):
 
             if self.debug_verbose:
                 messages = [
-                    f"\n[{class_name}.{func_name}]",
+                    f"\n({class_name}.{func_name})",
                     f"  Inputs: {inputs}",
                     f"  Inputs length: {inputs_length}",
                     f"  Result: {result}",
@@ -48,7 +48,7 @@ class AgentMeta(type):
                     f"  Time: {execution_time:.4f}s\n"
                 ]
             else:
-                messages = [f"[{class_name}.{func_name}] inputs_len: {inputs_length}, result_len: {result_length}, time: {execution_time:.4f}s\n"]
+                messages = [f"({class_name}.{func_name}) inputs_len: {inputs_length}, result_len: {result_length}, time: {execution_time:.4f}s\n"]
 
             for message in messages:
                 self.log_handler(message)

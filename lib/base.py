@@ -1,5 +1,5 @@
 from typing import Dict, Optional, Tuple, Callable, List, Any, Union
-import llms
+import litellm
 from .meta import AgentMeta
 
 class Agent(metaclass=AgentMeta):
@@ -44,7 +44,7 @@ class Agent(metaclass=AgentMeta):
     """
     self.log_handler = lambda msg: print(msg)
     self.debug_verbose = False
-    self.llm = llms.init(model_name)
+    self.model_name = model_name
     self.manifesto = manifesto
     self.memory = memory
     self._ask_user_impl = lambda q: (self.log_handler(q), input("\nYour response: "))[1]
@@ -116,7 +116,11 @@ class Agent(metaclass=AgentMeta):
       return True
 
   def llm_call(self, prompt: str, **kwargs) -> str:
-    return self.llm.complete(prompt, **kwargs).text
+    return litellm.completion(
+      model=self.model_name,
+      messages=[{"role": "user", "content": prompt}],
+      **kwargs
+    ).choices[0].message.content
 
   def run(self) -> str:
     # agent loop
@@ -131,9 +135,9 @@ class Agent(metaclass=AgentMeta):
         if tool := self.tools.get(tool_name):
           self._last_tool_called = tool_name
           result = tool(tool_args)
-          self.update_memory(self.memory + "\nTool Result: " + result)
+          self.update_memory(self.memory + "\nTool Result: " + result + "\n")
         else:
-          self.update_memory(self.memory + "\nTool Not Found: " + tool_name)
+          self.update_memory(self.memory + "\nTool Not Found: " + tool_name + "\n")
 
       # check end condition at end of loop
       if self.end():

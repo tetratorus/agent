@@ -26,7 +26,7 @@ class ResearchAgent(Agent):
         if manifesto is None:
             raise ValueError("Manifesto must be provided")
 
-        model_name = "gpt-4o"
+        model_name = "openai/gpt-4o"
 
         self.serpapi_key = os.environ.get("SERPAPI_API_KEY")
         if not self.serpapi_key:

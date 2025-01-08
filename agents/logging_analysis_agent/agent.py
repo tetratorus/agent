@@ -1,6 +1,4 @@
 from typing import Dict, Optional, Callable, Tuple
-import os
-import json
 from lib.base import Agent
 
 class LoggingAnalysisAgent(Agent):

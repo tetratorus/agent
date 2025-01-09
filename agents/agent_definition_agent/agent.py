@@ -20,10 +20,9 @@ class AgentDefinitionAgent(Agent):
         }
 
         super().__init__(
-            model_name="gpt-4",
+            model_name="openai/gpt-4o",
             tools=tools,
             tool_detection=self._detect_tool,
-            end_detection=self._end_detection,
             manifesto=manifesto,
             memory=memory
         )
@@ -47,8 +46,3 @@ class AgentDefinitionAgent(Agent):
         if match:
             return match.group(1), match.group(2).strip()
         return None, None
-
-    def _end_detection(self, manifesto: str, memory: str) -> bool:
-        """End when requirements are clear and complete."""
-        # End if the last message contains a clear completion marker
-        return "REQUIREMENTS_COMPLETE" in memory

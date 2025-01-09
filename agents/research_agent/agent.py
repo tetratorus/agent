@@ -43,7 +43,6 @@ class ResearchAgent(Agent):
             model_name=model_name,
             tools=tools,
             tool_detection=self._detect_tool,
-            end_detection=self._end_detection,
             manifesto=manifesto,
             memory=memory
         )
@@ -58,12 +57,6 @@ class ResearchAgent(Agent):
         topic = self.ask_user("What would you like me to research?")
         self._research_topic = topic
         return topic
-
-    def _end_detection(self, manifesto: str, memory: str) -> bool:
-        if "<TASK_COMPLETED>" in memory:
-            return True
-        else:
-            return False
 
     def _detect_tool(self, text: str) -> Tuple[Optional[str], Optional[str]]:
         """Detect if there is a tool call in the text and return the tool name and input."""

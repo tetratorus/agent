@@ -138,8 +138,11 @@ class Agent(metaclass=AgentMeta):
       if tool_name:
         if tool := self.tools.get(tool_name):
           self._last_tool_called = tool_name
-          result = tool(tool_args)
-          self.update_memory(self.memory + "\nTool Result [" + result + "]\n")
+          try:
+            result = tool(tool_args)
+            self.update_memory(self.memory + "\nTool Result [" + result + "]\n")
+          except Exception as e:
+            self.update_memory(self.memory + "\nTool Error [" + str(e) + "]\n")
         else:
           self.update_memory(self.memory + "\nTool Not Found [" + tool_name + "]\n")
 

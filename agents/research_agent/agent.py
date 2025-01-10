@@ -19,7 +19,7 @@ class ResearchAgent(Agent):
 
     def __init__(self,
                  manifesto: str,
-                 memory: str = ""):
+                 memory: str):
 
         # check if all required parameters are provided
 
@@ -42,7 +42,6 @@ class ResearchAgent(Agent):
         super().__init__(
             model_name=model_name,
             tools=tools,
-            tool_detection=self._detect_tool,
             manifesto=manifesto,
             memory=memory
         )
@@ -57,17 +56,6 @@ class ResearchAgent(Agent):
         topic = self.ask_user("What would you like me to research?")
         self._research_topic = topic
         return topic
-
-    def _detect_tool(self, text: str) -> Tuple[Optional[str], Optional[str]]:
-        """Detect if there is a tool call in the text and return the tool name and input."""
-        pattern = r'<TOOL: ([A-Z_]+)>(.*?)</TOOL>'
-        match = re.search(pattern, text)
-        if match:
-            tool_name = match.group(1)
-            tool_input = match.group(2)
-            return tool_name, tool_input
-        else:
-            return None, None
 
     def _open_url(self, url: str) -> str:
         """Open a URL and return its content as clean text using trafilatura."""

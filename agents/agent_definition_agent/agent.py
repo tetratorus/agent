@@ -8,8 +8,7 @@ class AgentDefinitionAgent(Agent):
 
     def __init__(self,
                  manifesto: str,
-                 memory: str = "",
-    ):
+                 memory: str):
         if manifesto is None:
             raise ValueError("Manifesto must be provided")
 
@@ -22,7 +21,6 @@ class AgentDefinitionAgent(Agent):
         super().__init__(
             model_name="openai/gpt-4o",
             tools=tools,
-            tool_detection=self._detect_tool,
             manifesto=manifesto,
             memory=memory
         )
@@ -38,11 +36,3 @@ class AgentDefinitionAgent(Agent):
         base_path = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), "lib", "base.py")
         with open(base_path, 'r') as f:
             return f.read()
-
-    def _detect_tool(self, text: str) -> Tuple[Optional[str], Optional[str]]:
-        """Detect tool calls in the agent's response using regex pattern matching."""
-        pattern = r'<TOOL: ([A-Z_]+)>([\s\S]*?)</TOOL>'
-        match = re.search(pattern, text)
-        if match:
-            return match.group(1), match.group(2).strip()
-        return None, None

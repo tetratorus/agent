@@ -1,0 +1,12 @@
+Running Agent: Scissors Paper Stone Agent
+(RockPaperScissorsAgent.compose_request) inputs_len: 2, result_len: 2261, time: 0.0000s
+(RockPaperScissorsAgent.llm_call) inputs_len: 2, result_len: 218, time: 1.4055s
+(RockPaperScissorsAgent.update_memory) inputs_len: 2, result_len: 4, time: 0.0000s
+(RockPaperScissorsAgent.tool_detection) inputs_len: 2, result_len: 22, time: 0.0001s
+(RockPaperScissorsAgent.store_move) inputs_len: 2, result_len: 14, time: 0.0000s
+(RockPaperScissorsAgent.update_memory) inputs_len: 2, result_len: 4, time: 0.0000s
+(RockPaperScissorsAgent.compose_request) inputs_len: 2, result_len: 2539, time: 0.0000s
+(RockPaperScissorsAgent.llm_call) inputs_len: 2, result_len: 126, time: 0.8073s
+(RockPaperScissorsAgent.update_memory) inputs_len: 2, result_len: 4, time: 0.0000s
+(RockPaperScissorsAgent.tool_detection) inputs_len: 2, result_len: 49, time: 0.0000s
+Choose rock, paper, or scissors: 

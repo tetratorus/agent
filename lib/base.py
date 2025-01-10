@@ -1,5 +1,6 @@
 from typing import Dict, Optional, Tuple, Callable, List, Any, Union
 import litellm
+import re
 from .meta import AgentMeta
 
 def get_multiline_input() -> str:
@@ -25,8 +26,7 @@ class Agent(metaclass=AgentMeta):
   a tool_detection function that determines when the agent should call a tool,
   and a memory_management function that processes and potentially updates the agent's memory after each interaction.
 
-
-  Agents MUST extend `lib.base.Agent`.
+  Implementations of agents MUST extend `lib.base.Agent`, they cannot override any of the methods except __init__.
   `lib.base.Agent` implements a base agent loop, and has access to ASK_USER, TELL_USER, and END_RUN tools.
   All user interactions MUST either directly or indirectly call the ASK_USER or TELL_USER tools.
   When the agent is complete, the agent MUST call the END_RUN tool.
@@ -43,11 +43,10 @@ class Agent(metaclass=AgentMeta):
 
   def __init__(
       self,
-      model_name: str,
       manifesto: str,
-      memory: str = "",
+      memory: str,
+      model_name: str = "openai/gpt-4o",
       tools: Optional[Dict[str, Callable]] = None,
-      tool_detection: Optional[Callable[[str], Tuple[Optional[str], Optional[str]]]] = None,
       memory_management: Optional[Callable[[str], Optional[str]]] = None,
       memory_tracing: bool = False,
   ):
@@ -56,11 +55,12 @@ class Agent(metaclass=AgentMeta):
     Args:
       model_name: Name of the language model to use
       manifesto: A string that describes the agent's purpose and capabilities.
-      memory: An optional string that represents the agent's initial memory state.
+      memory: A string that represents the agent's initial memory state. Can be empty
       tools: An optional dictionary of tool names to tool functions.
-      tool_detection: An optional function that takes a string and returns a tuple of (tool_name, tool_args).
       memory_management: An optional function that takes a string and returns a string to update the agent's memory.
+      memory_tracing: If True, memory tracing is enabled. Defaults to False
     """
+    self.llm_call_count = 0
     self.log_handler = lambda msg: print(msg)
     self.debug_verbose = False
     self.model_name = model_name
@@ -78,7 +78,6 @@ class Agent(metaclass=AgentMeta):
         **(tools or {})
     }
 
-    self.tool_detection = tool_detection
     self.memory_management = memory_management
     self._memory_trace: List[str] = []
     self._last_tool_called: Optional[str] = None
@@ -112,24 +111,15 @@ class Agent(metaclass=AgentMeta):
     return self.manifesto + "\n" + self.memory
 
   def tool_detection(self, text: str) -> Tuple[Optional[str], Optional[str]]:
-    # no tool detection
-    if not self.tool_detection:
-      return None, None
-
-    # call tool detection function
-    tool_name, tool_args = self.tool_detection(text)
-
-    # validate tool exists
-    if tool_name and tool_name in self.tools:
-      self._last_tool_called = tool_name
-      return tool_name, tool_args
-    elif tool_name:
-      print(f"Warning: Tool {tool_name} not found in tools dictionary")
-      return None, None
-    else:
-      return None, None
+    """Detect if there is a tool call in the text and return the tool name and input."""
+    pattern = r'<TOOL: ([A-Z_]+)>([\s\S]*?)</TOOL>'
+    match = re.search(pattern, text)
+    if match:
+        return match.group(1), match.group(2)
+    return None, None
 
   def llm_call(self, prompt: str, **kwargs) -> str:
+    self.llm_call_count += 1
     return litellm.completion(
       model=self.model_name,
       messages=[{"role": "user", "content": prompt}],
@@ -141,7 +131,7 @@ class Agent(metaclass=AgentMeta):
     while True:
       self._last_tool_called = None
       response = self.llm_call(self.compose_request())
-      self.update_memory(self.memory + "\n[" + self.__class__.__name__ + "]\n" + response)
+      self.update_memory(self.memory + "\n[" + self.__class__.__name__ + " - " + str(self.llm_call_count) + "]\n" + response)
 
       # tool_detection
       tool_name, tool_args = self.tool_detection(response)

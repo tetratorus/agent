@@ -5,9 +5,24 @@ from typing import Any
 
 class AgentMeta(type):
     def __new__(mcs, name, bases, attrs):
+        # Don't apply restrictions to the base Agent class itself
+        if name == 'Agent':
+            for attr_name, attr_value in attrs.items():
+                if callable(attr_value) and not attr_name.startswith('__'):
+                    attrs[attr_name] = mcs._wrap_with_logging(attr_value)
+            return super().__new__(mcs, name, bases, attrs)
+
+        # For subclasses, prevent overriding base methods except __init__
+        base_methods = {name for base in bases for name, value in base.__dict__.items() 
+                       if callable(value) and not name.startswith('__')}
+        
         for attr_name, attr_value in attrs.items():
-            if callable(attr_value) and not attr_name.startswith('__'):
-                attrs[attr_name] = mcs._wrap_with_logging(attr_value)
+            if callable(attr_value):
+                if not attr_name.startswith('__'):
+                    if attr_name in base_methods and attr_name != '__init__':
+                        raise TypeError(f"Cannot override base method '{attr_name}' in {name}. Only __init__ can be overridden.")
+                    attrs[attr_name] = mcs._wrap_with_logging(attr_value)
+
         return super().__new__(mcs, name, bases, attrs)
 
     @staticmethod

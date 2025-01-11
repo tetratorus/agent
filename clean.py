@@ -82,9 +82,9 @@ def main():
 
     # Show cleaning options
     print("\nWhat would you like to clean?")
-    print("1. Runs")
-    print("2. Simulations")
-    print("3. Both")
+    print("1. Both")
+    print("2. Runs")
+    print("3. Simulations")
     print()
 
     while True:
@@ -103,13 +103,13 @@ def main():
     if choice == 1:  # All agents
         print("\nCleaning all agents...")
         for agent_name, _ in agents:
-            if clean_choice in [1, 3]:
+            if clean_choice in [1, 2]:  # Both or Runs
                 runs = clean_agent_runs(agent_name)
                 if runs > 0:
                     print(f"Removed {runs} run logs from {agent_name}")
                 total_runs += runs
 
-            if clean_choice in [2, 3]:
+            if clean_choice in [1, 3]:  # Both or Simulations
                 sims = clean_agent_simulations(agent_name)
                 if sims > 0:
                     print(f"Removed {sims} simulations from {agent_name}")
@@ -117,12 +117,12 @@ def main():
     else:
         agent_name = agents[choice - 2][0]
         print(f"\nCleaning {agent_name}...")
-        if clean_choice in [1, 3]:
+        if clean_choice in [1, 2]:  # Both or Runs
             total_runs = clean_agent_runs(agent_name)
             if total_runs > 0:
                 print(f"Removed {total_runs} run logs")
 
-        if clean_choice in [2, 3]:
+        if clean_choice in [1, 3]:  # Both or Simulations
             total_sims = clean_agent_simulations(agent_name)
             if total_sims > 0:
                 print(f"Removed {total_sims} simulations")

@@ -27,9 +27,8 @@ class AgentImplementationAgent(Agent):
             memory=memory,
             tools={
                 "GET_AGENT_DESCRIPTION": self.get_agent_description,
-                "READ_README": self._read_readme,
-                "READ_BASE_AGENT": self._read_base_agent,
-                "READ_META": self._read_meta,
+                "READ_FILE": self.read_file,
+                "VIEW_DIRCTORY_TREE": self.view_directory_tree,
             },
         )
 
@@ -37,20 +36,38 @@ class AgentImplementationAgent(Agent):
         """ use ASK_USER tool to get the agent description from the user """
         return self.ask_user("What is the agent description?")
 
-    def _read_readme(self, _: str) -> str:
-        """Read the framework README file."""
-        readme_path = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), "README.md")
-        with open(readme_path, 'r') as f:
+    def read_file(self, file_path: str) -> str:
+        with open(file_path, 'r') as f:
             return f.read()
 
-    def _read_base_agent(self, _: str) -> str:
-        """Read the base agent implementation file."""
-        base_path = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), "lib", "base.py")
-        with open(base_path, 'r') as f:
-            return f.read()
+    def view_directory_tree(self, directory: str) -> str:
+        """Display directory structure in a tree-like format.
 
-    def _read_meta(self, _: str) -> str:
-        """Read the meta implementation file."""
-        meta_path = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), "lib", "meta.py")
-        with open(meta_path, 'r') as f:
-            return f.read()
+        Args:
+            directory: Path to the directory to display
+
+        Returns:
+            String representation of the directory tree
+        """
+        def list_files_recursively(path, prefix=""):
+            output = []
+            entries = sorted([e for e in os.listdir(path) if not (e.startswith('__') or e.startswith('.'))])
+
+            for i, entry in enumerate(entries):
+                is_last = i == len(entries) - 1
+                entry_path = os.path.join(path, entry)
+
+                connector = "└── " if is_last else "├── "
+                output.append(prefix + connector + entry)
+
+                if os.path.isdir(entry_path):
+                    extension = "    " if is_last else "│   "
+                    output.extend(list_files_recursively(entry_path, prefix + extension))
+
+            return output
+
+        try:
+            tree = list_files_recursively(directory)
+            return "\n".join(tree)
+        except Exception as e:
+            return f"Error displaying directory tree: {str(e)}"

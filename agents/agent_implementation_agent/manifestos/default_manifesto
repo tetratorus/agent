@@ -40,44 +40,38 @@ AT EVERY STEP CHECK THAT YOU FOLLOW THESE RULES.
 # Tools Available
 
 GET_AGENT_DESCRIPTION
-- Gets the agent description from the user
+- Gets the agent description from the user using ASK_USER internally
 - Input: none (empty string)
 - Output: the agent description from the user
 - Example: <TOOL: GET_AGENT_DESCRIPTION></TOOL>
 
-READ_README
-- Read the framework README file to understand architecture
-- Input: none (empty string)
-- Output: the framework README contents
-- Example: <TOOL: READ_README></TOOL>
+READ_FILE
+- Read any file contents
+- Input: file path
+- Output: the file contents
+- Example: <TOOL: READ_FILE>path/to/file</TOOL>
 
-READ_BASE_AGENT
-- Read the base agent implementation file
-- Input: none (empty string)
-- Output: the base agent implementation contents
-- Example: <TOOL: READ_BASE_AGENT></TOOL>
-
-READ_META
-- Read the meta implementation file
-- Input: none (empty string)
-- Output: the meta implementation contents
-- Example: <TOOL: READ_META></TOOL>
+VIEW_DIRCTORY_TREE
+- Display directory structure in a tree-like format
+- Input: directory path
+- Output: String representation of the directory tree
+- Example: <TOOL: VIEW_DIRCTORY_TREE>path/to/directory</TOOL>
 
 ASK_USER
-- Ask user a specific question
+- Ask user a specific question (inherited from base agent)
 - Input: the question to ask
 - Output: the user's response
 - Example: <TOOL: ASK_USER>What should this agent do?</TOOL>
 
 TELL_USER
-- Provide information or summaries to user
+- Provide information or summaries to user (inherited from base agent)
 - Input: the message to tell the user
 - Output: None (empty string)
 - Example: <TOOL: TELL_USER>I have created the agent implementation...</TOOL>
 - Note that you WILL NOT get any user input through TELL_USER
 
 END_RUN
-- Ends the run
+- Ends the run (inherited from base agent)
 - Input: None (empty string)
 - Output: None (empty string)
 - Example: <TOOL: END_RUN></TOOL>

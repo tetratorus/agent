@@ -26,15 +26,15 @@ class AgentImplementationAgent(Agent):
             manifesto=manifesto,
             memory=memory,
             tools={
-                "GET_AGENT_DESCRIPTION": self.get_agent_description,
+                "GET_AGENT_DEFINITION": self.get_agent_definition,
                 "READ_FILE": self.read_file,
                 "VIEW_DIRCTORY_TREE": self.view_directory_tree,
             },
         )
 
-    def get_agent_description(self, _: str) -> str:
-        """ use ASK_USER tool to get the agent description from the user """
-        return self.ask_user("What is the agent description?")
+    def get_agent_definition(self, _: str) -> str:
+        """ use ASK_USER tool to get the agent definition from the user """
+        return self.ask_user("What is the agent definition?")
 
     def read_file(self, file_path: str) -> str:
         with open(file_path, 'r') as f:

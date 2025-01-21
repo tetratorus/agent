@@ -17,14 +17,10 @@ def get_multiline_input() -> str:
 class Agent(metaclass=AgentMeta):
   """A flexible agent framework that manages conversations with an LLM while handling tool calls and memory management.
 
-  This class implements an autonomous agent that calls an LLM in a loop to generate responses,
-  execute tools based on the model's responses, and maintain a memory context. For debugging reasons, it also tracks
-  a history of all memory states in _memory_trace.
-
-  The agent is initialized with a manifesto that is provided to the LLM in every request, and a dictionary of tools that the agent can use.
-  It has access to tools, which are custom functions that the agent can call to perform actions.
-  a tool_detection function that determines when the agent should call a tool,
-  and a memory_management function that processes and potentially updates the agent's memory after each interaction.
+  This code defines an Agent that repeatedly calls an LLM using a manifesto (system instructions) and memory as context.
+  After each LLM response, it checks for a special <TOOL: NAME> tag.
+  If found, it calls the corresponding Python function (“tool”), updates its memory with the tool’s result, and continues.
+  The agent ends when an END_RUN tool call appears.
 
   Implementations of agents MUST extend `lib.base.Agent`, they cannot override any of the methods except __init__.
   `lib.base.Agent` implements a base agent loop, and has access to ASK_USER, TELL_USER, and END_RUN tools.

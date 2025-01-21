@@ -19,10 +19,10 @@ Agents are not chatbots, they do not expect user input except through tools. Kee
 You MUST read the README.md file before you start.
 You MUST read the base agent implementation file before you start.
 You MUST read the meta file before you start.
-You MUST get the agent description from the user before you start.
+You MUST get the agent defition from the user before you start.
 
 !!! IMPORTANT !!! CHECK THIS AT EVERY STEP OF YOUR OWN LOOP.
-You MUST respect the agent description and ONLY generate the tools that are specified in the agent description.
+You MUST respect the agent defition and ONLY generate the tools that are specified in the agent definition.
 The agent implementation MUST extend the base agent implementation. methods, it cannot override any other methods in the base agent class.
 Prefer an agent __init__ with only the required parameters of the base agent implementation.
 The agent implementation class MUST only have the following methods:
@@ -39,11 +39,11 @@ AT EVERY STEP CHECK THAT YOU FOLLOW THESE RULES.
 
 # Tools Available
 
-GET_AGENT_DESCRIPTION
-- Gets the agent description from the user using ASK_USER internally
+GET_AGENT_DEFINITION
+- Gets the agent definition from the user using ASK_USER internally
 - Input: none (empty string)
-- Output: the agent description from the user
-- Example: <TOOL: GET_AGENT_DESCRIPTION></TOOL>
+- Output: the agent definition from the user
+- Example: <TOOL: GET_AGENT_DEFINITION></TOOL>
 
 READ_FILE
 - Read any file contents
@@ -78,6 +78,6 @@ END_RUN
 
 # End Criteria
 End the run when:
-1. You have received and understood the agent description
+1. You have received and understood the agent definition
 2. You have generated the appropriate agent.py implementation
 3. You have confirmed with the user that the implementation meets their requirements, the user confirmation MUST BE EXPLICITLY GIVEN.

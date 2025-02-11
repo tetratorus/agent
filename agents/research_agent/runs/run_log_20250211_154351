@@ -1,0 +1,26 @@
+Running Agent: Research Agent
+What topic would you like me to research for you?[Tool: ASK_USER] time: 6.2667s
+[Tool: SEARCH] time: 0.3561s
+[Tool: OPEN_URL] time: 0.8447s
+DeepSeek-R1 is a reasoning model designed to demonstrate strong performance in math, code, and reasoning tasks, comparable to OpenAI's models. It was developed by the research community known as DeepSeek-AI. DeepSeek-R1 models aim to incentivize reasoning capabilities in language models through reinforcement learning (RL) without relying on supervised fine-tuning, achieving significant advancements in reasoning methodologies.
+
+Here are some key points about DeepSeek-R1:
+
+1. **Development and Architecture**: DeepSeek-R1, along with its predecessor DeepSeek-R1-Zero, uses large-scale reinforcement learning to enhance reasoning capability. The initial model, DeepSeek-R1-Zero, faced issues like endless repetition and language mixing. These were addressed in DeepSeek-R1 by incorporating cold-start data before reinforcement learning.
+
+2. **Open Source and Community Support**: DeepSeek-R1 is open-sourced to aid the research community, with multiple derivatives of varying model sizes - from 1.5B to 70B parameters. These models are available for download and further research, supporting commercial use and allowing modifications, including distillation for training other large language models (LLMs).
+
+3. **Methodology**: The development pipeline for DeepSeek-R1 includes stages of reinforcement learning and supervised fine-tuning, aiming to discover and align improved reasoning patterns. Notably, different distillation methods have been used to create smaller yet powerful models.
+
+4. **Performance**: DeepSeek-R1 demonstrates improved performance over various benchmarks compared to other models, with strong results in English, coding, and mathematical tasks. It provides a unique opportunity for leveraging reasoning data to finetune dense models.
+
+5. **Usage**: For best performance, DeepSeek-R1 series models recommend specific configurations in terms of model temperature and process directives when tackling tasks like mathematical problems.
+
+6. **Feedback Loop in Development**: The models are equipped to engage in self-verification and reflection, plus generating long chains of thought (CoT) for problem-solving.
+
+7. **Contact and Access**: For further exploration and direct interaction, DeepSeek-R1 can be accessed through the DeepSeek website or by using API services provided.
+
+For more details, visit the [DeepSeek GitHub repository](https://github.com/deepseek-ai/DeepSeek-R1) or read their [arXiv paper](https://arxiv.org/abs/2501.12948).
+
+Would you like more specific details or to end the current run?[Tool: TELL_USER] time: 0.0016s
+Would you like more specific details or to end the current run?[Tool: ASK_USER] time: 34.6492s

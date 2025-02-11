@@ -1,0 +1,6 @@
+Running Agent: Research Agent
+What topic would you like me to research for you?[Tool: ASK_USER] time: 3.3151s
+[Tool: SEARCH] time: 0.4054s
+[Tool: OPEN_URL] time: 0.7995s
+DeepSeek-R1 is a first-generation reasoning model that employs large-scale reinforcement learning (RL) to enhance reasoning capabilities without relying on supervised fine-tuning. The model achieves performance comparable to OpenAI-o1 in math, code, and reasoning tasks and is open-sourced to support the research community. Two models in this series, DeepSeek-R1-Zero and DeepSeek-R1, were developed through a pipeline that incorporates RL stages to improve reasoning patterns and align with human preferences. The model's reasoning patterns can also be distilled into smaller models, achieving competitive results on various benchmarks. Open-source checkpoints derived from the DeepSeek-R1 model, including models based on Qwen and Llama, are available to researchers. The DeepSeek-R1 series supports commercial use under the MIT License and is designed to be used in a manner similar to Qwen or Llama models. Further information and usage guidance are available on the DeepSeek GitHub repository.[Tool: TELL_USER] time: 0.0007s
+What topic would you like me to research for you?

@@ -24,18 +24,15 @@ class StreamingLogger:
         self.terminal.flush()
         self.log_file.flush()
 
-def get_agent_class(agent_name: str, silent: bool = False) -> Optional[Type]:
-    """Import and return the agent class from an agent module."""
+def get_agent_factory(agent_name: str, silent: bool = False) -> Optional[callable]:
+    """Import and return the create_agent function from an agent module."""
     try:
         module = importlib.import_module(f"agents.{agent_name}.agent")
-        for name, obj in inspect.getmembers(module):
-            if inspect.isfunction(obj) or inspect.ismethod(obj) or inspect.isclass(obj) or inspect.ismodule(obj):
-                continue
-            if name.endswith('agent'):
-                return obj
+        if hasattr(module, 'create_agent'):
+            return module.create_agent
     except ImportError:
         if not silent:
-            print(f"Could not load agent class for {agent_name}")
+            print(f"Could not load agent for {agent_name}")
         return None
     return None
 
@@ -45,8 +42,8 @@ def get_available_agents() -> List[Tuple[str, Optional[str]]]:
     agents_dir = os.path.join(os.path.dirname(__file__), "agents")
     for item in os.listdir(agents_dir):
         if os.path.isdir(os.path.join(agents_dir, item)) and not item.startswith('__'):
-            agent_class = get_agent_class(item, silent=True)
-            description = agent_class.__doc__ if agent_class and agent_class.__doc__ else None
+            agent_factory = get_agent_factory(item, silent=True)
+            description = agent_factory.__doc__ if agent_factory and agent_factory.__doc__ else None
             agents.append((item, description))
     return sorted(agents, key=lambda x: x[0])
 
@@ -87,9 +84,9 @@ def main():
 
     # Load and run agent
     print(f"Loading agent: {agent_name}")
-    agent_class = get_agent_class(agent_name)
-    if not agent_class:
-        print(f"Could not load the agent class for {agent_name}")
+    agent_factory = get_agent_factory(agent_name)
+    if not agent_factory:
+        print(f"Could not load the agent for {agent_name}")
         return
 
     # Select mode
@@ -146,7 +143,7 @@ def main():
     with open(run_log, "w") as log_file:
         logger = StreamingLogger(log_file)
         logger.write(f"Running Agent: {display_name}\n")
-        agent = agent_class(manifesto=manifesto, memory="")
+        agent = agent_factory(manifesto=manifesto, memory="")
         agent.log_handler = logger.write
         if mode == 2:
             agent.debug_verbose = True

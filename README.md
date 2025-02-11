@@ -36,19 +36,21 @@ Here's a simple example of creating an agent:
 
 ```python
 from lib.base import Agent
+from lib.tools import search, open_url
 
-# Define your tools
-def calculator(input_str: str) -> str:
-    return str(eval(input_str))
-
-# Create an agent with a manifesto and tools
-agent = Agent(manifesto="You are an AI agent that is called in a loop and can only interact with the user using tools. Call tools using the format <TOOL:TOOL_NAME>TOOL_INPUT</TOOL>. You can access the following tools: ASK_USER, TELL_USER, END_RUN, CALCULATE. Your purpose is to answer the user's questions using your tools.",
-    memory="",  # Initial memory state
-    tools={"CALCULATE": calculator}
-)
-
-# Run the agent
-result = agent.run()
+def create_agent(
+    manifesto: str,
+    memory: str,
+) -> Agent:
+    return Agent(
+        manifesto=manifesto,
+        memory=memory,
+        tools={
+            'SEARCH': search,
+            'OPEN_URL': open_url
+        },
+        name="ResearchAgent",
+    )
 ```
 
 ## Project Tree

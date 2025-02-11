@@ -1,6 +1,7 @@
 from typing import Dict, Optional, Tuple, Callable, List, Any, Union
 import litellm
 import re
+import time
 
 def get_multiline_input() -> str:
     buffer = []
@@ -23,9 +24,11 @@ class Agent():
       memory: str,
       tools: Dict[str, Callable],
       model_name: str = "openai/gpt-4o",
+      name: str = "Agent-" + str(int(time.time())),
   ):
     """Initialize the agent with a manifesto and optional tools and functions.
     """
+    self.name = name
     self.llm_call_count = 0
     self.debug_verbose = False
     self.model_name = model_name
@@ -51,13 +54,11 @@ class Agent():
   def update_memory(self, text: str) -> None:
     self.memory = text
 
-  def tool_detection(self, text: str) -> Tuple[Optional[str], Optional[str]]:
-    """Detect if there is a tool call in the text and return the tool name and input."""
+  def tool_detection(self, text: str) -> List[Tuple[str, str]]:
+    """Detect all tool calls in the text and return a list of (tool_name, tool_input) tuples."""
     pattern = r'<TOOL: ([A-Z_]+)>([\s\S]*?)</TOOL>'
-    match = re.search(pattern, text)
-    if match:
-        return match.group(1), match.group(2)
-    return None, None
+    matches = re.finditer(pattern, text)
+    return [(match.group(1), match.group(2)) for match in matches]
 
   def llm_call(self, prompt: str, **kwargs) -> str:
     self.llm_call_count += 1
@@ -72,15 +73,25 @@ class Agent():
     while True:
       self._last_tool_called = None
       response = self.llm_call(self.manifesto + "\n" + self.memory)
-      self.memory += "\n[" + self.__class__.__name__ + " - " + str(self.llm_call_count) + "]\n" + response
+      self.memory += "\n[" + self.name + " - " + str(self.llm_call_count) + "]\n" + response
 
       # tool_detection
-      tool_name, tool_args = self.tool_detection(response)
-      if tool_name:
+      tool_calls = self.tool_detection(response)
+      for tool_name, tool_args in tool_calls:
         if tool := self.tools.get(tool_name):
           self._last_tool_called = tool_name
           try:
+            # Log tool execution
+            start_time = time.time()
             result = tool(tool_args)
+            execution_time = time.time() - start_time
+
+            if self.debug_verbose:
+                tool_log = f"\n[Tool: {tool_name}]\n  Input: {tool_args}\n  Result: {result}\n  Time: {execution_time:.4f}s\n"
+            else:
+                tool_log = f"[Tool: {tool_name}] time: {execution_time:.4f}s\n"
+            self.log_handler(tool_log)
+
             self.memory += "\nTool Result [" + result + "]\n"
           except Exception as e:
             self.memory += "\nTool Error [" + str(e) + "]\n"

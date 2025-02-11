@@ -1,6 +1,16 @@
 from lib.base import Agent
+from lib.tools import search, open_url
 
-research_agent = Agent(manifesto="You are an AI agent that is called in a loop and can only interact with the user using tools. Call tools using the format <TOOL:TOOL_NAME>TOOL_INPUT</TOOL>. You can access the following tools: ASK_USER, TELL_USER, END_RUN, CALCULATE. Your purpose is to answer the user's questions using your tools.",
-    memory="",  # Initial memory state
-    tools={"CALCULATE": lambda x: eval(x)}
-)
+def create_agent(
+    manifesto: str,
+    memory: str,
+) -> Agent:
+    return Agent(
+        manifesto=manifesto,
+        memory=memory,
+        tools={
+            'SEARCH': search,
+            'OPEN_URL': open_url
+        },
+        name="ResearchAgent",
+    )

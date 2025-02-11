@@ -1,7 +1,6 @@
 from typing import Dict, Optional, Tuple, Callable, List, Any, Union
 import litellm
 import re
-from .meta import AgentMeta
 
 def get_multiline_input() -> str:
     buffer = []
@@ -15,21 +14,7 @@ def get_multiline_input() -> str:
     return '\n'.join(buffer)
 
 class Agent():
-  """A flexible agent framework that manages conversations with an LLM while handling tool calls and memory management.
-
-  Attributes:
-    debug_verbose: If True, logs detailed information about method calls including inputs and outputs.
-    model_name: Name of the language model to use.
-    manifesto: A string that describes the agent's purpose and capabilities.
-    memory: A string that represents the agent's initial memory state. Can be the empty string.
-    tools: An optional dictionary of tool names to tool functions.
-    _ask_user_impl: Function that handles user questions. Default prompts and gets input from console. Can be overridden.
-    _tell_user_impl: Function that handles user answers. Default prints to console. Can be overridden.
-    _log_handler_impl: Function that handles log messages. Default prints to console. Can be overridden.
-    llm_call_count: Number of times the LLM has been called.
-    llm: The LLM instance used by the agent.
-    ended: If True, the agent has ended its conversation.
-
+  """A simple agent implementation that calls an LLM in a loop, appending responses to its context window, and interacts with the user and the external world via tools (eg. ASK_USER, TELL_USER, END_RUN).
   """
 
   def __init__(
@@ -40,25 +25,20 @@ class Agent():
       model_name: str = "openai/gpt-4o",
   ):
     """Initialize the agent with a manifesto and optional tools and functions.
-
-    Args:
-      model_name: Name of the language model to use
-      manifesto: A string that describes the agent's purpose and capabilities.
-      memory: A string that represents the agent's initial memory state. Can be the empty string.
-      tools: An optional dictionary of tool names to tool functions.
-      model_name: Name of the language model to use
     """
     self.llm_call_count = 0
     self.debug_verbose = False
     self.model_name = model_name
     self.manifesto = manifesto
     self.memory = memory
-    self._log_handler_impl = lambda msg: (self.log_handler(msg), "")[1]
-    self._ask_user_impl = lambda q: (self.log_handler(q), get_multiline_input())[1]
-    self._tell_user_impl = lambda m: (self.log_handler(m), "")[1]
+    self.log_handler = lambda msg: print(msg)
+    self.ask_user = lambda q: (self.log_handler(q), get_multiline_input())[1]
+    self.tell_user = lambda m: (self.log_handler(m), "")[1]
+    self.end_run = lambda _: (setattr(self, "ended", True), "")[1]
+
     self.ended = False
 
-    # Merge provided tools with built-in tools
+    # Merge provided tools with default tools
     self.tools = {
         "ASK_USER": self.ask_user,
         "TELL_USER": self.tell_user,
@@ -69,11 +49,7 @@ class Agent():
     self._last_tool_called: Optional[str] = None
 
   def update_memory(self, text: str) -> None:
-    # if memory tracing is not enabled, update memory directly
     self.memory = text
-
-  def compose_request(self) -> str:
-    return self.manifesto + "\n" + self.memory
 
   def tool_detection(self, text: str) -> Tuple[Optional[str], Optional[str]]:
     """Detect if there is a tool call in the text and return the tool name and input."""
@@ -95,8 +71,8 @@ class Agent():
     # agent loop
     while True:
       self._last_tool_called = None
-      response = self.llm_call(self.compose_request())
-      self.update_memory(self.memory + "\n[" + self.__class__.__name__ + " - " + str(self.llm_call_count) + "]\n" + response)
+      response = self.llm_call(self.manifesto + "\n" + self.memory)
+      self.memory += "\n[" + self.__class__.__name__ + " - " + str(self.llm_call_count) + "]\n" + response
 
       # tool_detection
       tool_name, tool_args = self.tool_detection(response)
@@ -105,30 +81,14 @@ class Agent():
           self._last_tool_called = tool_name
           try:
             result = tool(tool_args)
-            self.update_memory(self.memory + "\nTool Result [" + result + "]\n")
+            self.memory += "\nTool Result [" + result + "]\n"
           except Exception as e:
-            self.update_memory(self.memory + "\nTool Error [" + str(e) + "]\n")
+            self.memory += "\nTool Error [" + str(e) + "]\n"
         else:
           self.update_memory(self.memory + "\nTool Not Found [" + tool_name + "]\n")
 
-      # check end condition at end of loop
+      # check end condition
       if self.ended:
         break
 
     return self.memory
-
-  def end_run(self, _: str) -> str:
-    self.ended = True
-    return ""
-
-  def ask_user(self, question: str) -> str:
-    """Ask the user a question and return their response."""
-    return self._ask_user_impl(question)
-
-  def tell_user(self, message: str) -> str:
-    """Tell the user a message."""
-    return self._tell_user_impl(message)
-
-  def log_handler(self, message: str) -> str:
-    """Handle log messages."""
-    return self._log_handler_impl(message)

@@ -29,7 +29,9 @@ def get_agent_class(agent_name: str, silent: bool = False) -> Optional[Type]:
     try:
         module = importlib.import_module(f"agents.{agent_name}.agent")
         for name, obj in inspect.getmembers(module):
-            if inspect.isclass(obj) and name.endswith('Agent') and obj.__module__ == module.__name__:
+            if inspect.isfunction(obj) or inspect.ismethod(obj) or inspect.isclass(obj) or inspect.ismodule(obj):
+                continue
+            if name.endswith('agent'):
                 return obj
     except ImportError:
         if not silent:
@@ -87,7 +89,7 @@ def main():
     print(f"Loading agent: {agent_name}")
     agent_class = get_agent_class(agent_name)
     if not agent_class:
-        print(f"Could not load agent class for {agent_name}")
+        print(f"Could not load the agent class for {agent_name}")
         return
 
     # Select mode

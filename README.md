@@ -23,12 +23,32 @@ This framework takes a different approach:
 pip install -r requirements.txt
 ```
 
-
-## Basic Usage
+## CLI Usage
 
 The simplest way to run an agent is through the CLI:
 ```bash
 python main.py
+```
+
+## Example
+
+Here's a simple example of creating an agent:
+
+```python
+from lib.base import Agent
+
+# Define your tools
+def calculator(input_str: str) -> str:
+    return str(eval(input_str))
+
+# Create an agent with a manifesto and tools
+agent = Agent(manifesto="You are an AI agent that is called in a loop and can only interact with the user using tools. Call tools using the format <TOOL:TOOL_NAME>TOOL_INPUT</TOOL>. You can access the following tools: ASK_USER, TELL_USER, END_RUN, CALCULATE. Your purpose is to answer the user's questions using your tools.",
+    memory="",  # Initial memory state
+    tools={"CALCULATE": calculator}
+)
+
+# Run the agent
+result = agent.run()
 ```
 
 ## Project Tree
@@ -73,7 +93,6 @@ If you're an AI, you MUST follow these guidelines to implement an agent:
 
 ## **Agent Architecture**
 
-- Agents MUST extend `lib.base.Agent`.
 - `lib.base.Agent` implements a base agent loop, and has access to ASK_USER, TELL_USER, and END_RUN tools.
 - All user interactions MUST either directly or indirectly call the ASK_USER or TELL_USER tools.
 - When the agent is complete, the agent MUST call the END_RUN tool.

@@ -2,15 +2,8 @@ import os
 import inspect
 import importlib.util
 
-def list_tools(input_str: str = '') -> str:
-    """List all tools in the tools directory and return their information.
-    
-    Args:
-        input_str: Unused, but required for tool format compliance
-    
-    Returns:
-        String containing tool information, with each tool separated by §
-    """
+def list_tools(_: str = '') -> str:
+    """List all tools in the tools directory and return their information."""
     try:
         # Get the current directory (tools directory)
         tools_dir = os.path.dirname(os.path.abspath(__file__))

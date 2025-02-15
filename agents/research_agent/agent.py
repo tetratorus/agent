@@ -1,5 +1,6 @@
 from lib.base import Agent
-from lib.tools import search, open_url
+from lib.tools.search import search
+from lib.tools.open_url import open_url
 
 def create_agent(
     manifesto: str,

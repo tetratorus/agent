@@ -57,35 +57,21 @@ def create_agent(
 
 ```bash
 agent/
+├── .codeiumignore
+├── .gitignore
+├── .windsurfrules
 ├── lib/
 │   ├── base.py      # Core agent implementation
-│   └── meta.py      # Debug log wrapper
+│   └── tools/       # Tool implementations
 ├── agents/          # Specific agent implementations
-│   ├── xxx_agent/
-│   │   ├── agent.py                # Agent implementation
-│   │   ├── manifestos/             # Generated manifestos
-│   │   │   ├── default_manifesto   # Default manifesto
-│   │   │   ├── manifesto_xxx       # Variation of manifesto
-│   │   │   └── manifesto_yyy
-│   │   ├── runs/                   # Normal agent run outputs
-│   │   │   ├── run_log_1           # Run log
-│   │   │   └── run_log_2
-│   │   ├── scenarios/              # Generated scenarios
-│   │   │   ├── scenario_aaa        # Scenario to simulate for xxx_agent
-│   │   │   └── scenario_bbb
-│   │   └── simulations/            # Scenario simulation outputs
-│   │       ├── simulation_scenario_aaa/     # Scenario_aaa simulation logs
-│   │       │   ├── simulation_log_1         # Simulation log
-│   │       │   └── simulation_log_2
-│   │       └── simulation_scenario_bbb/
-│   └── yyy_agent/
-│       ├── agent.py
-│       ├── manifestos/
-│       ├── scenarios/
-│       └── simulations/
-├── main.py             # Main runner with CLI interface
-├── requirements.txt    # Dependencies
-└── README.md           # Project description and instructions
+│   ├── agent_definition_agent/
+│   │   └── agent.py
+│   └── research_agent/
+│       └── agent.py
+├── clean.py         # Cleanup script
+├── main.py         # Main runner with CLI interface
+├── requirements.txt # Dependencies
+└── README.md       # Project description and instructions
 ```
 
 <details>

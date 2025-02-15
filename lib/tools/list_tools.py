@@ -2,8 +2,15 @@ import os
 import inspect
 import importlib.util
 
-def list_tools() -> str:
-    """List all tools in the tools directory and return their information."""
+def list_tools(input_str: str = '') -> str:
+    """List all tools in the tools directory and return their information.
+    
+    Args:
+        input_str: Unused, but required for tool format compliance
+    
+    Returns:
+        String containing tool information, with each tool separated by §
+    """
     try:
         # Get the current directory (tools directory)
         tools_dir = os.path.dirname(os.path.abspath(__file__))
@@ -32,10 +39,10 @@ def list_tools() -> str:
                     tool_info.append(
                         f"File: {file_name}\n"
                         f"Function: {func_name}{sig}\n"
-                        f"Documentation: {doc}\n"
+                        f"Documentation: {doc}"
                     )
         
-        return '\n'.join(tool_info) if tool_info else 'No tools found'
+        return '§'.join(tool_info) if tool_info else 'No tools found'
         
     except Exception as e:
         return f"Error listing tools: {str(e)}"

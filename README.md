@@ -53,21 +53,32 @@ def create_agent(
     )
 ```
 
+## Tools
+Tools live in the lib/tools folder
+Tools MUST be called by using the format `<TOOL: TOOL_NAME>TOOL_INPUT</TOOL>`
+AS such, tools must only have a single string input, and return a single string output.
+For tools that require multiple inputs and outputs, use the "§" as a delimiter: `<TOOL: TOOL_NAME>TOOL_INPUT1§TOOL_INPUT2</TOOL> -> TOOL_OUTPUT1§TOOL_OUTPUT2`
+
 ## Project Tree
 
 ```bash
 agent/
-├── .codeiumignore
-├── .gitignore
-├── .windsurfrules
 ├── lib/
 │   ├── base.py      # Core agent implementation
+│   ├── debug.py     # Debugging utilities
+│   ├── meta.py      # Meta-programming utilities
 │   └── tools/       # Tool implementations
+│       ├── list_tools.py
+│       ├── open_url.py
+│       └── search.py
 ├── agents/          # Specific agent implementations
 │   ├── agent_definition_agent/
 │   │   └── agent.py
 │   └── research_agent/
-│       └── agent.py
+│       ├── agent.py
+│       ├── manifestos/
+│       │   └── default_manifesto
+│       └── runs/
 ├── clean.py         # Cleanup script
 ├── main.py         # Main runner with CLI interface
 ├── requirements.txt # Dependencies

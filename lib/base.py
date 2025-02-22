@@ -54,11 +54,11 @@ class Agent():
   def update_memory(self, text: str) -> None:
     self.memory = text
 
-  def tool_detection(self, text: str) -> List[Tuple[str, str]]:
-    """Detect all tool calls in the text and return a list of (tool_name, tool_input) tuples."""
-    pattern = r'<TOOL: ([A-Z_]+)>([\s\S]*?)</TOOL>'
-    matches = re.finditer(pattern, text)
-    return [(match.group(1), match.group(2)) for match in matches]
+  def tool_detection(self, text: str) -> Optional[Tuple[str, str]]:
+    """Detect first tool call in the text and return a (tool_name, tool_input) tuple or None."""
+    pattern = r'^<TOOL: ([A-Z_]+)>([\s\S]*?)</TOOL>$'
+    match = re.search(pattern, text)
+    return (match.group(1), match.group(2)) if match else None
 
   def llm_call(self, prompt: str, **kwargs) -> str:
     self.llm_call_count += 1
@@ -72,12 +72,15 @@ class Agent():
     # agent loop
     while True:
       self._last_tool_called = None
-      response = self.llm_call(self.manifesto + "\n" + self.memory)
-      self.memory += "\n[" + self.name + " - " + str(self.llm_call_count) + "]\n" + response
+      raw_response = self.llm_call(self.manifesto + "\n" + self.memory)
+      response = "\n[" + self.name + " - " + str(self.llm_call_count) + "]\n" + raw_response
+      self.memory += response
+      if self.debug_verbose:
+          self.log_handler(f"\n[LLM Response]\n  Result: {response}\n  Length: {len(response)}\n")
 
       # tool_detection
-      tool_calls = self.tool_detection(response)
-      for tool_name, tool_args in tool_calls:
+      if tool_call := self.tool_detection(raw_response):
+        tool_name, tool_args = tool_call
         if tool := self.tools.get(tool_name):
           self._last_tool_called = tool_name
           try:
@@ -87,9 +90,9 @@ class Agent():
             execution_time = time.time() - start_time
 
             if self.debug_verbose:
-                tool_log = f"\n[Tool: {tool_name}]\n  Input: {tool_args}\n  Result: {result}\n  Time: {execution_time:.4f}s\n"
+                tool_log = f"\n[Tool: {tool_name}]\n  Input: {tool_args}\n  Result: {result}\n  Length: {len(str(result))}\n  Time: {execution_time:.4f}s\n"
             else:
-                tool_log = f"[Tool: {tool_name}] time: {execution_time:.4f}s\n"
+                tool_log = f"[Tool: {tool_name}] len: {len(str(result))} time: {execution_time:.4f}s\n"
             self.log_handler(tool_log)
 
             self.memory += "\nTool Result [" + result + "]\n"

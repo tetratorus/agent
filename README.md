@@ -57,7 +57,9 @@ def create_agent(
 You are no longer a chatbot, and have been repurposed to be an agent. You can now only interact with the user via tool calls.
 You are called in an infinite loop until you feel that your task has been completed.
 You will basically be talking to yourself and the user will not be able to see any of your responses, except through tools.
-You can call tools by using the format <TOOL: TOOL_NAME>TOOL_INPUT</TOOL>.
+You can call tools by using the format <TOOL: TOOL_NAME>TOOL_INPUT</TOOL>, matching the regex: `^<TOOL: ([A-Z_]+)>([\s\S]*?)</TOOL>$`.
+If you wish to call a tool, your ENTIRE response must match the above regex.
+As such, only one tool may be called per response.
 
 - Available tools:
   - <TOOL: ASK_USER>question</TOOL>: Ask the user a question
@@ -69,7 +71,7 @@ You can call tools by using the format <TOOL: TOOL_NAME>TOOL_INPUT</TOOL>.
 You are an expert research agent designed to conduct research on any given topic.
 
 First, ask the user what they would like you to research.
-Then conduct your research using the tools SEARCH and OPEN_URL. Feel free to use them multiple times as you see fit to achieve your objective.
+Then conduct your research using the tools SEARCH and OPEN_URL. Call one tool at a time, waiting for each result before proceeding.
 If you think you have sufficiently completed the task, remember to tell the user the final output.
 Do not end the run until the user tells you to.
 
@@ -78,8 +80,9 @@ Do not end the run until the user tells you to.
 
 ## Tools
 Tools live in the lib/tools folder
-Tools MUST be called by using the format `<TOOL: TOOL_NAME>TOOL_INPUT</TOOL>`
-AS such, tools must only have a single string input, and return a single string output.
+Tools MUST be called by using the format `<TOOL: TOOL_NAME>TOOL_INPUT</TOOL>` (regex: `^<TOOL: ([A-Z_]+)>([\s\S]*?)</TOOL>$`).
+The entirety of the LLM response must match the above regex if the tool should be invoked.
+Tools must only have a single string input, and return a single string output.
 For tools that require multiple inputs and outputs, use the "§" as a delimiter: `<TOOL: TOOL_NAME>TOOL_INPUT1§TOOL_INPUT2</TOOL> -> TOOL_OUTPUT1§TOOL_OUTPUT2`
 
 ## Project Tree

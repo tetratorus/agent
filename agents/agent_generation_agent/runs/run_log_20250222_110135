@@ -1,4 +1,0 @@
-Running Agent: Agent Generation Agent
-[Tool: READ_BASE_AGENT_IMPLEMENTATION] time: 0.0003s
-What is the name of the agent you would like to implement, and what is its purpose?What is the name of the agent you would like to implement, and what is its purpose?Could you please provide the name and the purpose of the agent you would like to implement?It appears there is an issue gathering input. Please provide the name of the agent you would like to implement and its purpose via any available means, and we can proceed from there.[Tool: TELL_USER] time: 0.0002s
-What is the name and purpose of the agent you would like to implement?Due to an issue with the input tool, please manually provide the name and purpose of the agent you want to implement. You can provide this information by replying directly here.[Tool: TELL_USER] time: 0.0002s

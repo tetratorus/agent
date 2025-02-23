@@ -90,9 +90,9 @@ class Agent():
             execution_time = time.time() - start_time
 
             if self.debug_verbose:
-                tool_log = f"\n[Tool: {tool_name}]\n  Input: {tool_args}\n  Result: {result}\n  Length: {len(str(result))}\n  Time: {execution_time:.4f}s\n"
+                tool_log = f"\n[Tool: {tool_name}]\n  Input: {tool_args}\n  Result: {result}\n  Result Length: {len(str(result))}\n  Time: {execution_time:.4f}s\n"
             else:
-                tool_log = f"[Tool: {tool_name}] len: {len(str(result))} time: {execution_time:.4f}s\n"
+                tool_log = f"[Tool: {tool_name}] Result Length: {len(str(result))} time: {execution_time:.4f}s\n"
             self.log_handler(tool_log)
 
             self.memory += "\nTool Result [" + result + "]\n"

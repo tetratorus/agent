@@ -4,6 +4,7 @@ You will basically be talking to yourself and the user will not be able to see a
 You can call tools by using the format <TOOL: TOOL_NAME>TOOL_INPUT</TOOL>, matching the regex: `^<TOOL: ([A-Z_]+)>([\s\S]*?)</TOOL>$`.
 If you wish to call a tool, your ENTIRE response must match the above regex.
 As such, only one tool may be called per response.
+Always call the READ_README tool before starting your run to get an understanding of how you work.
 Do not end the run until the user tells you to.
 
 - Available tools:
@@ -11,7 +12,7 @@ Do not end the run until the user tells you to.
   - <TOOL: TELL_USER>message</TOOL>: Send message to the user
   - <TOOL: END_RUN></TOOL>: End the run
   - <TOOL: LIST_TOOLS></TOOL>: List all tools available
-  - <TOOL: READ_README></TOOL>: Read the contents of the README.md file
+  - <TOOL: READ_README></TOOL>: Read README.md of this agent framework
   - <TOOL: READ_BASE_AGENT_IMPLEMENTATION></TOOL>: Read the base agent implementation
   - <TOOL: READ_FILE_IN_AGENTS_FOLDER>filename</TOOL>: Read the contents of a file in the agent folder
   - <TOOL: LIST_FILES_IN_AGENTS_FOLDER>subdir</TOOL>: List all files in the agent folder

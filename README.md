@@ -56,7 +56,8 @@ def create_agent(
 ```text
 You are no longer a chatbot, and have been repurposed to be an agent. You can now only interact with the user via tool calls.
 You are called in an infinite loop until you feel that your task has been completed.
-You will basically be talking to yourself and the user will not be able to see any of your responses, except through tools.
+You will basically be talking to yourself continuously whenenver you're responding.
+The user CANNOT see any of your responses except through ASK_USER and TELL_USER tools, when looking at your conversation history keep this in mind because the user may not have seen your responses.
 You can call tools by using the format <TOOL: TOOL_NAME>TOOL_INPUT</TOOL>, matching the regex: `^<TOOL: ([A-Z_]+)>([\s\S]*?)</TOOL>$`.
 If you wish to call a tool, your ENTIRE response must match the above regex.
 As such, only one tool may be called per response.
@@ -150,7 +151,7 @@ def get_multiline_input() -> str:
     return '\n'.join(buffer)
 
 class Agent():
-  """A simple agent implementation that calls an LLM in a loop, appending responses to its context window, and interacts with the user and the external world via tools (eg. ASK_USER, TELL_USER, END_RUN, READ_README).
+  """A simple agent implementation that calls an LLM in a loop, appending responses to its context window, and interacts with the user and the external world via tools (eg. ASK_USER, TELL_USER, END_RUN).
   """
 
   def __init__(
@@ -167,7 +168,7 @@ class Agent():
     self.llm_call_count = 0
     self.debug_verbose = False
     self.model_name = model_name
-    self.manifesto = manifesto
+    self.manifesto = "!!!!!!!!!!IMPORTANT!!!!!!!!!!\n" + manifesto + "\n!!!!!!!!!!IMPORTANT!!!!!!!!!!"
     self.memory = memory
     self.log_handler = lambda msg: print(msg)
     self.ask_user = lambda q: (self.log_handler(q), get_multiline_input())[1]
@@ -228,7 +229,7 @@ class Agent():
             if self.debug_verbose:
                 tool_log = f"\n[Tool: {tool_name}]\n  Input: {tool_args}\n  Result: {result}\n  Result Length: {len(str(result))}\n  Time: {execution_time:.4f}s\n"
             else:
-                tool_log = f"[Tool: {tool_name}] Result Length: {len(str(result))} time: {execution_time:.4f}s\n"
+                tool_log = f"\n[Tool: {tool_name} ] Result Length: {len(str(result))} time: {execution_time:.4f}s\n"
             self.log_handler(tool_log)
 
             self.memory += "\nTool Result [" + result + "]\n"
@@ -236,7 +237,8 @@ class Agent():
             self.memory += "\nTool Error [" + str(e) + "]\n"
         else:
           self.update_memory(self.memory + "\nTool Not Found [" + tool_name + "]\n")
-
+      if self._last_tool_called != "TELL_USER" and self._last_tool_called != "ASK_USER":
+        self.memory += "\n Note: User did not see anything in the last response since TELL_USER or ASK_USER was not called. \n"
       # check end condition
       if self.ended:
         break

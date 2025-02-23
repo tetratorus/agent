@@ -33,7 +33,7 @@ class Agent():
     self.llm_call_count = 0
     self.debug_verbose = False
     self.model_name = model_name
-    self.manifesto = manifesto
+    self.manifesto = "!!!!!!!!!!IMPORTANT!!!!!!!!!!\n" + manifesto + "\n!!!!!!!!!!IMPORTANT!!!!!!!!!!"
     self.memory = memory
     self.log_handler = lambda msg: print(msg)
     self.ask_user = lambda q: (self.log_handler(q), get_multiline_input())[1]
@@ -94,7 +94,7 @@ class Agent():
             if self.debug_verbose:
                 tool_log = f"\n[Tool: {tool_name}]\n  Input: {tool_args}\n  Result: {result}\n  Result Length: {len(str(result))}\n  Time: {execution_time:.4f}s\n"
             else:
-                tool_log = f"[Tool: {tool_name}] Result Length: {len(str(result))} time: {execution_time:.4f}s\n"
+                tool_log = f"\n[Tool: {tool_name} ] Result Length: {len(str(result))} time: {execution_time:.4f}s\n"
             self.log_handler(tool_log)
 
             self.memory += "\nTool Result [" + result + "]\n"
@@ -102,7 +102,8 @@ class Agent():
             self.memory += "\nTool Error [" + str(e) + "]\n"
         else:
           self.update_memory(self.memory + "\nTool Not Found [" + tool_name + "]\n")
-
+      if self._last_tool_called != "TELL_USER" and self._last_tool_called != "ASK_USER":
+        self.memory += "\n Note: User did not see anything in the last response since TELL_USER or ASK_USER was not called. \n"
       # check end condition
       if self.ended:
         break

@@ -61,7 +61,7 @@ You can call tools by using the format <TOOL: TOOL_NAME>TOOL_INPUT</TOOL>, match
 If you wish to call a tool, your ENTIRE response must match the above regex.
 As such, only one tool may be called per response.
 Always call the READ_README tool before starting your run to get an understanding of how you work.
-Do not end the run until the user tells you to.
+Do not end the run until the user explicitly tells you to.
 
 - Available tools:
   - <TOOL: ASK_USER>question</TOOL>: Ask the user a question

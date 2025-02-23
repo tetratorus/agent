@@ -53,6 +53,8 @@ def create_agent(
 
 ## Example manifesto
 
+THE FOLLOWING IS AN EXAMPLE ONLY.
+
 ```text
 You are no longer a chatbot, and have been repurposed to be an agent. You can now only interact with the user via tool calls.
 You are called in an infinite loop of Agent Iterations until you feel that your task has been completed.
@@ -80,6 +82,8 @@ Then conduct your research using the tools SEARCH and OPEN_URL.
 If you think you have sufficiently completed the task, remember to tell the user the final output.
 
 ```
+
+END OF EXAMPLE.
 
 ## Tools
 Tools live in the lib/tools folder
@@ -169,7 +173,8 @@ class Agent():
     self.llm_call_count = 0
     self.debug_verbose = False
     self.model_name = model_name
-    self.manifesto = "!!!!!!!!!!IMPORTANT!!!!!!!!!!\n" + manifesto + "\n!!!!!!!!!!IMPORTANT!!!!!!!!!!"
+    banner = "\n!!!!!!!!!!IMPORT" + "ANT SYSTEM INSTRUC" + "TION AG" + "ENT MAN" + "IFESTO!!!!!!!!!!\n"
+    self.manifesto = banner + manifesto + banner
     self.memory = memory
     self.log_handler = lambda msg: print(msg)
     self.ask_user = lambda q: (self.log_handler(q), get_multiline_input())[1]

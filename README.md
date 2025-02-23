@@ -209,12 +209,16 @@ class Agent():
     # agent loop
     while True:
       self._last_tool_called = None
+      llm_call_start_time = time.time()
       raw_response = self.llm_call(self.manifesto + "\n" + self.memory)
+      llm_call_end_time = time.time()
+      llm_call_time = llm_call_end_time - llm_call_start_time
       response = "\n[" + self.name + " - " + str(self.llm_call_count) + "]\n" + raw_response
       self.memory += response
       if self.debug_verbose:
-          self.log_handler(f"\n[LLM Response]\n  Result: {response}\n  Length: {len(response)}\n")
-
+          self.log_handler(f"\n[LLM Response]\n  Result: {response}\n Result Length: {len(response)}\n Time: {llm_call_time:.4f}s\n")
+      else:
+          self.log_handler(f"\n[LLM Response] Result Length: {len(response)}\n Time: {llm_call_time:.4f}s\n")
       # tool_detection
       if tool_call := self.tool_detection(raw_response):
         tool_name, tool_args = tool_call
@@ -229,7 +233,7 @@ class Agent():
             if self.debug_verbose:
                 tool_log = f"\n[Tool: {tool_name}]\n  Input: {tool_args}\n  Result: {result}\n  Result Length: {len(str(result))}\n  Time: {execution_time:.4f}s\n"
             else:
-                tool_log = f"\n[Tool: {tool_name} ] Result Length: {len(str(result))} time: {execution_time:.4f}s\n"
+                tool_log = f"\n[Tool: {tool_name} ] Result Length: {len(str(result))} Time: {execution_time:.4f}s\n"
             self.log_handler(tool_log)
 
             self.memory += "\nTool Result [" + result + "]\n"

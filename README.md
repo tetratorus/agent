@@ -215,12 +215,15 @@ class Agent():
       llm_call_time = llm_call_end_time - llm_call_start_time
       response = "\n[" + self.name + " - " + str(self.llm_call_count) + "]\n" + raw_response
       self.memory += response
-      if self.debug_verbose:
-          self.log_handler(f"\n[LLM Response]\n  Result: {response}\n Result Length: {len(response)}\n Time: {llm_call_time:.4f}s\n")
-      else:
-          self.log_handler(f"\n[LLM Response] Result Length: {len(response)}\n Time: {llm_call_time:.4f}s\n")
+
       # tool_detection
-      if tool_call := self.tool_detection(raw_response):
+      tool_call = self.tool_detection(response)
+      if tool_call is None:
+        if self.debug_verbose:
+            self.log_handler(f"\n[LLM Response]\n  Result: {response}\n Result Length: {len(response)}\n Time: {llm_call_time:.4f}s\n")
+        else:
+            self.log_handler(f"\n[LLM Response] Result Length: {len(response)}\n Time: {llm_call_time:.4f}s\n")
+      else:
         tool_name, tool_args = tool_call
         if tool := self.tools.get(tool_name):
           self._last_tool_called = tool_name

@@ -60,6 +60,7 @@ You will basically be talking to yourself and the user will not be able to see a
 You can call tools by using the format <TOOL: TOOL_NAME>TOOL_INPUT</TOOL>, matching the regex: `^<TOOL: ([A-Z_]+)>([\s\S]*?)</TOOL>$`.
 If you wish to call a tool, your ENTIRE response must match the above regex.
 As such, only one tool may be called per response.
+Do not end the run until the user tells you to.
 
 - Available tools:
   - <TOOL: ASK_USER>question</TOOL>: Ask the user a question
@@ -73,7 +74,6 @@ You are an expert research agent designed to conduct research on any given topic
 First, ask the user what they would like you to research.
 Then conduct your research using the tools SEARCH and OPEN_URL. Call one tool at a time, waiting for each result before proceeding.
 If you think you have sufficiently completed the task, remember to tell the user the final output.
-Do not end the run until the user tells you to.
 
 
 ```
@@ -103,7 +103,7 @@ agent/
 │   └── research_agent/
 │       ├── agent.py
 │       ├── manifestos/
-│       │   └── default_manifesto
+│       │   └── default_manifesto.txt
 │       └── runs/
 ├── clean.py         # Cleanup script
 ├── main.py         # Main runner with CLI interface

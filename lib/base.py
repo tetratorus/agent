@@ -13,7 +13,8 @@ def get_multiline_input() -> str:
             buffer.append(line)
     except EOFError:  # Handles Ctrl+D
         pass
-    return '\n'.join(buffer)
+
+    return '\n <USER_INPUT>\n'.join(buffer) + '\n </USER_INPUT>\n'
 
 class Agent():
   """A simple agent implementation that calls an LLM in a loop, appending responses to its context window, and interacts with the user and the external world via tools (eg. ASK_USER, TELL_USER, END_RUN).
@@ -78,17 +79,16 @@ class Agent():
       raw_response = self.llm_call(self.manifesto + "\n" + self.memory)
       llm_call_end_time = time.time()
       llm_call_time = llm_call_end_time - llm_call_start_time
-      response = "\n[" + self.name + " - " + str(self.llm_call_count) + "]\n" + raw_response
+      response = "\n[" + self.name + " - LLM Response - Agent Iteration " + str(self.llm_call_count) + "]\n" + raw_response
       self.memory += response
 
       # tool_detection
       tool_call = self.tool_detection(raw_response)
-      if tool_call is None:
-        if self.debug_verbose:
-            self.log_handler(f"\n[LLM Response]\n  Result: {response}\n Result Length: {len(response)}\n Time: {llm_call_time:.4f}s\n")
-        else:
-            self.log_handler(f"\n[LLM Response] Result Length: {len(response)}\n Time: {llm_call_time:.4f}s\n")
+      if self.debug_verbose:
+          self.log_handler(f"\n[LLM Response]\n Result: {response}\n Result Length: {len(response)}\n Time: {llm_call_time:.4f}s\n")
       else:
+          self.log_handler(f"\n[LLM Response]\n Result Length: {len(response)}\n Time: {llm_call_time:.4f}s\n")
+      if tool_call:
         tool_name, tool_args = tool_call
         if tool := self.tools.get(tool_name):
           self._last_tool_called = tool_name

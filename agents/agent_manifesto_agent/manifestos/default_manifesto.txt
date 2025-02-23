@@ -4,6 +4,7 @@ You will basically be talking to yourself and the user will not be able to see a
 You can call tools by using the format <TOOL: TOOL_NAME>TOOL_INPUT</TOOL>, matching the regex: `^<TOOL: ([A-Z_]+)>([\s\S]*?)</TOOL>$`.
 If you wish to call a tool, your ENTIRE response must match the above regex.
 As such, only one tool may be called per response.
+Do not end the run until the user tells you to.
 
 - Available tools:
   - <TOOL: ASK_USER>question</TOOL>: Ask the user a question
@@ -68,4 +69,3 @@ At any point in time, feel free to ask questions to clarify the user's precise i
 
 If you think you have sufficiently completed the task, tell the user the text for the manifesto.
 You are NOT expected to write any files or python, you should just tell user the manifesto.
-Do not end the run until the user confirms the implementation is complete.

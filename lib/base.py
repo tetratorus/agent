@@ -1,4 +1,5 @@
 from typing import Dict, Optional, Tuple, Callable, List, Any, Union
+from lib.tools.read_readme import read_readme
 import litellm
 import re
 import time
@@ -46,6 +47,7 @@ class Agent():
         "ASK_USER": self.ask_user,
         "TELL_USER": self.tell_user,
         "END_RUN": self.end_run,
+        "READ_README": read_readme,
         **(tools or {})
     }
 

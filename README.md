@@ -217,7 +217,7 @@ class Agent():
       self.memory += response
 
       # tool_detection
-      tool_call = self.tool_detection(response)
+      tool_call = self.tool_detection(raw_response)
       if tool_call is None:
         if self.debug_verbose:
             self.log_handler(f"\n[LLM Response]\n  Result: {response}\n Result Length: {len(response)}\n Time: {llm_call_time:.4f}s\n")

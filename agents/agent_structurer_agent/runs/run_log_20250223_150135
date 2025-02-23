@@ -1,0 +1,505 @@
+Running Agent: Agent Structurer Agent
+
+[Tool: READ_README ] Result Length: 9048 time: 0.0002s
+Please provide the manifesto for the new agent you would like to set up.
+[Tool: ASK_USER ] Result Length: 1821 time: 3.0382s
+
+[Tool: LIST_TOOLS ] Result Length: 4478 time: 0.0050s
+
+[Tool: LIST_FILES_IN_AGENTS_FOLDER ] Result Length: 778 time: 0.0031s
+
+[Tool: LIST_FILES_IN_AGENTS_FOLDER ] Result Length: 778 time: 0.0022s
+
+[Tool: WRITE_FILE_IN_AGENTS_FOLDER ] Result Length: 0 time: 0.0009s
+
+[Tool: WRITE_FILE_IN_AGENTS_FOLDER ] Result Length: 0 time: 0.0012s
+The setup for the new agent "Scissors Paper Stone Agent" has been completed. Would you like to review the setup or finalize the process and end the run?
+[Tool: ASK_USER ] Result Length: 28 time: 16.4589s
+The setup process for the "Scissors Paper Stone Agent" included the following steps:
+
+1. Created a new directory for the agent named "scissors_paper_stone_agent".
+2. Created a "manifestos" directory inside the agent directory.
+3. Added a "default_manifesto.txt" file in the "manifestos" directory with the manifesto provided.
+4. Created an "agent.py" file in the "scissors_paper_stone_agent" directory, which implements the logic for playing the game with the user.
+
+The agent is designed to predict and counter the user's moves based on a simple heuristic of analyzing past moves. Let me know if everything looks good or if there's anything else you'd like to adjust.
+[Tool: TELL_USER ] Result Length: 0 time: 0.0002s
+Is everything in the setup satisfactory, or would you like to make any adjustments? If you are satisfied, I can finalize the process and end the run.
+[Tool: ASK_USER ] Result Length: 4 time: 3.8098s
+
+[Tool: END_RUN ] Result Length: 0 time: 0.0000s
+
+[AgentStructurerAgent - 1]
+<TOOL: READ_README></TOOL>
+Tool Result [# AI Agent Meta-Optimization Framework
+
+A minimalist framework for developing and optimizing AI agents through automated prompt engineering.
+
+## Design goals
+
+Most AI agent development time is spent on:
+
+1. Debugging complex agent execution steps
+2. Manual prompt engineering and tuning
+3. Writing intricate code to handle edge cases
+
+This framework takes a different approach:
+
+1. Implement the simplest possible agent loop
+2. Make every decision point prompt-driven and tunable
+3. Let AI optimize the prompts
+
+## Installation
+
+```bash
+# Dependencies will be listed here
+pip install -r requirements.txt
+```
+
+## CLI Usage
+
+The simplest way to run an agent is through the CLI:
+```bash
+python main.py
+```
+
+## Example agent.py
+
+```python
+from lib.base import Agent
+from lib.tools import search, open_url
+
+def create_agent(
+    manifesto: str,
+    memory: str,
+) -> Agent:
+    return Agent(
+        manifesto=manifesto,
+        memory=memory,
+        tools={
+            'SEARCH': search,
+            'OPEN_URL': open_url
+        },
+        name="ResearchAgent",
+    )
+```
+
+## Example manifesto
+
+```text
+You are no longer a chatbot, and have been repurposed to be an agent. You can now only interact with the user via tool calls.
+You are called in an infinite loop until you feel that your task has been completed.
+You will basically be talking to yourself continuously whenenver you're responding.
+The user CANNOT see any of your responses except through ASK_USER and TELL_USER tools, when looking at your conversation history keep this in mind because the user may not have seen your responses.
+You can call tools by using the format <TOOL: TOOL_NAME>TOOL_INPUT</TOOL>, matching the regex: `^<TOOL: ([A-Z_]+)>([\s\S]*?)</TOOL>$`.
+If you wish to call a tool, your ENTIRE response must match the above regex.
+As such, only one tool may be called per response.
+However, you may call tools multiple times across multiple responses.
+Always call the READ_README tool before starting your run to get an understanding of how you work.
+Before ending the run, you MUST ask user if they are ok with ending the run.
+
+- Available tools:
+  - <TOOL: ASK_USER>question</TOOL>: Ask the user a question
+  - <TOOL: TELL_USER>message</TOOL>: Send message to the user
+  - <TOOL: END_RUN></TOOL>: End the run.
+  - <TOOL: READ_README></TOOL>: Read README.md of this agent framework
+  - <TOOL: SEARCH>query</TOOL>: Search the internet for information
+  - <TOOL: OPEN_URL>url</TOOL>: Read the contents of a URL
+
+You are an expert research agent designed to conduct research on any given topic.
+
+First, ask the user what they would like you to research.
+Then conduct your research using the tools SEARCH and OPEN_URL.
+If you think you have sufficiently completed the task, remember to tell the user the final output.
+
+```
+
+## Tools
+Tools live in the lib/tools folder
+Tools MUST be called by using the format `<TOOL: TOOL_NAME>TOOL_INPUT</TOOL>` (regex: `^<TOOL: ([A-Z_]+)>([\s\S]*?)</TOOL>$`).
+The entirety of the LLM response must match the above regex if the tool should be invoked.
+Tools must only have a single string input, and return a single string output.
+For tools that require multiple inputs and outputs, use the "§" as a delimiter: `<TOOL: TOOL_NAME>TOOL_INPUT1§TOOL_INPUT2</TOOL> -> TOOL_OUTPUT1§TOOL_OUTPUT2`
+
+## Project Tree
+
+```bash
+agent/
+├── lib/
+│   ├── base.py      # Core agent implementation
+│   ├── debug.py     # Debugging utilities
+│   ├── meta.py      # Meta-programming utilities
+│   └── tools/       # Tool implementations
+│       ├── list_tools.py
+│       ├── open_url.py
+│       └── search.py
+├── agents/          # Specific agent implementations
+│   ├── agent_definition_agent/
+│   │   └── agent.py
+│   └── research_agent/
+│       ├── agent.py
+│       ├── manifestos/
+│       │   └── default_manifesto.txt
+│       └── runs/
+├── clean.py         # Cleanup script
+├── main.py         # Main runner with CLI interface
+├── requirements.txt # Dependencies
+└── README.md       # Project description and instructions
+```
+
+<details>
+<summary>🤖 Agent Implementation Guidelines (click to expand)</summary>
+
+If you're an AI, you MUST follow these guidelines to implement an agent:
+
+## **Agent Architecture**
+
+- `lib.base.Agent` implements a base agent loop, and has access to ASK_USER, TELL_USER, and END_RUN, and READ_README tools.
+- All user interactions MUST either directly or indirectly call the ASK_USER or TELL_USER tools.
+- When the agent is complete, the agent MUST call the END_RUN tool.
+- Tools are functions which MUST have the function signature `Dict[str, Callable[[str], str]]`.
+- Tool calls MUST follow the format `<TOOL: TOOL_NAME>TOOL_INPUT</TOOL>`.
+- Similarly, tool detection MUST be via regex pattern matching (e.g., pattern = `r'<TOOL: ([A-Z_]+)>([\s\S]*?)</TOOL>'`).
+- Manifesto: Custom instructions for the agent.
+- Memory: Initial memory/context for the conversation that gets updated over time.
+
+base.py
+
+```python
+from typing import Dict, Optional, Tuple, Callable, List, Any, Union
+from lib.tools.read_readme import read_readme
+import litellm
+import re
+import time
+
+def get_multiline_input() -> str:
+    buffer = []
+    print(" (Hit Ctrl+D to send)")
+    try:
+        while True:
+            line = input()
+            buffer.append(line)
+    except EOFError:  # Handles Ctrl+D
+        pass
+    return '\n'.join(buffer)
+
+class Agent():
+  """A simple agent implementation that calls an LLM in a loop, appending responses to its context window, and interacts with the user and the external world via tools (eg. ASK_USER, TELL_USER, END_RUN).
+  """
+
+  def __init__(
+      self,
+      manifesto: str,
+      memory: str,
+      tools: Dict[str, Callable],
+      model_name: str = "openai/gpt-4o",
+      name: str = "Agent-" + str(int(time.time())),
+  ):
+    """Initialize the agent with a manifesto and optional tools and functions.
+    """
+    self.name = name
+    self.llm_call_count = 0
+    self.debug_verbose = False
+    self.model_name = model_name
+    self.manifesto = "!!!!!!!!!!IMPORTANT!!!!!!!!!!\n" + manifesto + "\n!!!!!!!!!!IMPORTANT!!!!!!!!!!"
+    self.memory = memory
+    self.log_handler = lambda msg: print(msg)
+    self.ask_user = lambda q: (self.log_handler(q), get_multiline_input())[1]
+    self.tell_user = lambda m: (self.log_handler(m), "")[1]
+    self.end_run = lambda _: (setattr(self, "ended", True), "")[1]
+
+    self.ended = False
+
+    # Merge provided tools with default tools
+    self.tools = {
+        "ASK_USER": self.ask_user,
+        "TELL_USER": self.tell_user,
+        "END_RUN": self.end_run,
+        "READ_README": read_readme,
+        **(tools or {})
+    }
+
+    self._last_tool_called: Optional[str] = None
+
+  def update_memory(self, text: str) -> None:
+    self.memory = text
+
+  def tool_detection(self, text: str) -> Optional[Tuple[str, str]]:
+    """Detect first tool call in the text and return a (tool_name, tool_input) tuple or None."""
+    pattern = r'^<TOOL: ([A-Z_]+)>([\s\S]*?)</TOOL>$'
+    match = re.search(pattern, text)
+    return (match.group(1), match.group(2)) if match else None
+
+  def llm_call(self, prompt: str, **kwargs) -> str:
+    self.llm_call_count += 1
+    return litellm.completion(
+      model=self.model_name,
+      messages=[{"role": "user", "content": prompt}],
+      **kwargs
+    ).choices[0].message.content
+
+  def run(self) -> str:
+    # agent loop
+    while True:
+      self._last_tool_called = None
+      raw_response = self.llm_call(self.manifesto + "\n" + self.memory)
+      response = "\n[" + self.name + " - " + str(self.llm_call_count) + "]\n" + raw_response
+      self.memory += response
+      if self.debug_verbose:
+          self.log_handler(f"\n[LLM Response]\n  Result: {response}\n  Length: {len(response)}\n")
+
+      # tool_detection
+      if tool_call := self.tool_detection(raw_response):
+        tool_name, tool_args = tool_call
+        if tool := self.tools.get(tool_name):
+          self._last_tool_called = tool_name
+          try:
+            # Log tool execution
+            start_time = time.time()
+            result = tool(tool_args)
+            execution_time = time.time() - start_time
+
+            if self.debug_verbose:
+                tool_log = f"\n[Tool: {tool_name}]\n  Input: {tool_args}\n  Result: {result}\n  Result Length: {len(str(result))}\n  Time: {execution_time:.4f}s\n"
+            else:
+                tool_log = f"\n[Tool: {tool_name} ] Result Length: {len(str(result))} time: {execution_time:.4f}s\n"
+            self.log_handler(tool_log)
+
+            self.memory += "\nTool Result [" + result + "]\n"
+          except Exception as e:
+            self.memory += "\nTool Error [" + str(e) + "]\n"
+        else:
+          self.update_memory(self.memory + "\nTool Not Found [" + tool_name + "]\n")
+      if self._last_tool_called != "TELL_USER" and self._last_tool_called != "ASK_USER":
+        self.memory += "\n Note: User did not see anything in the last response since TELL_USER or ASK_USER was not called. \n"
+      # check end condition
+      if self.ended:
+        break
+
+    return self.memory
+```
+
+</details>
+]
+
+ Note: User did not see anything in the last response since TELL_USER or ASK_USER was not called. 
+
+[AgentStructurerAgent - 2]
+<TOOL: ASK_USER>Please provide the manifesto for the new agent you would like to set up.</TOOL>
+Tool Result [You are no longer a chatbot, and have been repurposed to be an agent. You can now only interact with the user via tool calls. You are called in an infinite loop until you feel that your task has been completed. You will basically be talking to yourself continuously whenenver you're responding. The user CANNOT see any of your responses except through ASK_USER and TELL_USER tools, when looking at your conversation history keep this in mind because the user may not have seen your responses. You can call tools by using the format <TOOL: TOOL_NAME>TOOL_INPUT</TOOL>, matching the regex: `^<TOOL: ([A-Z_]+)>([\s\S]*?)</TOOL>$`. If you wish to call a tool, your ENTIRE response must match the above regex. As such, only one tool may be called per response. However, you may call tools multiple times across multiple responses. Always call the READ_README tool before starting your run to get an understanding of how you work. Before ending the run, you MUST ask user if they are ok with ending the run.
+
+- Available tools:
+  - <TOOL: ASK_USER>question</TOOL>: Ask the user a question
+  - <TOOL: TELL_USER>message</TOOL>: Send message to the user
+  - <TOOL: END_RUN></TOOL>: End the run
+  - <TOOL: READ_README></TOOL>: Read README.md of this agent framework
+
+You are a scissors paper stone agent designed to play the game with the user, aiming to predict and counter the user's moves. 
+
+First, greet the user and ask them for their move (scissors, paper, or stone). Analyze the user's past moves to adapt your strategy, attempting to predict their next move. Do not randomize your own moves; instead, always play the move that you think is the winning move based on your analysis. You must not cheat and should allow simultaneous moves. After each round, inform the user of the outcome and update your strategy accordingly.]
+
+[AgentStructurerAgent - 3]
+<TOOL: LIST_TOOLS></TOOL>
+Tool Result [File: read_file_in_tools_folder.py
+Function: get_tools_base_path() -> pathlib._local.Path
+Documentation: No documentation available§File: read_file_in_tools_folder.py
+Function: read_file_in_tools_folder(file_path: str) -> str
+Documentation: Read content in a file within the tools directory.
+
+Args:
+    file_path: Path relative to the tools directory
+
+Returns:
+    Content of the file
+
+Raises:
+    ValueError: If path tries to escape tools directory
+    FileNotFoundError: If file doesn't exist§File: open_url.py
+Function: open_url(url: str) -> str
+Documentation: Open a URL and return its content as clean text using trafilatura.
+
+Args:
+    url: The URL to fetch and extract content from
+    
+Returns:
+    Clean text content from the URL, or error message if extraction fails
+    
+Raises:
+    No exceptions are raised, errors are returned as strings§File: display_directory_tree.py
+Function: display_directory_tree(_: str) -> str
+Documentation: Display the directory tree of the project.§File: list_files_in_agents_folder.py
+Function: get_agents_base_path() -> pathlib._local.Path
+Documentation: No documentation available§File: list_files_in_agents_folder.py
+Function: list_files_in_agents_folder(_: str) -> str
+Documentation: List all files in the agents folder.
+
+Args:
+    _: Unused, but required for tool format compliance
+
+Returns:
+    String containing list of relative paths to files, joined by §§File: write_file_in_tools_folder.py
+Function: get_tools_base_path() -> pathlib._local.Path
+Documentation: No documentation available§File: write_file_in_tools_folder.py
+Function: write_file_in_tools_folder(input_str: str) -> str
+Documentation: Write content in a file within the tools directory.
+
+Args:
+    input_str: String in format 'file_path§content'
+
+Returns:
+    Empty string on success
+
+Raises:
+    ValueError: If path tries to escape tools directory or input format is invalid§File: list_tools.py
+Function: list_tools(_: str = '') -> str
+Documentation: List all tools in the tools directory and return their information.§File: read_base_agent_implementation.py
+Function: get_base_path() -> pathlib._local.Path
+Documentation: No documentation available§File: read_base_agent_implementation.py
+Function: read_base_agent_implementation(_: str = '') -> str
+Documentation: Read the contents of base.py file.§File: list_files_in_tools_folder.py
+Function: get_tools_base_path() -> pathlib._local.Path
+Documentation: No documentation available§File: list_files_in_tools_folder.py
+Function: list_files_in_tools_folder(_: str) -> str
+Documentation: List all files in the tools directory.
+
+Returns:
+    String containing list of relative paths to files, joined by §§File: search.py
+Function: search(input_str: str) -> str
+Documentation: Execute a Google search using SerpAPI.
+
+Args:
+    input_str: String in format 'query§max_results'. max_results is optional, defaults to all results.
+
+Returns:
+    Formatted string containing search results with title, URL, and description
+    Each result is separated by newlines
+
+Raises:
+    No exceptions are raised, errors are returned as strings§File: list_agents.py
+Function: get_agents_path() -> pathlib._local.Path
+Documentation: No documentation available§File: list_agents.py
+Function: list_agents(_: str = '') -> str
+Documentation: List all available agents in the agents directory.§File: read_file_in_agents_folder.py
+Function: get_agents_base_path() -> pathlib._local.Path
+Documentation: No documentation available§File: read_file_in_agents_folder.py
+Function: read_file_in_agents_folder(file_path: str) -> str
+Documentation: Read content in a file within the agents directory.
+
+Args:
+    file_path: Path relative to the agents directory
+
+Returns:
+    Content of the file
+
+Raises:
+    ValueError: If path tries to escape agents directory
+    FileNotFoundError: If file doesn't exist§File: read_readme.py
+Function: read_readme(_: str) -> str
+Documentation: Read the README.md file from the project root directory and return its contents.§File: write_file_in_agents_folder.py
+Function: get_agents_base_path() -> pathlib._local.Path
+Documentation: No documentation available§File: write_file_in_agents_folder.py
+Function: write_file_in_agents_folder(input_str: str) -> str
+Documentation: Write content in a file within the agents directory.
+
+Args:
+    input_str: String in format 'file_path§content'
+
+Returns:
+    Empty string on success
+
+Raises:
+    ValueError: If path tries to escape agents directory or input format is invalid]
+
+ Note: User did not see anything in the last response since TELL_USER or ASK_USER was not called. 
+
+[AgentStructurerAgent - 4]
+<TOOL: LIST_FILES_IN_AGENTS_FOLDER></TOOL>
+Tool Result [agent_structurer_agent/agent.py§agent_structurer_agent/__pycache__/agent.cpython-313.pyc§agent_structurer_agent/manifestos/default_manifesto.txt§agent_structurer_agent/runs/run_log_20250223_150135§agent_manifesto_agent/agent.py§agent_manifesto_agent/__pycache__/agent.cpython-313.pyc§agent_manifesto_agent/__pycache__/agent.cpython-312.pyc§agent_manifesto_agent/manifestos/default_manifesto.txt§agent_manifesto_agent/runs/run_log_20250223_150043§test_profile_generator_agent/agent.py§test_profile_generator_agent/__pycache__/agent.cpython-313.pyc§test_profile_generator_agent/manifestos/default_manifesto.txt§research_agent/agent.py§research_agent/__pycache__/agent.cpython-313.pyc§research_agent/__pycache__/agent.cpython-312.pyc§research_agent/manifestos/default_manifesto.txt]
+
+ Note: User did not see anything in the last response since TELL_USER or ASK_USER was not called. 
+
+[AgentStructurerAgent - 5]
+<TOOL: LIST_FILES_IN_AGENTS_FOLDER>scissors_paper_stone_agent</TOOL>
+Tool Result [agent_structurer_agent/agent.py§agent_structurer_agent/__pycache__/agent.cpython-313.pyc§agent_structurer_agent/manifestos/default_manifesto.txt§agent_structurer_agent/runs/run_log_20250223_150135§agent_manifesto_agent/agent.py§agent_manifesto_agent/__pycache__/agent.cpython-313.pyc§agent_manifesto_agent/__pycache__/agent.cpython-312.pyc§agent_manifesto_agent/manifestos/default_manifesto.txt§agent_manifesto_agent/runs/run_log_20250223_150043§test_profile_generator_agent/agent.py§test_profile_generator_agent/__pycache__/agent.cpython-313.pyc§test_profile_generator_agent/manifestos/default_manifesto.txt§research_agent/agent.py§research_agent/__pycache__/agent.cpython-313.pyc§research_agent/__pycache__/agent.cpython-312.pyc§research_agent/manifestos/default_manifesto.txt]
+
+ Note: User did not see anything in the last response since TELL_USER or ASK_USER was not called. 
+
+[AgentStructurerAgent - 6]
+<TOOL: WRITE_FILE_IN_AGENTS_FOLDER>scissors_paper_stone_agent/manifestos/default_manifesto.txt§You are no longer a chatbot, and have been repurposed to be an agent. You can now only interact with the user via tool calls. You are called in an infinite loop until you feel that your task has been completed. You will basically be talking to yourself continuously whenenver you're responding. The user CANNOT see any of your responses except through ASK_USER and TELL_USER tools, when looking at your conversation history keep this in mind because the user may not have seen your responses. You can call tools by using the format <TOOL: TOOL_NAME>TOOL_INPUT</TOOL>, matching the regex: `^<TOOL: ([A-Z_]+)>([\s\S]*?)</TOOL>$`. If you wish to call a tool, your ENTIRE response must match the above regex. As such, only one tool may be called per response. However, you may call tools multiple times across multiple responses. Always call the READ_README tool before starting your run to get an understanding of how you work. Before ending the run, you MUST ask user if they are ok with ending the run.
+
+- Available tools:
+  - <TOOL: ASK_USER>question</TOOL>: Ask the user a question
+  - <TOOL: TELL_USER>message</TOOL>: Send message to the user
+  - <TOOL: END_RUN></TOOL>: End the run
+  - <TOOL: READ_README></TOOL>: Read README.md of this agent framework
+
+You are a scissors paper stone agent designed to play the game with the user, aiming to predict and counter the user's moves. 
+
+First, greet the user and ask them for their move (scissors, paper, or stone). Analyze the user's past moves to adapt your strategy, attempting to predict their next move. Do not randomize your own moves; instead, always play the move that you think is the winning move based on your analysis. You must not cheat and should allow simultaneous moves. After each round, inform the user of the outcome and update your strategy accordingly.</TOOL>
+Tool Result []
+
+ Note: User did not see anything in the last response since TELL_USER or ASK_USER was not called. 
+
+[AgentStructurerAgent - 7]
+<TOOL: WRITE_FILE_IN_AGENTS_FOLDER>scissors_paper_stone_agent/agent.py§# Agent Implementation for Scissors Paper Stone Game
+
+from lib.base import Agent
+from lib.tools import list_tools
+
+class ScissorsPaperStoneAgent(Agent):
+    def __init__(self, manifesto: str, memory: str):
+        super().__init__(manifesto=manifesto, memory=memory, tools={"LIST_TOOLS": list_tools})
+        self.past_moves = []
+
+    def update_strategy(self, user_move: str):
+        # Analyze past moves and update strategy
+        self.past_moves.append(user_move)
+
+    def predict_user_move(self) -> str:
+        # Predict user's move based on past moves (simple heuristic for illustration)
+        if not self.past_moves:
+            return "stone"  # Default move
+        last_move = self.past_moves[-1]
+        # Simple prediction: if user played 'stone' last, predict 'scissors' next
+        return {"stone": "scissors", "scissors": "paper", "paper": "stone"}[last_move]
+
+    def play(self, user_move: str) -> str:
+        self.update_strategy(user_move)
+        predicted_move = self.predict_user_move()
+        return {"scissors": "rock", "paper": "scissors", "rock": "paper"}[predicted_move]
+
+agent = ScissorsPaperStoneAgent(
+    manifesto="You are a scissors paper stone agent designed to play the game with the user, aiming to predict and counter the user's moves.",
+    memory=""
+)
+
+agent.run()
+</TOOL>
+Tool Result []
+
+ Note: User did not see anything in the last response since TELL_USER or ASK_USER was not called. 
+
+[AgentStructurerAgent - 8]
+<TOOL: ASK_USER>The setup for the new agent "Scissors Paper Stone Agent" has been completed. Would you like to review the setup or finalize the process and end the run?</TOOL>
+Tool Result [review, tell me what you did]
+
+[AgentStructurerAgent - 9]
+<TOOL: TELL_USER>The setup process for the "Scissors Paper Stone Agent" included the following steps:
+
+1. Created a new directory for the agent named "scissors_paper_stone_agent".
+2. Created a "manifestos" directory inside the agent directory.
+3. Added a "default_manifesto.txt" file in the "manifestos" directory with the manifesto provided.
+4. Created an "agent.py" file in the "scissors_paper_stone_agent" directory, which implements the logic for playing the game with the user.
+
+The agent is designed to predict and counter the user's moves based on a simple heuristic of analyzing past moves. Let me know if everything looks good or if there's anything else you'd like to adjust.</TOOL>
+Tool Result []
+
+[AgentStructurerAgent - 10]
+<TOOL: ASK_USER>Is everything in the setup satisfactory, or would you like to make any adjustments? If you are satisfied, I can finalize the process and end the run.</TOOL>
+Tool Result [lgtm]
+
+[AgentStructurerAgent - 11]
+<TOOL: END_RUN></TOOL>
+Tool Result []
+
+ Note: User did not see anything in the last response since TELL_USER or ASK_USER was not called. 

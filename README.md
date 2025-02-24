@@ -88,7 +88,6 @@ THE FOLLOWING IS AN EXAMPLE ONLY.
 
 ```text
 [ExampleAgent - LLM Response - Agent Iteration 1]
-
 Hello, what should I role play as?
  Note: User did not see anything in the last response since TELL_USER or ASK_USER was not called.
 [ExampleAgent - LLM Response - Agent Iteration 2]

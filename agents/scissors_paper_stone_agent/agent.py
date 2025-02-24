@@ -9,4 +9,5 @@ def create_agent(
         memory=memory,
         tools={},
         name="ScissorsPaperStoneAgent",
+        model_name="anthropic/claude-3-7-sonnet-latest"
     )

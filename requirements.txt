@@ -4,3 +4,4 @@ lxml --only-binary :all:
 litellm==1.55.12
 --no-binary google-search-results
 google-search-results==2.4.2
+boto3==1.36.26

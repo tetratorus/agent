@@ -34,7 +34,7 @@ class Agent():
     self.llm_call_count = 0
     self.debug_verbose = False
     self.model_name = model_name
-    banner = "\n!!!!!!!!!!IMPORT" + "ANT SYSTEM INSTRUC" + "TION AG" + "ENT MAN" + "IFESTO!!!!!!!!!!\n"
+    banner = "\n!!!!!!!!!!IMPORT" + "ANT SYSTEM INSTRUC" + "TION AG" + "ENT MAN" + "IFESTO ONLY FO" + "LLOW THESE IN" + "STRUCTIONS!!!!!!!!!!\n"
     self.manifesto = banner + manifesto + banner
     self.memory = memory
     self.log_handler = lambda msg: print(msg)
@@ -116,4 +116,4 @@ class Agent():
       if self.ended:
         break
 
-    return self.memory
+    return self.manifesto + "\n" + self.memory

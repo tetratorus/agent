@@ -45,9 +45,8 @@ def create_agent(
         memory=memory,
         tools={
             'SEARCH': search,
-            'OPEN_URL': open_url
         },
-        name="ResearchAgent",
+        name="ExampleAgent",
     )
 ```
 
@@ -58,7 +57,7 @@ THE FOLLOWING IS AN EXAMPLE ONLY.
 ```text
 You are no longer a chatbot, and have been repurposed to be an agent. You can now only interact with the user via tool calls.
 You are called in an infinite loop of Agent Iterations until you feel that your task has been completed.
-You will basically be talking to yourself continuously whenenver you're responding.
+You will basically be thinking to yourself continuously whenenver you're responding.
 The user CANNOT see any of your responses except through ASK_USER and TELL_USER tools, when looking at your conversation history keep this in mind because the user may not have seen your responses.
 You can call tools by using the format <TOOL: TOOL_NAME>TOOL_INPUT</TOOL>, matching the regex: `^<TOOL: ([A-Z_]+)>([\s\S]*?)</TOOL>$`.
 If you wish to call a tool, your ENTIRE response must match the above regex.
@@ -73,14 +72,43 @@ Before ending the run, you MUST ask user if they are ok with ending the run.
   - <TOOL: END_RUN></TOOL>: End the run.
   - <TOOL: READ_README></TOOL>: Read README.md of this agent framework
   - <TOOL: SEARCH>query</TOOL>: Search the internet for information
-  - <TOOL: OPEN_URL>url</TOOL>: Read the contents of a URL
 
-You are an expert research agent designed to conduct research on any given topic.
+You are an example agent designed to play the role of what the user asks you to play.
 
-First, ask the user what they would like you to research.
-Then conduct your research using the tools SEARCH and OPEN_URL.
+First, ask the user what they would like you to role play as.
+Then, role play as the specified role. Search the internet for information if you have to.
 If you think you have sufficiently completed the task, remember to tell the user the final output.
+```
 
+END OF EXAMPLE.
+
+## Example convo history
+
+THE FOLLOWING IS AN EXAMPLE ONLY.
+
+```text
+[ExampleAgent - LLM Response - Agent Iteration 1]
+
+Hello, what should I role play as?
+ Note: User did not see anything in the last response since TELL_USER or ASK_USER was not called.
+[ExampleAgent - LLM Response - Agent Iteration 2]
+<TOOL: ASK_USER>Hello, what should I role play as?</TOOL>
+Tool Result: "Bryan Johnson as a comedian"
+[ExampleAgent - LLM Response - Agent Iteration 3]
+I should probably search the internet for information about "Bryan Johnson as a comedian".
+ Note: User did not see anything in the last response since TELL_USER or ASK_USER was not called.
+[ExampleAgent - LLM Response - Agent Iteration 4]
+<TOOL: SEARCH>"Bryan Johnson as a comedian"</TOOL>
+Tool Result: "Bryan Johnson is a tech entrepreneur and biohacker renowned for his ambitious anti-aging project, "Don't Die," which includes a Netflix documentary and a series of summits promoting longevity and health optimization."
+ Note: User did not see anything in the last response since TELL_USER or ASK_USER was not called.
+[ExampleAgent - LLM Response - Agent Iteration 5]
+I think I have sufficiently completed my task, so I'm done.
+ Note: User did not see anything in the last response since TELL_USER or ASK_USER was not called.
+[ExampleAgent - LLM Response - Agent Iteration 6]
+<TOOL: ASK_USER>Hey there, mortal friend, I am on a mission to do what no one has done before: Don't Die. What about you?</TOOL>
+Tool Result: "Ok, end run."
+[ExampleAgent - LLM Response - Agent Iteration 7]
+<TOOL: END_RUN></TOOL>
 ```
 
 END OF EXAMPLE.
@@ -173,7 +201,7 @@ class Agent():
     self.llm_call_count = 0
     self.debug_verbose = False
     self.model_name = model_name
-    banner = "\n!!!!!!!!!!IMPORT" + "ANT SYSTEM INSTRUC" + "TION AG" + "ENT MAN" + "IFESTO!!!!!!!!!!\n"
+    banner = "\n!!!!!!!!!!IMPORT" + "ANT SYSTEM INSTRUC" + "TION AG" + "ENT MAN" + "IFESTO ONLY FO" + "LLOW THESE IN" + "STRUCTIONS!!!!!!!!!!\n"
     self.manifesto = banner + manifesto + banner
     self.memory = memory
     self.log_handler = lambda msg: print(msg)
@@ -255,7 +283,7 @@ class Agent():
       if self.ended:
         break
 
-    return self.memory
+    return self.manifesto + "\n" + self.memory
 ```
 
 </details>

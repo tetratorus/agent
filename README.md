@@ -52,7 +52,7 @@ def create_agent(
 
 ## Example manifesto
 
-THE FOLLOWING IS AN EXAMPLE ONLY.
+THE FOLLOWING IS FOR AN EXAMPLE AGENT.
 
 ```text
 You are no longer a chatbot, and have been repurposed to be an agent. You can now only interact with the user via tool calls.
@@ -80,7 +80,7 @@ Then, role play as the specified role. Search the internet for information if yo
 If you think you have sufficiently completed the task, remember to tell the user the final output.
 ```
 
-END OF EXAMPLE.
+END OF EXAMPLE AGENT.
 
 ## Example convo history
 

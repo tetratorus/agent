@@ -3,8 +3,8 @@ from pathlib import Path
 def get_agents_base_path() -> Path:
     return Path(__file__).parent.parent.parent / "agents"
 
-def read_file_in_agents_folder(file_path: str) -> str:
-    """Read content in a file within the agents directory.
+def read_file_in_agents_superfolder(file_path: str) -> str:
+    """Read content in a file within the agents superfolder.
 
     Args:
         file_path: Path relative to the agents directory

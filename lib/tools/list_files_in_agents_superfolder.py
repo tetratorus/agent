@@ -5,8 +5,8 @@ import os
 def get_agents_base_path() -> Path:
     return Path(__file__).parent.parent.parent / "agents"
 
-def list_files_in_agents_folder(_: str) -> str:
-    """List all files in the agents folder.
+def list_files_in_agents_superfolder(_: str) -> str:
+    """List all files in the agents superfolder.
 
     Args:
         _: Unused, but required for tool format compliance

@@ -4,8 +4,8 @@ import os
 def get_agents_base_path() -> Path:
     return Path(__file__).parent.parent.parent / "agents"
 
-def write_file_in_agents_folder(input_str: str) -> str:
-    """Write content in a file within the agents directory.
+def write_file_in_agents_superfolder(input_str: str) -> str:
+    """Write content in a file within the agents superfolder.
 
     Args:
         input_str: String in format 'file_path§content'

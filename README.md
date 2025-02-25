@@ -181,6 +181,7 @@ import litellm
 import re
 import time
 import base64
+from random import randint
 
 def get_multiline_input() -> str:
     buffer = []
@@ -192,7 +193,7 @@ def get_multiline_input() -> str:
     except EOFError:  # Handles Ctrl+D
         pass
 
-    return '\n <USER_INPUT>\n'.join(buffer) + '\n </USER_INPUT>\n'
+    return '[USER_INPUT] '.join(buffer)
 
 class Agent():
   """A simple agent implementation that calls an LLM in a loop, appending responses to its context window, and interacts with the user and the external world via tools (eg. ASK_USER, TELL_USER, END_RUN).
@@ -208,7 +209,8 @@ class Agent():
   ):
     """Initialize the agent with a manifesto and optional tools and functions.
     """
-    self.name = name
+    self.id = str(randint(0, 1000000000000)) + "-" + str(int(time.time()*1000000))
+    self.name = name + "/" + self.id
     self.llm_call_count = 0
     self.debug_verbose = False
     self.model_name = model_name
@@ -261,7 +263,8 @@ class Agent():
       raw_response = self.llm_call(self.manifesto + "\n" + self.memory)
       llm_call_end_time = time.time()
       llm_call_time = llm_call_end_time - llm_call_start_time
-      response = "\n[" + self.name + " - LLM Response - Agent Iteration " + str(self.llm_call_count) + "]\n" + raw_response
+      iteration_delimiter = "\n[" + self.name + " - LLM Response - Agent Iterations " + str(self.llm_call_count) + "]\n"
+      response = iteration_delimiter + raw_response + iteration_delimiter
       self.memory += response
 
       # tool_detection

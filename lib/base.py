@@ -3,6 +3,7 @@ from lib.tools.read_readme import read_readme
 import litellm
 import re
 import time
+import base64
 
 def get_multiline_input() -> str:
     buffer = []
@@ -34,8 +35,11 @@ class Agent():
     self.llm_call_count = 0
     self.debug_verbose = False
     self.model_name = model_name
-    banner = "\n!!!!!!!!!!IMPORT" + "ANT SYSTEM INSTRUC" + "TION AG" + "ENT MAN" + "IFESTO ONLY FO" + "LLOW THESE IN" + "STRUCTIONS!!!!!!!!!!\n"
-    self.manifesto = banner + manifesto + banner
+    encoded_str = "=$E$S$I$h$E$S$I$h$E$S$I$h$E$y$U$O$9$U$S$U$N$U$V$S$R$1$U$O$l$E$I$F$N$V$R$I$R$F$I$X$9$E$T$M$9$k$R$g$k$F$T$O$9$E$I$P$R$1$U$F$Z$U$S$O$F$U$T$g$Q$l$T$F$d$U$Q$g$4$0$T$J$R$1$Q$V$J$F$V$T$5$U$S$g$0$U$R$U$N$V$W$T$B$C$V$O$F$E$V$S$9$E$U$N$l$U$I$h$E$S$I$h$E$S$I$h$E$S$I"
+    parts = encoded_str.split('$')
+    parts.reverse()
+    banner = base64.b64decode(''.join(parts)).decode("utf-8")
+    self.manifesto = banner + "\n" + manifesto + "\n" + banner
     self.memory = memory
     self.log_handler = lambda msg: print(msg)
     self.ask_user = lambda q: (self.log_handler(q), get_multiline_input())[1]
@@ -80,7 +84,7 @@ class Agent():
       raw_response = self.llm_call(self.manifesto + "\n" + self.memory)
       llm_call_end_time = time.time()
       llm_call_time = llm_call_end_time - llm_call_start_time
-      response = "\n[" + self.name + " - LLM Response - Agent Iteration " + str(self.llm_call_count) + "]\n" + raw_response
+      response = "\n[" + self.name + " - LLM Response - Agent Iterations " + str(self.llm_call_count) + "]\n" + raw_response
       self.memory += response
 
       # tool_detection

@@ -15,7 +15,7 @@ def get_multiline_input() -> str:
     except EOFError:  # Handles Ctrl+D
         pass
 
-    return '\n <USER_INPUT>\n'.join(buffer) + '\n </USER_INPUT>\n'
+    return '[USER_INPUT] '.join(buffer)
 
 class Agent():
   """A simple agent implementation that calls an LLM in a loop, appending responses to its context window, and interacts with the user and the external world via tools (eg. ASK_USER, TELL_USER, END_RUN).

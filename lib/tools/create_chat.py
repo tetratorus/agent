@@ -11,12 +11,12 @@ def create_chat(caller_id: str, _: str) -> str:
     """
     timestamp = str(int(time.time() * 1000000))
     random_hex = secrets.token_hex(4)
-    filename = f"{timestamp}_{random_hex}"
+    chatfile = f"{timestamp}_{random_hex}"
 
     chats_dir = Path(__file__).parent / 'chats'
     chats_dir.mkdir(exist_ok=True)
 
-    chat_path = chats_dir / filename
+    chat_path = chats_dir / chatfile
     chat_path.touch()
 
-    return str(chat_path)
+    return str(chatfile)

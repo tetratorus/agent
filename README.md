@@ -40,6 +40,10 @@ def create_agent(
     manifesto: str,
     memory: str,
 ) -> Agent:
+    """Creates an example agent
+    This agent is an example agent that follows the instructions given to it by the user.
+    It has access to the SEARCH tool to search for information.
+    """
     return Agent(
         manifesto=manifesto,
         memory=memory,

@@ -8,6 +8,17 @@ def create_agent(
     manifesto: str,
     memory: str,
 ) -> Agent:
+    """Creates an agent that sets up the necessary folder and file structure for new agents.
+    
+    This agent takes a manifesto as input and:
+    1. Parses the manifesto to understand required files and structure
+    2. Creates the necessary folders and files for the new agent
+    3. Ensures the agent.py file follows the correct structure
+    4. Places the manifesto in the correct location
+    
+    The agent only uses existing tools and doesn't redefine default tools.
+    It verifies its work by checking the created files before completion.
+    """
     return Agent(
         manifesto=manifesto,
         memory=memory,

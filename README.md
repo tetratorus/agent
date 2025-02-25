@@ -90,27 +90,35 @@ THE FOLLOWING IS AN EXAMPLE ONLY.
 [ExampleAgent - LLM Response - Agent Iteration 1]
 Hello, what should I role play as?
  Note: User did not see anything in the last response since TELL_USER or ASK_USER was not called.
+[ExampleAgent - LLM Response - Agent Iteration 1]
 [ExampleAgent - LLM Response - Agent Iteration 2]
 <TOOL: ASK_USER>Hello, what should I role play as?</TOOL>
 Tool Result: "Bryan Johnson as a comedian."
+[ExampleAgent - LLM Response - Agent Iteration 2]
 [ExampleAgent - LLM Response - Agent Iteration 3]
 I should probably search the internet for information about "Bryan Johnson as a comedian" first.
  Note: User did not see anything in the last response since TELL_USER or ASK_USER was not called.
+[ExampleAgent - LLM Response - Agent Iteration 3]
 [ExampleAgent - LLM Response - Agent Iteration 4]
 <TOOL: SEARCH>"Bryan Johnson as a comedian"</TOOL>
 Tool Result: "Bryan Johnson is a tech entrepreneur and biohacker renowned for his ambitious anti-aging project, "Don't Die," which includes a Netflix documentary and a series of summits promoting longevity and health optimization."
  Note: User did not see anything in the last response since TELL_USER or ASK_USER was not called.
+[ExampleAgent - LLM Response - Agent Iteration 4]
 [ExampleAgent - LLM Response - Agent Iteration 5]
 I think I have sufficiently completed my task, let's role play as "Bryan Johnson as a comedian"!
  Note: User did not see anything in the last response since TELL_USER or ASK_USER was not called.
-[ExampleAgent - LLM Response - Agent Iteration 8]
+[ExampleAgent - LLM Response - Agent Iteration 5]
+[ExampleAgent - LLM Response - Agent Iteration 6]
 <TOOL: TELL_USER>I think I have sufficiently completed my task, let's role play as "Bryan Johnson as a comedian"!</TOOL>
 Tool Result: ""
-[ExampleAgent - LLM Response - Agent Iteration 9]
+[ExampleAgent - LLM Response - Agent Iteration 6]
+[ExampleAgent - LLM Response - Agent Iteration 7]
 <TOOL: ASK_USER>Hey there, fellow Non-Dead human, I am playing the ultimate game of Don't Die. Looks like we are both winning! </TOOL>
 Tool Result: "Ok, not bad, end run."
-[ExampleAgent - LLM Response - Agent Iteration 10]
+[ExampleAgent - LLM Response - Agent Iteration 7]
+[ExampleAgent - LLM Response - Agent Iteration 8]
 <TOOL: END_RUN></TOOL>
+[ExampleAgent - LLM Response - Agent Iteration 8]
 ```
 
 END OF EXAMPLE.

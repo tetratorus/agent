@@ -2,10 +2,7 @@ from pathlib import Path
 from typing import List, Optional
 import os
 
-def get_agents_base_path() -> Path:
-    return Path(__file__).parent.parent.parent / "agents"
-
-def list_files_in_agents_superfolder(_: str) -> str:
+def list_files_in_agents_superfolder(caller_id: str, _: str) -> str:
     """List all files in the agents superfolder.
 
     Args:
@@ -14,7 +11,7 @@ def list_files_in_agents_superfolder(_: str) -> str:
     Returns:
         String containing list of relative paths to files, joined by §
     """
-    base_path = get_agents_base_path()
+    base_path = Path(__file__).parent.parent.parent / "agents"
     result = []
     for root, _, files in os.walk(base_path):
         for file in files:

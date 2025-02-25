@@ -2,16 +2,13 @@ from pathlib import Path
 from typing import List, Optional
 import os
 
-def get_tools_base_path() -> Path:
-    return Path(__file__).parent
-
-def list_files_in_tools_folder(_: str) -> str:
+def list_files_in_tools_folder(caller_id: str, _: str) -> str:
     """List all files in the tools directory.
 
     Returns:
         String containing list of relative paths to files, joined by §
     """
-    base_path = get_tools_base_path()
+    base_path = Path(__file__).parent
     result = []
     for root, _, files in os.walk(base_path):
         for file in files:

@@ -3,7 +3,7 @@ import secrets
 from pathlib import Path
 
 
-def create_chat() -> str:
+def create_chat(caller_id: str, _: str) -> str:
     """Create a new chat file in the /chats directory with a unique filename.
 
     Returns:

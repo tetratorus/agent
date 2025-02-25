@@ -1,6 +1,6 @@
 import os
 
-def read_readme(_: str) -> str:
+def read_readme(caller_id: str, _: str) -> str:
     """Read the README.md file from the project root directory and return its contents."""
 
     try:

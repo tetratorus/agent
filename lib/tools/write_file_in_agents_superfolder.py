@@ -1,10 +1,7 @@
 from pathlib import Path
 import os
 
-def get_agents_base_path() -> Path:
-    return Path(__file__).parent.parent.parent / "agents"
-
-def write_file_in_agents_superfolder(input_str: str) -> str:
+def write_file_in_agents_superfolder(caller_id: str, input_str: str) -> str:
     """Write content in a file within the agents superfolder.
 
     Args:
@@ -22,7 +19,7 @@ def write_file_in_agents_superfolder(input_str: str) -> str:
 
     file_path, content = parts
 
-    base_path = get_agents_base_path()
+    base_path = Path(__file__).parent.parent.parent / "agents"
     full_path = (base_path / file_path).resolve()
 
     if not str(full_path).startswith(str(base_path)):

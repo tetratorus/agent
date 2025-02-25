@@ -1,10 +1,7 @@
 from pathlib import Path
 import os
 
-def get_tools_base_path() -> Path:
-    return Path(__file__).parent
-
-def write_file_in_tools_folder(input_str: str) -> str:
+def write_file_in_tools_folder(caller_id: str, input_str: str) -> str:
     """Write content in a file within the tools directory.
 
     Args:
@@ -22,7 +19,7 @@ def write_file_in_tools_folder(input_str: str) -> str:
 
     file_path, content = parts
 
-    base_path = get_tools_base_path()
+    base_path = Path(__file__).parent
     full_path = (base_path / file_path).resolve()
 
     if not str(full_path).startswith(str(base_path)):

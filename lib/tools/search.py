@@ -1,7 +1,7 @@
 from serpapi import GoogleSearch
 import os
 
-def search(input_str: str) -> str:
+def search(caller_id: str, input_str: str) -> str:
     """Execute a Google search using SerpAPI.
 
     Args:

@@ -5,25 +5,25 @@ import hashlib
 # Store last content hash per caller_id
 _last_content_hash = {}
 
-def read_chat(caller_id: str, chatfile: str) -> str:
-    """Read the content of a chat file from the /chats directory.
+def read_chat(caller_id: str, agent_id: str) -> str:
+    """Read messages from an agent's chat file.
     If the caller_id has read this file before, blocks until new content is available.
 
     Args:
         caller_id (str): The ID of the caller
-        chatfile (str): The name of the chat file to read
+        agent_id (str): The ID of the agent to read messages from
 
     Returns:
         str: The content of the chat file
     """
     chats_dir = Path(__file__).parent / 'chats'
-    chat_path = chats_dir / chatfile
+    chat_path = chats_dir / f"{agent_id}_to_{caller_id}.txt"
 
     if not chat_path.exists():
-        raise FileNotFoundError(f"Chat file {chatfile} not found")
+        raise FileNotFoundError(f"No messages found from agent {agent_id}")
 
-    caller_key = f"{caller_id}:{chatfile}"
-    last_content = _last_read_content.get(caller_key)
+    caller_key = f"{caller_id}:{agent_id}"
+    last_content = _last_content_hash.get(caller_key)
 
     # Keep checking for new content if we've seen this content before
     start_time = time.time()

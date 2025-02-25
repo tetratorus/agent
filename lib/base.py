@@ -4,7 +4,7 @@ import litellm
 import re
 import time
 import base64
-from random import randint
+import secrets
 
 def get_multiline_input() -> str:
     buffer = []
@@ -32,7 +32,7 @@ class Agent():
   ):
     """Initialize the agent with a manifesto and optional tools and functions.
     """
-    self.id = str(randint(0, 1000000000000)) + "-" + str(int(time.time()*1000000))
+    self.id = secrets.token_hex(4) + "-" + str(int(time.time()*1000000))
     self.name = name + "/" + self.id
     self.llm_call_count = 0
     self.debug_verbose = False

@@ -4,6 +4,7 @@ from lib.tools.read_readme import read_readme
 from lib.tools.read_file_in_agents_superfolder import read_file_in_agents_superfolder
 from lib.tools.list_files_in_agents_superfolder import list_files_in_agents_superfolder
 from lib.tools.list_tools import list_tools
+from lib.tools.list_agents import list_agents
 
 def create_agent(
     manifesto: str,
@@ -17,6 +18,7 @@ def create_agent(
             'READ_FILE_IN_AGENTS_SUPERFOLDER': read_file_in_agents_superfolder,
             'LIST_FILES_IN_AGENTS_SUPERFOLDER': list_files_in_agents_superfolder,
             'READ_README': read_readme,
+            'LIST_AGENTS': list_agents,
             'LIST_TOOLS': list_tools
         },
         name="AgentManifestoAgent",

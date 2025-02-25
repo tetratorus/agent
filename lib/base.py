@@ -84,7 +84,8 @@ class Agent():
       raw_response = self.llm_call(self.manifesto + "\n" + self.memory)
       llm_call_end_time = time.time()
       llm_call_time = llm_call_end_time - llm_call_start_time
-      response = "\n[" + self.name + " - LLM Response - Agent Iterations " + str(self.llm_call_count) + "]\n" + raw_response
+      iteration_delimiter = "\n[" + self.name + " - LLM Response - Agent Iterations " + str(self.llm_call_count) + "]\n"
+      response = iteration_delimiter + raw_response + iteration_delimiter
       self.memory += response
 
       # tool_detection

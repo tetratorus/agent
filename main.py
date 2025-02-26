@@ -6,7 +6,7 @@ import importlib.util
 import secrets
 from typing import Type, List, Tuple, Optional, Dict, Any, TextIO
 import datetime
-
+import hashlib
 import logging
 
 class StreamingLogger(logging.Handler):
@@ -17,10 +17,37 @@ class StreamingLogger(logging.Handler):
         self.log_file = log_file
         self.setFormatter(logging.Formatter('%(name)s - %(message)s'))
 
+    def get_color_for_agent(self, agent_id):
+        """Generate a color based on the hash of the agent ID."""
+        # Generate MD5 hash of agent ID
+        hash_obj = hashlib.md5(agent_id.encode())
+        # Get first 6 characters of hex digest (RGB color)
+        hex_color = hash_obj.hexdigest()[:6]
+        # Convert to RGB values
+        r = int(hex_color[0:2], 16)
+        g = int(hex_color[2:4], 16)
+        b = int(hex_color[4:6], 16)
+        # Return 24-bit color ANSI code
+        return f"\033[38;2;{r};{g};{b}m"
+
     def emit(self, record):
-        msg = self.format(record)
-        self.terminal.write(msg + '\n')
-        self.log_file.write(msg + '\n')
+        # Save original message and create a copy of the record
+        original_msg = record.getMessage()
+
+        # For terminal output - add color based on agent ID
+        colored_msg = original_msg
+        if hasattr(record, 'name') and record.name.startswith('agent.'):
+            agent_id = record.name[6:]  # Remove 'agent.' prefix
+            color_code = self.get_color_for_agent(agent_id)
+            reset_code = "\033[0m"
+            colored_msg = f"{color_code}{original_msg}{reset_code}"
+
+        # Write colored message to terminal
+        self.terminal.write(f"{record.name} - {colored_msg}\n")
+
+        # Write original message (without color) to log file
+        self.log_file.write(f"{record.name} - {original_msg}\n")
+
         # Flush both to ensure real-time output
         self.terminal.flush()
         self.log_file.flush()
@@ -148,20 +175,20 @@ def main():
     with open(run_log, "w") as log_file:
         # Set up logging
         logger = StreamingLogger(log_file)
-        
+
         # Create a specific logger for agents instead of using root logger
         agent_logger = logging.getLogger('agent')
-        
+
         # Set log level based on selected mode
         if mode == 2:  # Verbose/DEBUG mode
             agent_logger.setLevel(logging.DEBUG)
         else:  # Normal/INFO mode
             agent_logger.setLevel(logging.INFO)
-            
+
         agent_logger.addHandler(logger)
         # Prevent propagation to root logger
         agent_logger.propagate = False
-        
+
         agent_logger.info(f"Running Agent: {display_name}")
         agent = agent_factory(manifesto=manifesto, memory="")
         result = agent.run()

@@ -3,7 +3,7 @@
 import os
 import sys
 import importlib.util
-import inspect
+import secrets
 from typing import Type, List, Tuple, Optional, Dict, Any, TextIO
 import datetime
 
@@ -137,7 +137,7 @@ def main():
 
     # Create run log with timestamp
     timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
-    run_log = os.path.join(runs_dir, f"run_log_{timestamp}")
+    run_log = os.path.join(runs_dir, f"run_log_{timestamp}_{secrets.token_hex(4)}")
 
     # Setup logging
     with open(run_log, "w") as log_file:

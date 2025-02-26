@@ -11,13 +11,13 @@ def create_agent(
     memory: str,
 ) -> Agent:
     """Creates an agent that helps users generate manifestos for new AI agents.
-    
+
     This agent guides users through the process of creating manifestos for new agents by:
     1. Providing information about the agent framework and structure
     2. Asking intent-based questions to understand the user's needs
     3. Drafting a manifesto that follows the required format
     4. Including appropriate tools based on the agent's purpose
-    
+
     The agent focuses on understanding user intent rather than implementation details,
     and ensures all manifestos include the four default tools.
     """

@@ -7,15 +7,20 @@ import secrets
 from typing import Type, List, Tuple, Optional, Dict, Any, TextIO
 import datetime
 
-class StreamingLogger:
+import logging
+
+class StreamingLogger(logging.Handler):
     """Logger that writes to both file and stdout in real-time."""
     def __init__(self, log_file: TextIO):
+        super().__init__()
         self.terminal = sys.stdout
         self.log_file = log_file
+        self.setFormatter(logging.Formatter('%(name)s - %(message)s'))
 
-    def write(self, message: str):
-        self.terminal.write(message)
-        self.log_file.write(message)
+    def emit(self, record):
+        msg = self.format(record)
+        self.terminal.write(msg + '\n')
+        self.log_file.write(msg + '\n')
         # Flush both to ensure real-time output
         self.terminal.flush()
         self.log_file.flush()
@@ -91,8 +96,8 @@ def main():
 
     # Select mode
     print("\nModes:")
-    print("1. Run agent")
-    print("2. Run agent (verbose)")
+    print("1. Run agent (INFO level)")
+    print("2. Run agent (DEBUG level - verbose)")
 
     while True:
         try:
@@ -141,14 +146,26 @@ def main():
 
     # Setup logging
     with open(run_log, "w") as log_file:
+        # Set up logging
         logger = StreamingLogger(log_file)
-        logger.write(f"Running Agent: {display_name}\n")
+        
+        # Create a specific logger for agents instead of using root logger
+        agent_logger = logging.getLogger('agent')
+        
+        # Set log level based on selected mode
+        if mode == 2:  # Verbose/DEBUG mode
+            agent_logger.setLevel(logging.DEBUG)
+        else:  # Normal/INFO mode
+            agent_logger.setLevel(logging.INFO)
+            
+        agent_logger.addHandler(logger)
+        # Prevent propagation to root logger
+        agent_logger.propagate = False
+        
+        agent_logger.info(f"Running Agent: {display_name}")
         agent = agent_factory(manifesto=manifesto, memory="")
-        agent.log_handler = logger.write
-        if mode == 2:
-            agent.debug_verbose = True
         result = agent.run()
-        logger.write(result)
+        agent_logger.info(result)
 
 if __name__ == "__main__":
     try:

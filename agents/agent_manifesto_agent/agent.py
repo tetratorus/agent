@@ -21,6 +21,7 @@ def create_agent(
     The agent focuses on understanding user intent rather than implementation details,
     and ensures all manifestos include the four default tools.
     """
+
     return Agent(
         manifesto=manifesto,
         memory=memory,

@@ -181,6 +181,7 @@ base.py
 
 ```python
 from typing import Dict, Optional, Tuple, Callable, List, Any, Union
+import logging
 from lib.tools.read_readme import read_readme
 import litellm
 import re
@@ -209,15 +210,14 @@ class Agent():
       self,
       manifesto: str,
       memory: str,
+      name: str,
       tools: Dict[str, Callable],
       model_name: str = "openai/gpt-4o",
-      name: str = "Agent-" + str(int(time.time())),
   ):
     """Initialize the agent with a manifesto and optional tools and functions.
     """
-    self.id = name + "_" + str(int(time.time()*1000000)) + "-" + secrets.token_hex(4) + "-"
+    self.id = name + "_" + time.strftime("%H%M%S") + "-" + secrets.token_hex(4) + "-"
     self.llm_call_count = 0
-    self.debug_verbose = False
     self.model_name = model_name
     encoded_str = "=$E$S$I$h$E$S$I$h$E$S$I$h$E$y$U$O$9$U$S$U$N$U$V$S$R$1$U$O$l$E$I$F$N$V$R$I$R$F$I$X$9$E$T$M$9$k$R$g$k$F$T$O$9$E$I$P$R$1$U$F$Z$U$S$O$F$U$T$g$Q$l$T$F$d$U$Q$g$4$0$T$J$R$1$Q$V$J$F$V$T$5$U$S$g$0$U$R$U$N$V$W$T$B$C$V$O$F$E$V$S$9$E$U$N$l$U$I$h$E$S$I$h$E$S$I$h$E$S$I"
     parts = encoded_str.split('$')
@@ -225,18 +225,19 @@ class Agent():
     banner = base64.b64decode(''.join(parts)).decode("utf-8")
     self.manifesto = banner + "\n" + manifesto + "\n" + banner
     self.memory = memory
-    self.log_handler = lambda msg: print(msg)
-    self.ask_user = lambda _, q: (self.log_handler(q), get_multiline_input())[1]
-    self.tell_user = lambda _, m: (self.log_handler(m), "")[1]
+    self.logger = logging.getLogger(f'agent.{self.id}')
+    self.log_handler = lambda msg: self.logger.info(msg)
+    self.ask_user = lambda _, q: (self.logger.info(f"[ASK_USER] {q}"), get_multiline_input())[1]
+    self.tell_user = lambda _, m: (self.logger.info(f"[TELL_USER] {m}"), "")[1]
     self.end_run = lambda _, x: (setattr(self, "ended", True), "")[1]
 
     self.ended = False
 
     # Merge provided tools with default tools
     self.tools = {
-        "ASK_USER": self.ask_user,
-        "TELL_USER": self.tell_user,
-        "END_RUN": self.end_run,
+        "ASK_USER": lambda agent_id, args: self.ask_user(agent_id, args),
+        "TELL_USER": lambda agent_id, args: self.tell_user(agent_id, args),
+        "END_RUN": lambda agent_id, args: self.end_run(agent_id, args),
         "READ_README": read_readme,
         **(tools or {})
     }
@@ -274,10 +275,6 @@ class Agent():
 
       # tool_detection
       tool_call = self.tool_detection(raw_response)
-      if self.debug_verbose:
-          self.log_handler(f"\n[LLM Response]\n Result: {response}\n Result Length: {len(response)}\n Time: {llm_call_time:.4f}s\n")
-      else:
-          self.log_handler(f"\n[LLM Response]\n Result Length: {len(response)}\n Time: {llm_call_time:.4f}s\n")
       if tool_call:
         tool_name, tool_args = tool_call
         if tool := self.tools.get(tool_name):
@@ -288,23 +285,39 @@ class Agent():
             result = tool(self.id, tool_args)
             execution_time = time.time() - start_time
 
-            if self.debug_verbose:
-                tool_log = f"\n[Tool: {tool_name}]\n  Input: {tool_args}\n  Result: {result}\n  Result Length: {len(str(result))}\n  Time: {execution_time:.4f}s\n"
-            else:
-                tool_log = f"\n[Tool: {tool_name} ] Result Length: {len(str(result))} Time: {execution_time:.4f}s\n"
-            self.log_handler(tool_log)
+            # INFO for summary, DEBUG for details
+            self.logger.info(f"[Tool: {tool_name}] Input: {tool_args} | Result Length: {len(str(result))} | Time: {execution_time:.4f}s")
+            self.logger.debug(f"[Tool: {tool_name}] Result: {result}")
 
-            self.memory += "\nTool Result [" + result + "]\n"
+            # Memory includes metadata and result
+            memory_message = f"\nTool Result [Tool: {tool_name}] Input: {tool_args} | Result: {result} | Time: {execution_time:.4f}s\n"
+            self.memory += memory_message
           except Exception as e:
-            error_trace = traceback.format_exc()
-            error_msg = f"\nTool Error [{str(e)}]\nStack Trace:\n{error_trace}\n"
-            self.memory += error_msg
-            if self.debug_verbose:
-              self.log_handler(error_msg)
+            # INFO for error message, ERROR for stack trace
+            self.logger.info(f"Tool Error: {str(e)}")
+            self.logger.error(traceback.format_exc())
+            memory_message = f"\nTool Error: {str(e)}\n"
+            self.memory += memory_message
         else:
-          self.update_memory(self.memory + "\nTool Not Found [" + tool_name + "]\n")
+          tool_name = tool_call[0]
+          error_message = f"Tool Not Found: {tool_name}"
+          self.logger.info(error_message)
+          memory_message = f"\n{error_message}\n"
+          self.memory += memory_message
+      else:
+        no_tool_message = "No tool call detected in LLM response"
+        self.logger.info(no_tool_message)
+        self.memory += f"\n{no_tool_message}\n"
+
+      # INFO for summary, DEBUG for details
+      self.logger.info(f"[LLM Response] Length: {len(response)} | Time: {llm_call_time:.4f}s")
+      self.logger.debug(f"[LLM Response] Result: {response}")
+
       if self._last_tool_called != "TELL_USER" and self._last_tool_called != "ASK_USER":
-        self.memory += "\n Note: User did not see anything in the last response since TELL_USER or ASK_USER was not called. \n"
+        user_message = "User did not see anything in the last response since TELL_USER or ASK_USER was not called."
+        self.logger.info(user_message)
+        note = f"\n Note: {user_message} \n"
+        self.memory += note
       # check end condition
       if self.ended:
         break

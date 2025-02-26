@@ -54,6 +54,28 @@ def clean_agent_simulations(agent_name: str) -> int:
             count += 1
     return count
 
+def clean_agent_chats(agent_name: str) -> int:
+    """Clean chat files for a specific agent. Returns number of files removed."""
+    chats_dirs = [
+        os.path.join(os.path.dirname(__file__), "lib", "tools", "chats"),
+        os.path.join(os.path.dirname(__file__), "chats")
+    ]
+    
+    # Convert agent_name to the format used in chat files
+    # e.g. agent_manifesto_agent -> AgentManifestoAgent
+    formatted_name = ''.join(word.capitalize() for word in agent_name.split('_'))
+    
+    count = 0
+    for chats_dir in chats_dirs:
+        if not os.path.exists(chats_dir):
+            continue
+            
+        for item in os.listdir(chats_dir):
+            if formatted_name in item:
+                os.remove(os.path.join(chats_dir, item))
+                count += 1
+    return count
+
 def main():
     # Get available agents
     agents = get_available_agents()
@@ -82,15 +104,16 @@ def main():
 
     # Show cleaning options
     print("\nWhat would you like to clean?")
-    print("1. Both")
+    print("1. All")
     print("2. Runs")
     print("3. Simulations")
+    print("4. Chats")
     print()
 
     while True:
         try:
             clean_choice = int(input("Select what to clean (number): "))
-            if 1 <= clean_choice <= 3:
+            if 1 <= clean_choice <= 4:
                 break
             print("Invalid choice, try again")
         except ValueError:
@@ -99,35 +122,47 @@ def main():
     # Clean based on selections
     total_runs = 0
     total_sims = 0
+    total_chats = 0
 
     if choice == 1:  # All agents
         print("\nCleaning all agents...")
         for agent_name, _ in agents:
-            if clean_choice in [1, 2]:  # Both or Runs
+            if clean_choice in [1, 2]:  # All or Runs
                 runs = clean_agent_runs(agent_name)
                 if runs > 0:
                     print(f"Removed {runs} run logs from {agent_name}")
                 total_runs += runs
 
-            if clean_choice in [1, 3]:  # Both or Simulations
+            if clean_choice in [1, 3]:  # All or Simulations
                 sims = clean_agent_simulations(agent_name)
                 if sims > 0:
                     print(f"Removed {sims} simulations from {agent_name}")
                 total_sims += sims
+                
+            if clean_choice in [1, 4]:  # All or Chats
+                chats = clean_agent_chats(agent_name)
+                if chats > 0:
+                    print(f"Removed {chats} chat files from {agent_name}")
+                total_chats += chats
     else:
         agent_name = agents[choice - 2][0]
         print(f"\nCleaning {agent_name}...")
-        if clean_choice in [1, 2]:  # Both or Runs
+        if clean_choice in [1, 2]:  # All or Runs
             total_runs = clean_agent_runs(agent_name)
             if total_runs > 0:
                 print(f"Removed {total_runs} run logs")
 
-        if clean_choice in [1, 3]:  # Both or Simulations
+        if clean_choice in [1, 3]:  # All or Simulations
             total_sims = clean_agent_simulations(agent_name)
             if total_sims > 0:
                 print(f"Removed {total_sims} simulations")
+                
+        if clean_choice in [1, 4]:  # All or Chats
+            total_chats = clean_agent_chats(agent_name)
+            if total_chats > 0:
+                print(f"Removed {total_chats} chat files")
 
-    print(f"\nTotal cleaned: {total_runs} run logs, {total_sims} simulations")
+    print(f"\nTotal cleaned: {total_runs} run logs, {total_sims} simulations, {total_chats} chat files")
 
 if __name__ == "__main__":
     try:

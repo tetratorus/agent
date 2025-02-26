@@ -34,7 +34,8 @@ python main.py
 
 ```python
 from lib.base import Agent
-from lib.tools import search, open_url
+from lib.tools.search import search
+from lib.tools.open_url import open_url
 
 def create_agent(
     manifesto: str,
@@ -213,8 +214,7 @@ class Agent():
   ):
     """Initialize the agent with a manifesto and optional tools and functions.
     """
-    self.id = secrets.token_hex(4) + "-" + str(int(time.time()*1000000))
-    self.name = name + "/" + self.id
+    self.id = name + "/" + secrets.token_hex(4) + "-" + str(int(time.time()*1000000))
     self.llm_call_count = 0
     self.debug_verbose = False
     self.model_name = model_name
@@ -225,9 +225,9 @@ class Agent():
     self.manifesto = banner + "\n" + manifesto + "\n" + banner
     self.memory = memory
     self.log_handler = lambda msg: print(msg)
-    self.ask_user = lambda q: (self.log_handler(q), get_multiline_input())[1]
-    self.tell_user = lambda m: (self.log_handler(m), "")[1]
-    self.end_run = lambda _: (setattr(self, "ended", True), "")[1]
+    self.ask_user = lambda _, q: (self.log_handler(q), get_multiline_input())[1]
+    self.tell_user = lambda _, m: (self.log_handler(m), "")[1]
+    self.end_run = lambda _, x: (setattr(self, "ended", True), "")[1]
 
     self.ended = False
 
@@ -267,7 +267,7 @@ class Agent():
       raw_response = self.llm_call(self.manifesto + "\n" + self.memory)
       llm_call_end_time = time.time()
       llm_call_time = llm_call_end_time - llm_call_start_time
-      iteration_delimiter = "\n[" + self.name + " - LLM Response - Agent Iterations " + str(self.llm_call_count) + "]\n"
+      iteration_delimiter = "\n[" + self.id + " - LLM Response - Agent Iterations " + str(self.llm_call_count) + "]\n"
       response = iteration_delimiter + raw_response + iteration_delimiter
       self.memory += response
 
@@ -284,7 +284,7 @@ class Agent():
           try:
             # Log tool execution
             start_time = time.time()
-            result = tool(tool_args)
+            result = tool(self.id, tool_args)
             execution_time = time.time() - start_time
 
             if self.debug_verbose:

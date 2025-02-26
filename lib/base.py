@@ -33,7 +33,7 @@ class Agent():
   ):
     """Initialize the agent with a manifesto and optional tools and functions.
     """
-    self.id = name + "/" + secrets.token_hex(4) + "-" + str(int(time.time()*1000000))
+    self.id = name + "_" + secrets.token_hex(4) + "-" + str(int(time.time()*1000000))
     self.llm_call_count = 0
     self.debug_verbose = False
     self.model_name = model_name

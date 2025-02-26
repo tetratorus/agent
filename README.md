@@ -187,6 +187,7 @@ import re
 import time
 import base64
 import secrets
+import traceback
 
 def get_multiline_input() -> str:
     buffer = []
@@ -295,7 +296,11 @@ class Agent():
 
             self.memory += "\nTool Result [" + result + "]\n"
           except Exception as e:
-            self.memory += "\nTool Error [" + str(e) + "]\n"
+            error_trace = traceback.format_exc()
+            error_msg = f"\nTool Error [{str(e)}]\nStack Trace:\n{error_trace}\n"
+            self.memory += error_msg
+            if self.debug_verbose:
+              self.log_handler(error_msg)
         else:
           self.update_memory(self.memory + "\nTool Not Found [" + tool_name + "]\n")
       if self._last_tool_called != "TELL_USER" and self._last_tool_called != "ASK_USER":

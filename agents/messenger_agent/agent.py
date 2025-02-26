@@ -2,7 +2,7 @@ from lib.base import Agent
 from lib.tools.spawn_subagent import spawn_subagent
 from lib.tools.tell_subagent import tell_subagent
 from lib.tools.read_chat import read_chat
-from lib.tools.list import list_agents
+from lib.tools.list_agents import list_agents
 
 def create_agent(
     manifesto: str,

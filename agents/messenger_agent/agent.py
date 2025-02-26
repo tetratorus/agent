@@ -1,7 +1,7 @@
 from lib.base import Agent
 from lib.tools.spawn_subagent import spawn_subagent
-from lib.tools.tell_subagent import tell_subagent
-from lib.tools.read_chat import read_chat
+from lib.tools.listen_to_subagent import listen_to_subagent
+from lib.tools.respond_to_subagent import respond_to_subagent
 from lib.tools.list_agents import list_agents
 
 def create_agent(
@@ -25,8 +25,8 @@ def create_agent(
         tools={
             'LIST_AGENTS': list_agents,
             'SPAWN_SUBAGENT': spawn_subagent,
-            'TELL_SUBAGENT': tell_subagent,
-            'READ_CHAT': read_chat,
+            'LISTEN_TO_SUBAGENT': listen_to_subagent,
+            'RESPOND_TO_SUBAGENT': respond_to_subagent,
         },
         name="MessengerAgent",
     )

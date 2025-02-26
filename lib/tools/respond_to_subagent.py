@@ -1,7 +1,7 @@
 from pathlib import Path
 
-def tell_subagent(caller_id: str, input_str: str) -> str:
-    """Write a message to a subagent's chat file.
+def respond_to_subagent(caller_id: str, input_str: str) -> str:
+    """Write a message to a subagent's chat file to respond to them.
 
     Args:
         caller_id (str): The ID of the caller
@@ -20,7 +20,7 @@ def tell_subagent(caller_id: str, input_str: str) -> str:
 
     agent_id, message = parts
 
-    chats_dir = Path(__file__).parent / 'chats'
+    chats_dir = Path(__file__).parent.parent.parent / 'chats'
     chats_dir.mkdir(exist_ok=True)
 
     # Write to caller_to_agent chat file

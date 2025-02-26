@@ -56,24 +56,20 @@ def clean_agent_simulations(agent_name: str) -> int:
 
 def clean_agent_chats(agent_name: str) -> int:
     """Clean chat files for a specific agent. Returns number of files removed."""
-    chats_dirs = [
-        os.path.join(os.path.dirname(__file__), "lib", "tools", "chats"),
-        os.path.join(os.path.dirname(__file__), "chats")
-    ]
+    chats_dir = os.path.join(os.path.dirname(__file__), "chats")
     
     # Convert agent_name to the format used in chat files
     # e.g. agent_manifesto_agent -> AgentManifestoAgent
     formatted_name = ''.join(word.capitalize() for word in agent_name.split('_'))
     
     count = 0
-    for chats_dir in chats_dirs:
-        if not os.path.exists(chats_dir):
-            continue
+    if not os.path.exists(chats_dir):
+        return count
             
-        for item in os.listdir(chats_dir):
-            if formatted_name in item:
-                os.remove(os.path.join(chats_dir, item))
-                count += 1
+    for item in os.listdir(chats_dir):
+        if formatted_name in item:
+            os.remove(os.path.join(chats_dir, item))
+            count += 1
     return count
 
 def main():

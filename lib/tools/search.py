@@ -2,7 +2,7 @@ from serpapi import GoogleSearch
 import os
 
 def search(caller_id: str, input_str: str) -> str:
-    """Execute a Google search using SerpAPI.
+    """Execute a Google search using SerpAPI. Only returns URLs, no other text.
 
     Args:
         input_str: String in format 'query§max_results'. max_results is optional, defaults to all results.

@@ -5,8 +5,8 @@ import hashlib
 # Store last content hash per caller_id
 _last_content_hash = {}
 
-def read_chat(caller_id: str, agent_id: str) -> str:
-    """Read messages from an agent's chat file.
+def listen_to_subagent(caller_id: str, agent_id: str) -> str:
+    """Listen to incoming messages from an agent's chat file
     If the caller_id has read this file before, blocks until new content is available.
 
     Args:
@@ -16,7 +16,8 @@ def read_chat(caller_id: str, agent_id: str) -> str:
     Returns:
         str: The content of the chat file
     """
-    chats_dir = Path(__file__).parent / 'chats'
+
+    chats_dir = Path(__file__).parent.parent.parent / 'chats'
     chat_path = chats_dir / f"{agent_id}_to_{caller_id}.txt"
 
     if not chat_path.exists():

@@ -20,7 +20,6 @@ class StreamingLogger(logging.Handler):
         self.agent_colors = {}
         # Bright ANSI colors (text only, no background)
         self.bright_colors = [
-            "\033[90m",  # Bright Black (Gray)
             "\033[91m",  # Bright Red
             "\033[92m",  # Bright Green
             "\033[93m",  # Bright Yellow

@@ -28,8 +28,8 @@ Spend some time reflecting on how the manifesto guides agent behavior through th
 
 Next, take look at all the tools available using list_tools.
 
-Start by asking the user for the name of the new agent.
-After that, ask the user what the agent should do.
+Start by asking the user for the name of the new agent. ONLY ask for the name.
+After that, ask the user what the agent should do. ASK THIS SEPARATELY FROM THE NAME.
 You should ONLY ask intent-based questions to the user, and try to infer the rest of the implementation of your manifesto on your own.
 DO NOT ask the user about implementation details.
 

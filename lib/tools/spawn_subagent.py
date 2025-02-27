@@ -64,7 +64,7 @@ def spawn_subagent(caller_id: str, input_str: str) -> str:
             with open(agent_to_caller, 'a') as f:
                 f.write(f"[{agent_id}] {message}\n")
                 f.flush()
-            agent.logger.info(f"[SUBAGENT_TELL_USER] {message}")
+            agent.logger.debug(f"[SUBAGENT_TELL_USER] {message}")
             return ""
 
         # Configure agent's ask_user to write to agent_to_caller and read from caller_to_agent
@@ -72,7 +72,7 @@ def spawn_subagent(caller_id: str, input_str: str) -> str:
             with open(agent_to_caller, 'a') as f:
                 f.write(f"[{agent_id}] {message}\n")
                 f.flush()
-            agent.logger.info(f"[SUBAGENT_ASK_USER] {message}")
+            agent.logger.debug(f"[SUBAGENT_ASK_USER] {message}")
 
             # Then wait for new content
             start_time = time.time()

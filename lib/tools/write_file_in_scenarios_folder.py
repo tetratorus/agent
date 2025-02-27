@@ -1,7 +1,7 @@
 from pathlib import Path
 import os
 
-def write_scenario_in_scenarios_folder(caller_id: str, input_str: str) -> str:
+def write_file_in_scenarios_folder(caller_id: str, input_str: str) -> str:
     """Write content in a file within the scenarios directory.
 
     Args:

@@ -35,7 +35,7 @@ def listen_to_subagent(caller_id: str, agent_id: str) -> str:
             _last_content_hash[caller_key] = current_hash
             return current_content
 
-        if time.time() - start_time > 60:  # 1 minute timeout
+        if time.time() - start_time > 300:  # 5 minute timeout
             raise TimeoutError("No new messages found, feel free to call this function again to await new messages")
 
         time.sleep(5)  # Sleep for 5 seconds between checks

@@ -88,7 +88,7 @@ def spawn_subagent(caller_id: str, input_str: str) -> str:
                     agent.logger.info(f"[USER_RESPONSE] Content: {new_content}")
                     return new_content
 
-                if time.time() - start_time > 60:  # 1 minute timeout
+                if time.time() - start_time > 300:  # 5 minute timeout
                     timeout_message = "ASK_USER timed out waiting for response"
                     agent.logger.info(timeout_message)
                     raise TimeoutError("No new messages found, feel free to call this function again to await new messages")

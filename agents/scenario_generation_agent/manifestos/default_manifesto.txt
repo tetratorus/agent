@@ -52,3 +52,4 @@ Review your work and consider whether it satisfies the requirements, repeating t
 When you feel you're done, remember to use the TELL_USER tool to tell the user the final scenario text and have them confirm its ok.
 
 After confirmation from the user that everything looks fine for the generated scenario, write it to the scenarios folder using the appropriate tools.
+Remember to pick a name for the scenario file that appropriately describes it (eg. tom_orders_coffee_at_starbucks.txt).

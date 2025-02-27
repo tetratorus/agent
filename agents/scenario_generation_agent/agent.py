@@ -15,12 +15,12 @@ def create_agent(manifesto: str, memory: str) -> Agent:
         manifesto=manifesto,
         memory=memory,
         tools={
-            LIST_AGENTS: list_agents,
-            LIST_FILES_IN_AGENTS_SUPERFOLDER: list_files_in_agents_superfolder,
-            READ_FILE_IN_AGENTS_SUPERFOLDER: read_file_in_agents_superfolder,
-            LIST_FILES_IN_SCENARIOS_FOLDER: list_files_in_scenarios_folder,
-            READ_FILE_IN_SCENARIOS_FOLDER: read_file_in_scenarios_folder,
-            WRITE_FILE_IN_SCENARIOS_FOLDER: write_file_in_scenarios_folder,
+            'LIST_AGENTS': list_agents,
+            'LIST_FILES_IN_AGENTS_SUPERFOLDER': list_files_in_agents_superfolder,
+            'READ_FILE_IN_AGENTS_SUPERFOLDER': read_file_in_agents_superfolder,
+            'LIST_FILES_IN_SCENARIOS_FOLDER': list_files_in_scenarios_folder,
+            'READ_FILE_IN_SCENARIOS_FOLDER': read_file_in_scenarios_folder,
+            'WRITE_FILE_IN_SCENARIOS_FOLDER': write_file_in_scenarios_folder,
         },
         name="ScenarioGenerationAgent",
     )

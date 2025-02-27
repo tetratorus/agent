@@ -155,6 +155,8 @@ agent/
 │       ├── manifestos/
 │       │   └── default_manifesto.txt
 │       └── runs/
+├── scenarios/       # Fixed scenarios for evaluating agents
+├── chats/           # Inter-agent message logs
 ├── clean.py         # Cleanup script
 ├── main.py         # Main runner with CLI interface
 ├── requirements.txt # Dependencies

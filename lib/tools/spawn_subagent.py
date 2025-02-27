@@ -63,6 +63,7 @@ def spawn_subagent(caller_id: str, input_str: str) -> str:
         def tell_user(agent_id: str, message: str) -> str:
             with open(agent_to_caller, 'a') as f:
                 f.write(f"[{agent_id}] {message}\n")
+                f.flush()
             agent.logger.info(f"[TELL_USER] {message}")
             return ""
 
@@ -70,6 +71,7 @@ def spawn_subagent(caller_id: str, input_str: str) -> str:
         def ask_user(agent_id: str, message: str) -> str:
             with open(agent_to_caller, 'a') as f:
                 f.write(f"[{agent_id}] {message}\n")
+                f.flush()
             agent.logger.info(f"[ASK_USER] {message}")
 
             # Then wait for new content

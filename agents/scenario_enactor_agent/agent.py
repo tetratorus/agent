@@ -15,5 +15,5 @@ def create_agent(manifesto: str, memory: str) -> Agent:
             'LIST_FILES_IN_SCENARIOS_FOLDER': list_files_in_scenarios_folder,
             'READ_FILE_IN_SCENARIOS_FOLDER': read_file_in_scenarios_folder,
         },
-        name="Scenario Enactor Agent",
+        name="ScenarioEnactorAgent",
     )

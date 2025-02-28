@@ -7,10 +7,10 @@ def list_agents(caller_id: str, _: str = '') -> str:
         current_dir = os.path.dirname(os.path.abspath(__file__))
         project_root = os.path.dirname(os.path.dirname(current_dir))
         agents_dir = os.path.join(project_root, 'agents')
-        
+
         if not os.path.isdir(agents_dir):
             return f"Agents directory not found at: {agents_dir}"
-        
+
         agents = []
         for agent_name in os.listdir(agents_dir):
             agent_dir = os.path.join(agents_dir, agent_name)
@@ -33,10 +33,13 @@ def list_agents(caller_id: str, _: str = '') -> str:
                                     break
                         except Exception as e:
                             agents.append(f"\n{agent_name}: Error parsing agent file: {str(e)}")
-        
+
         if not agents:
             return "No agents found"
-            
+
+        # Sort agents alphabetically by agent name
+        agents.sort(key=lambda x: x.split("AGENT: ")[1].split("\n")[0] if "AGENT: " in x else x)
+
         return "Available agents:\n" + ''.join(agents)
 
     except Exception as e:

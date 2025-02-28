@@ -209,7 +209,7 @@ def main():
 
     # Create run log with timestamp
     timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
-    run_log = os.path.join(runs_dir, f"run_log_{timestamp}_{secrets.token_hex(4)}")
+    run_log = os.path.join(runs_dir, f"run_log_{timestamp}_{secrets.token_hex(4)}.txt")
 
     # Setup logging
     with open(run_log, "w") as log_file:

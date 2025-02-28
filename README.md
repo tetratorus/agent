@@ -129,11 +129,12 @@ Tool Result: "Ok, not bad, end run."
 END OF EXAMPLE.
 
 ## Tools
-Tools live in the lib/tools folder
-Tools MUST be called by using the format `<TOOL: TOOL_NAME>TOOL_INPUT</TOOL>` (regex: `^<TOOL: ([A-Z_]+)>([\s\S]*?)</TOOL>$`).
-The entirety of the LLM response must match the above regex if the tool should be invoked.
-Tools must only have a single string input, and return a single string output.
-For tools that require multiple inputs and outputs, use the "§" as a delimiter: `<TOOL: TOOL_NAME>TOOL_INPUT1§TOOL_INPUT2</TOOL> -> TOOL_OUTPUT1§TOOL_OUTPUT2`
+
+- Tools live in the lib/tools folder
+- Tools MUST be called by using the format `<TOOL: TOOL_NAME>TOOL_INPUT</TOOL>` (regex: `^<TOOL: ([A-Z_]+)>([\s\S]*?)</TOOL>$`).
+- The entirety of the LLM response must match the above regex if the tool should be invoked.
+- Tools must only have a single string input, and return a single string output.
+- For tools that require multiple inputs and outputs, use the "§" as a delimiter: `<TOOL: TOOL_NAME>TOOL_INPUT1§TOOL_INPUT2</TOOL> -> TOOL_OUTPUT1§TOOL_OUTPUT2`
 
 ## Project Tree
 

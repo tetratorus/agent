@@ -247,7 +247,7 @@ class Agent():
     self.memory = text
 
   def update_memory(self, text: str) -> None:
-    self.logger.debug("\n".join(f"[Memory]{line}" for line in text.split("\n")))
+    self.logger.debug("\n".join(f"[{self.id}][Memory]{line}" for line in text.split("\n")))
     self.memory += text
 
   def tool_detection(self, text: str) -> Optional[Tuple[str, str]]:

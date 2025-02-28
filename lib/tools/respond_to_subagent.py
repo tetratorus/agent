@@ -1,4 +1,5 @@
 from pathlib import Path
+import re
 
 def respond_to_subagent(caller_id: str, input_str: str) -> str:
     """Write a message to a subagent's chat file to respond to them.
@@ -14,11 +15,14 @@ def respond_to_subagent(caller_id: str, input_str: str) -> str:
         ValueError: If input format is invalid
         IOError: If writing to chat file fails
     """
-    parts = input_str.split('§')
-    if len(parts) != 2:
+    # Use regex to match the format 'agent_id§message' with a non-greedy approach
+    # This is more robust than splitting on '§' which can fail if the message itself contains '§'
+    # or if there are formatting issues with newlines, invisible characters, etc.
+    match = re.match(r'^([^§]+)§([\s\S]*)$', input_str.strip())
+    if not match:
         raise ValueError("Input must be in format 'agent_id§message'")
 
-    agent_id, message = parts
+    agent_id, message = match.groups()
 
     chats_dir = Path(__file__).parent.parent.parent / 'chats'
     chats_dir.mkdir(exist_ok=True)

@@ -1,8 +1,0 @@
-{
-  "files.associations": {
-      "**/scenarios/*": "plaintext",
-      "**/manifestos/*": "plaintext",
-      "**/runs/*": "plaintext",
-      "**/simulations/*": "plaintext"
-  }
-}

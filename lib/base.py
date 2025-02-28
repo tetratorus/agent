@@ -58,8 +58,12 @@ class Agent():
     }
     self._last_tool_called = None
 
-  def update_memory(self, text: str) -> None:
+  def overwrite_memory(self, text: str) -> None:
     self.memory = text
+
+  def update_memory(self, text: str) -> None:
+    self.logger.debug("\n".join(f"[Memory]{line}" for line in text.split("\n")))
+    self.memory += text
 
   def tool_detection(self, text: str) -> Optional[Tuple[str, str]]:
     """Detect first tool call in the text and return a (tool_name, tool_input) tuple or None."""
@@ -75,7 +79,7 @@ class Agent():
       **kwargs
     ).choices[0].message.content
 
-  def run(self) -> str:
+  def run(self) -> None:
     # agent loop
     while True:
       self._last_tool_called = None
@@ -84,7 +88,7 @@ class Agent():
       llm_call_time = time.time() - llm_call_start_time
       iteration_delimiter = f"\n[{self.id} - LLM Response - Agent Iterations {self.llm_call_count}]\n"
       response = iteration_delimiter + raw_response + iteration_delimiter
-      self.memory += response
+      self.update_memory(response)
       self.logger.info(f"[LLM Response] Length: {len(response)} | Time: {llm_call_time:.4f}s")
       self.logger.debug(f"[LLM Response] Result: {response}")
 
@@ -100,28 +104,27 @@ class Agent():
             execution_time = time.time() - start_time
             self.logger.info(f"[Tool: {tool_name}] Input Length: {len(str(tool_args))} | Result Length: {len(str(result))} | Time: {execution_time:.4f}s")
             self.logger.debug(f"[Tool: {tool_name}] Input: {tool_args} | Result: {result}")
-            self.memory += f"\nTool Result [Tool: {tool_name}] Input: {tool_args} | Result: {result} | Time: {execution_time:.4f}s\n"
+            self.update_memory(f"\nTool Result [Tool: {tool_name}] Input: {tool_args} | Result: {result} | Time: {execution_time:.4f}s\n")
           except Exception as e:
             self.logger.info(f"Tool Error: {str(e)}")
             self.logger.error(traceback.format_exc())
-            self.memory += f"\nTool Error: {str(e)}\n"
+            self.update_memory(f"\nTool Error: {str(e)}\n")
         else:
           error_message = f"Tool Not Found: {tool_call[0]}"
           self.logger.info(error_message)
-          self.memory += f"\n{error_message}\n"
+          self.update_memory(f"\n{error_message}\n")
       else:
         no_tool_message = "No tool call detected in LLM response based on exact regex match."
         self.logger.info(no_tool_message)
-        self.memory += f"\n{no_tool_message}\n"
+        self.update_memory(f"\n{no_tool_message}\n")
 
       if self._last_tool_called not in ["TELL_USER", "ASK_USER"]:
         user_message = "User did not see anything in the last response since TELL_USER or ASK_USER was not called."
         self.logger.info(user_message)
-        self.memory += f"\n Note: {user_message} \n"
+        self.update_memory(f"\n Note: {user_message} \n")
 
       if self.ended:
         self.logger.debug(f"[Agent {self.id}] Ended")
-        self.logger.debug(f"[Manifesto]\n{self.manifesto}] \n[Memory]\n {self.memory}\n")
         break
 
-    return self.manifesto + "\n" + self.memory
+    return

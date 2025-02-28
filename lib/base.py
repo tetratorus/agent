@@ -110,7 +110,7 @@ class Agent():
           self.logger.info(error_message)
           self.memory += f"\n{error_message}\n"
       else:
-        no_tool_message = "No tool call detected in LLM response based on regex ^<TOOL: ([A-Z_]+)>([\s\S]*?)</TOOL>$"
+        no_tool_message = "No tool call detected in LLM response based on exact regex match."
         self.logger.info(no_tool_message)
         self.memory += f"\n{no_tool_message}\n"
 

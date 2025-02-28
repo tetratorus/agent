@@ -9,16 +9,23 @@ def spawn_subagent(caller_id: str, input_str: str) -> str:
 
     Args:
         caller_id (str): The ID of the caller
-        input_str (str): String in format 'agent_name§chat_id'
+        input_str (str): The agent specification in the format "agent_name§manifesto_name"
+                         The manifesto file must exist at agents/{agent_name}/manifestos/{manifesto_name}.txt
+                         Note: "default_manifesto" is always available for all agents.
 
     Returns:
         str: The agent instance ID
 
     Raises:
-        ValueError: If input format is invalid or agent not found
+        ValueError: If input format is invalid, agent not found, or manifesto not found
         ImportError: If agent module cannot be imported
     """
-    agent_name = input_str
+    # Parse input string to get agent_name and manifesto_name
+    parts = input_str.split("§")
+    if len(parts) != 2:
+        raise ValueError(f"Invalid input format. Expected 'agent_name§manifesto_name', got '{input_str}'")
+    
+    agent_name, manifesto_name = parts
 
     agents_dir = Path(__file__).parent.parent.parent / "agents"
     agent_dir = agents_dir / agent_name
@@ -37,10 +44,10 @@ def spawn_subagent(caller_id: str, input_str: str) -> str:
 
     # Create the agent instance
     try:
-        # Load default manifesto
-        manifesto_file = agent_dir / "manifestos" / "default_manifesto.txt"
+        # Load manifesto
+        manifesto_file = agent_dir / "manifestos" / f"{manifesto_name}.txt"
         if not manifesto_file.exists():
-            raise ValueError(f"No default_manifesto.txt found for agent {agent_name}")
+            raise ValueError(f"Manifesto '{manifesto_name}' not found for agent {agent_name}")
 
         manifesto = manifesto_file.read_text()
 

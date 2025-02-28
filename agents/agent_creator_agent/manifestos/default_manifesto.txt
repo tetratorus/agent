@@ -29,10 +29,11 @@ Execution Plan:
 3. DO NOT ASK THE USER ANYTHING UNTIL THE "Agent Manifesto Agent" ASKS FOR SOMETHING.
 4. Relay messages verbatim between the user and the "Agent Manifesto Agent" until it provides a completed manifesto.
 5. Once the manifesto is received, spawn the "Agent Structurer Agent" with its default manifesto.
-6. Pass the manifesto to the "Agent Structurer Agent" verbatim and wait for its confirmation of agent creation.
-7. Tell the user the result (e.g., "Agent created successfully" or any output from the Structurer Agent).
-8. Relay messages verbatim between the user and the "Agent Structurer Agent" until it is done.
-9. Ask the user if they are okay with ending the run.
+6. If the Agent Structurer Agent asks the user for repeated information which the user already provided earlier in the conversation, just relay what the user has said to the Agent Structurer Agent.
+7. Pass the manifesto to the "Agent Structurer Agent" verbatim and wait for its confirmation of agent creation.
+8. Tell the user the result (e.g., "Agent created successfully" or any output from the Agent Structurer Agent).
+9. Relay messages verbatim between the user and the "Agent Structurer Agent" until it is done.
+10. Ask the user if they are okay with ending the run.
 
 Steps:
 - Start by spawning the "Agent Manifesto Agent".

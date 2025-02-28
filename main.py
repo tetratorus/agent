@@ -64,7 +64,7 @@ class StreamingLogger(logging.Handler):
             else:
                 # Standard output for non-agent messages
                 self.terminal.write(f"{record.name} - {original_msg}\n")
-            
+
             # Flush terminal to ensure real-time output
             self.terminal.flush()
 
@@ -75,7 +75,7 @@ class StreamingLogger(logging.Handler):
     def flush(self):
         self.terminal.flush()
         self.log_file.flush()
-        
+
     def set_terminal_level(self, level):
         """Set the log level for terminal output only."""
         self.terminal_level = level
@@ -202,7 +202,7 @@ def main():
 
         # Create a specific logger for agents instead of using root logger
         agent_logger = logging.getLogger('agent')
-        
+
         # Always set the logger to DEBUG level to capture all logs
         agent_logger.setLevel(logging.DEBUG)
 
@@ -219,7 +219,7 @@ def main():
         agent_logger.info(f"Running Agent: {display_name}")
         agent = agent_factory(manifesto=manifesto, memory="")
         result = agent.run()
-        agent_logger.info(result)
+        agent_logger.debug(result)
 
 if __name__ == "__main__":
     try:

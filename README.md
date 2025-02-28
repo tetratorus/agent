@@ -269,6 +269,8 @@ class Agent():
       iteration_delimiter = f"\n[{self.id} - LLM Response - Agent Iterations {self.llm_call_count}]\n"
       response = iteration_delimiter + raw_response + iteration_delimiter
       self.memory += response
+      self.logger.info(f"[LLM Response] Length: {len(response)} | Time: {llm_call_time:.4f}s")
+      self.logger.debug(f"[LLM Response] Result: {response}")
 
       # tool_detection
       tool_call = self.tool_detection(raw_response)
@@ -280,8 +282,8 @@ class Agent():
             start_time = time.time()
             result = tool(self.id, tool_args)
             execution_time = time.time() - start_time
-            self.logger.info(f"[Tool: {tool_name}] Input: {tool_args} | Result Length: {len(str(result))} | Time: {execution_time:.4f}s")
-            self.logger.debug(f"[Tool: {tool_name}] Result: {result}")
+            self.logger.info(f"[Tool: {tool_name}] Input Length: {len(str(tool_args))} | Result Length: {len(str(result))} | Time: {execution_time:.4f}s")
+            self.logger.debug(f"[Tool: {tool_name}] Input: {tool_args} | Result: {result}")
             self.memory += f"\nTool Result [Tool: {tool_name}] Input: {tool_args} | Result: {result} | Time: {execution_time:.4f}s\n"
           except Exception as e:
             self.logger.info(f"Tool Error: {str(e)}")
@@ -296,15 +298,14 @@ class Agent():
         self.logger.info(no_tool_message)
         self.memory += f"\n{no_tool_message}\n"
 
-      self.logger.info(f"[LLM Response] Length: {len(response)} | Time: {llm_call_time:.4f}s")
-      self.logger.debug(f"[LLM Response] Result: {response}")
-
       if self._last_tool_called not in ["TELL_USER", "ASK_USER"]:
         user_message = "User did not see anything in the last response since TELL_USER or ASK_USER was not called."
         self.logger.info(user_message)
         self.memory += f"\n Note: {user_message} \n"
 
       if self.ended:
+        self.logger.debug(f"[Agent {self.id}] Ended")
+        self.logger.debug(f"[Manifesto]\n{self.manifesto}] \n[Memory]\n {self.memory}\n")
         break
 
     return self.manifesto + "\n" + self.memory

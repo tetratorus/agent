@@ -92,7 +92,7 @@ def spawn_subagent(caller_id: str, input_str: str) -> str:
                 if current_content != last_content:
                     # Return just the new content
                     new_content = current_content[len(last_content):].strip()
-                    agent.logger.info(f"[USER_RESPONSE] Content: {new_content}")
+                    agent.logger.info(f"[PARENT_RESPONSE] {new_content}")
                     return new_content
 
                 if time.time() - start_time > 300:  # 5 minute timeout

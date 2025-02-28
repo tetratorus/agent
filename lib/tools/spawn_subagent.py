@@ -69,7 +69,7 @@ def spawn_subagent(caller_id: str, input_str: str) -> str:
         # Configure agent's tell_user to write to agent_to_caller file
         def tell_user(agent_id: str, message: str) -> str:
             with open(agent_to_caller, 'a') as f:
-                f.write(f"[{agent_id}] {message}\n")
+                f.write(f"{message}\n")
                 f.flush()
             agent.logger.debug(f"[SUBAGENT_TELL_USER] {message}")
             return ""
@@ -77,7 +77,7 @@ def spawn_subagent(caller_id: str, input_str: str) -> str:
         # Configure agent's ask_user to write to agent_to_caller and read from caller_to_agent
         def ask_user(agent_id: str, message: str) -> str:
             with open(agent_to_caller, 'a') as f:
-                f.write(f"[{agent_id}] {message}\n")
+                f.write(f"{message}\n")
                 f.flush()
             agent.logger.debug(f"[SUBAGENT_ASK_USER] {message}")
 

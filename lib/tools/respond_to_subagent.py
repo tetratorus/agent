@@ -1,5 +1,4 @@
 from pathlib import Path
-import re
 
 def respond_to_subagent(caller_id: str, input_str: str) -> str:
     """Write a message to a subagent's chat file to respond to them.
@@ -30,7 +29,7 @@ def respond_to_subagent(caller_id: str, input_str: str) -> str:
     try:
         chat_file = chats_dir / f"{caller_id}_to_{agent_id}.txt"
         with open(chat_file, 'a') as f:
-            f.write(f"[{caller_id}] {message}\n")
+            f.write(f"{message}\n")
         return ""
     except IOError as e:
         raise IOError(f"Failed to write to chat file: {str(e)}")

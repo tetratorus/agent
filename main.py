@@ -28,6 +28,8 @@ class StreamingLogger(logging.Handler):
             "\033[96m",  # Bright Cyan
             "\033[97m",  # Bright White
         ]
+        # Store the terminal log level (will be set when adding handler)
+        self.terminal_level = logging.INFO
 
     def get_color_for_agent(self, agent_id):
         """Select a bright ANSI color based on the hash of the agent ID."""
@@ -46,32 +48,37 @@ class StreamingLogger(logging.Handler):
         # Get the original message
         original_msg = record.getMessage()
 
-        # For terminal output with colored agent prefix
-        if hasattr(record, 'name') and record.name.startswith('agent.'):
-            # Extract agent ID
-            agent_id = record.name[6:]  # Remove 'agent.' prefix
-            color_code = self.get_color_for_agent(agent_id)
-            reset_code = "\033[0m"
+        # For terminal output with colored agent prefix - only if at or above terminal level
+        if record.levelno >= self.terminal_level:
+            if hasattr(record, 'name') and record.name.startswith('agent.'):
+                # Extract agent ID
+                agent_id = record.name[6:]  # Remove 'agent.' prefix
+                color_code = self.get_color_for_agent(agent_id)
+                reset_code = "\033[0m"
 
-            # Color only the agent prefix, not the whole message
-            colored_prefix = f"{color_code}{record.name}{reset_code}"
+                # Color only the agent prefix, not the whole message
+                colored_prefix = f"{color_code}{record.name}{reset_code}"
 
-            # Write to terminal with colored prefix
-            self.terminal.write(f"{colored_prefix} - {original_msg}\n")
-        else:
-            # Standard output for non-agent messages
-            self.terminal.write(f"{record.name} - {original_msg}\n")
+                # Write to terminal with colored prefix
+                self.terminal.write(f"{colored_prefix} - {original_msg}\n")
+            else:
+                # Standard output for non-agent messages
+                self.terminal.write(f"{record.name} - {original_msg}\n")
+            
+            # Flush terminal to ensure real-time output
+            self.terminal.flush()
 
-        # Write original message (without color) to log file
+        # Always write to log file regardless of level
         self.log_file.write(f"{record.name} - {original_msg}\n")
-
-        # Flush both to ensure real-time output
-        self.terminal.flush()
         self.log_file.flush()
 
     def flush(self):
         self.terminal.flush()
         self.log_file.flush()
+        
+    def set_terminal_level(self, level):
+        """Set the log level for terminal output only."""
+        self.terminal_level = level
 
 def get_agent_factory(agent_name: str, silent: bool = False) -> Optional[callable]:
     """Import and return the create_agent function from an agent module."""
@@ -195,12 +202,15 @@ def main():
 
         # Create a specific logger for agents instead of using root logger
         agent_logger = logging.getLogger('agent')
+        
+        # Always set the logger to DEBUG level to capture all logs
+        agent_logger.setLevel(logging.DEBUG)
 
-        # Set log level based on selected mode
+        # Set terminal log level based on selected mode
         if mode == 2:  # Verbose/DEBUG mode
-            agent_logger.setLevel(logging.DEBUG)
+            logger.set_terminal_level(logging.DEBUG)
         else:  # Normal/INFO mode
-            agent_logger.setLevel(logging.INFO)
+            logger.set_terminal_level(logging.INFO)
 
         agent_logger.addHandler(logger)
         # Prevent propagation to root logger

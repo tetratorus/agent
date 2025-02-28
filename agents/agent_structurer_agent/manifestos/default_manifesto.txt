@@ -41,5 +41,6 @@ You are an expert agent designed to set up the necessary folder and file structu
   - Do not write new tools, if the manifesto mentions tools that dont exist or are not default tools, tell the user about this problem.
 
 - For the default_manifesto.txt
+  - DO NOT USE &lt; or &gt; IN PLACE OF < OR >
   - Try to use the exact same default_manifesto fed to you by the user input, including keeping the newlines.
   - Ensure that its in the right folder structure, list files if you need to to check this.

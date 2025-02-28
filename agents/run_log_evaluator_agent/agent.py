@@ -1,3 +1,6 @@
+from lib.tools.read_agent_run_log import read_agent_run_log
+from lib.tools.list_agent_run_logs import list_agent_run_logs
+from lib.tools.list_agents import list_agents
 from lib.base import Agent
 
 def create_agent(manifesto: str, memory: str) -> Agent:

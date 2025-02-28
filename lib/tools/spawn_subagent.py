@@ -24,7 +24,7 @@ def spawn_subagent(caller_id: str, input_str: str) -> str:
     parts = input_str.split("§")
     if len(parts) != 2:
         raise ValueError(f"Invalid input format. Expected 'agent_name§manifesto_name', got '{input_str}'")
-    
+
     agent_name, manifesto_name = parts
 
     agents_dir = Path(__file__).parent.parent.parent / "agents"
@@ -47,7 +47,7 @@ def spawn_subagent(caller_id: str, input_str: str) -> str:
         # Load manifesto
         manifesto_file = agent_dir / "manifestos" / f"{manifesto_name}.txt"
         if not manifesto_file.exists():
-            raise ValueError(f"Manifesto '{manifesto_name}' not found for agent {agent_name}")
+            raise ValueError(f"Manifesto '{manifesto_name}' not found for agent {agent_name}. (Note: remember not to include .txt extension for the manifesto name)")
 
         manifesto = manifesto_file.read_text()
 

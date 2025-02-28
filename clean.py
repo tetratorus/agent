@@ -30,7 +30,7 @@ def get_available_agents() -> List[Tuple[str, Optional[str]]]:
 
 def clean_agent_runs(agent_name: str) -> int:
     """Clean runs directory for a specific agent. Returns number of files removed."""
-    runs_dir = os.path.join(os.path.dirname(__file__), "agents", agent_name, "runs")
+    runs_dir = os.path.join(os.path.dirname(__file__), "runs", agent_name)
     if not os.path.exists(runs_dir):
         return 0
 
@@ -114,6 +114,15 @@ def main():
             print("Invalid choice, try again")
         except ValueError:
             print("Please enter a number")
+    
+    # Display warning and require confirmation
+    print("\n⚠️  WARNING: You are about to delete files that are not tracked by git. This action cannot be undone. ⚠️")
+    print("Type 'OK' to continue or anything else to cancel:")
+    confirmation = input("> ")
+    
+    if confirmation != "OK":
+        print("Operation cancelled.")
+        return
 
     # Clean based on selections
     total_runs = 0

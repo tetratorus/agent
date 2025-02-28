@@ -234,8 +234,7 @@ def main():
 
         agent_logger.info(f"Running Agent: {display_name}")
         agent = agent_factory(manifesto=manifesto, memory="")
-        result = agent.run()
-        agent_logger.debug(result)
+        agent.run()
 
 if __name__ == "__main__":
     try:

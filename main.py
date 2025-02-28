@@ -204,7 +204,7 @@ def main():
         return
 
     # Create runs directory if it doesn't exist
-    runs_dir = os.path.join(os.path.dirname(__file__), "agents", agent_name, "runs")
+    runs_dir = os.path.join(os.path.dirname(__file__), "runs", agent_name)
     os.makedirs(runs_dir, exist_ok=True)
 
     # Create run log with timestamp

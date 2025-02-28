@@ -6,8 +6,11 @@ import importlib.util
 import secrets
 from typing import Type, List, Tuple, Optional, Dict, Any, TextIO
 import datetime
-import hashlib
 import logging
+
+_first_agent_id = None
+GREY_TEXT_COLOR = "\033[90m"
+WHITE_TEXT_COLOR = "\033[97m"
 
 class StreamingLogger(logging.Handler):
     """Logger that writes to both file and stdout in real-time."""
@@ -18,33 +21,33 @@ class StreamingLogger(logging.Handler):
         self.setFormatter(logging.Formatter('%(name)s - %(message)s'))
         # Cache for agent colors
         self.agent_colors = {}
-        # Bright ANSI colors (text only, no background)
-        self.bright_colors = [
+        # ANSI colors (text only, no background)
+        self.text_colors = [
             "\033[91m",  # Bright Red
             "\033[92m",  # Bright Green
             "\033[93m",  # Bright Yellow
             "\033[94m",  # Bright Blue
             "\033[95m",  # Bright Magenta
             "\033[96m",  # Bright Cyan
-            "\033[97m",  # Bright White
         ]
         # Store the terminal log level (will be set when adding handler)
         self.terminal_level = logging.INFO
 
     def get_color_for_agent(self, agent_id):
-        """Select a bright ANSI color based on the hash of the agent ID."""
+        """Select a ANSI color based on the hash of the agent ID."""
         if agent_id in self.agent_colors:
             return self.agent_colors[agent_id]
 
         # Generate a simple hash number from the agent ID
-        hash_val = sum(ord(c) for c in agent_id) % len(self.bright_colors)
-        color = self.bright_colors[hash_val]
+        hash_val = sum(ord(c) for c in agent_id) % len(self.text_colors)
+        color = self.text_colors[hash_val]
 
         # Cache the color for this agent
         self.agent_colors[agent_id] = color
         return color
 
     def emit(self, record):
+        global _first_agent_id
         # Get the original message
         original_msg = record.getMessage()
 
@@ -53,14 +56,21 @@ class StreamingLogger(logging.Handler):
             if hasattr(record, 'name') and record.name.startswith('agent.'):
                 # Extract agent ID
                 agent_id = record.name[6:]  # Remove 'agent.' prefix
+                if _first_agent_id is None:
+                    _first_agent_id = agent_id
                 color_code = self.get_color_for_agent(agent_id)
                 reset_code = "\033[0m"
 
                 # Color only the agent prefix, not the whole message
                 colored_prefix = f"{color_code}{record.name}{reset_code}"
 
+                if _first_agent_id == agent_id:
+                    colored_msg = f"{WHITE_TEXT_COLOR}{original_msg}\033[0m"
+                else:
+                    colored_msg = f"{GREY_TEXT_COLOR}{original_msg}\033[0m"
+
                 # Write to terminal with colored prefix
-                self.terminal.write(f"{colored_prefix} - {original_msg}\n")
+                self.terminal.write(f"{colored_prefix} - {colored_msg}\n")
             else:
                 # Standard output for non-agent messages
                 self.terminal.write(f"{record.name} - {original_msg}\n")

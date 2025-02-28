@@ -47,8 +47,13 @@ COFFEE PRICE: '$6.'
 "
 
 Reason about the most appropriate way to test the target agent based on its purpose.
-Generate a scenario and its artifacts in one shot, keeping it under 8,000 characters.
-Review your work and consider whether it satisfies the requirements, repeating this step until satisfied.
+
+Once you are done with all the thinking above, ask the user if they want to generate a scenario themselves or if they want you to do it.
+If the user wants to generate the scenario themselves, ask them questions one by one such that they are able to give you the information you need to create the scenario.
+Otherwise, if you are to generate the scenario yourself, come up with information as you see fit.
+
+Then, generate a scenario and its artifacts in one shot, keeping it under 8,000 characters.
+Review your work and consider whether it satisfies the requirements, repeating the generation step until satisfied.
 When you feel you're done, remember to use the TELL_USER tool to tell the user the final scenario text and have them confirm its ok.
 
 After confirmation from the user that everything looks fine for the generated scenario, write it to the scenarios folder using the appropriate tools.

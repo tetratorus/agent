@@ -15,14 +15,13 @@ def respond_to_subagent(caller_id: str, input_str: str) -> str:
         ValueError: If input format is invalid
         IOError: If writing to chat file fails
     """
-    # Use regex to match the format 'agent_id§message' with a non-greedy approach
-    # This is more robust than splitting on '§' which can fail if the message itself contains '§'
-    # or if there are formatting issues with newlines, invisible characters, etc.
-    match = re.match(r'^([^§]+)§([\s\S]*)$', input_str.strip())
-    if not match:
+    # Split on the first occurrence of § only
+    # This ensures we correctly handle cases where the message itself contains §
+    parts = input_str.split('§', 1)
+    if len(parts) != 2:
         raise ValueError("Input must be in format 'agent_id§message'")
 
-    agent_id, message = match.groups()
+    agent_id, message = parts
 
     chats_dir = Path(__file__).parent.parent.parent / 'chats'
     chats_dir.mkdir(exist_ok=True)

@@ -15,7 +15,9 @@ def search(caller_id: str, input_str: str) -> str:
         No exceptions are raised, errors are returned as strings
     """
     try:
-        parts = input_str.split('§')
+        # Split on the first occurrence of § only
+        # This ensures we correctly handle cases where the query itself contains §
+        parts = input_str.split('§', 1)
         query = parts[0]
         max_results = int(parts[1]) if len(parts) > 1 else None
 

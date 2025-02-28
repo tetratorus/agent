@@ -13,7 +13,9 @@ def write_file_in_tools_folder(caller_id: str, input_str: str) -> str:
     Raises:
         ValueError: If path tries to escape tools directory or input format is invalid
     """
-    parts = input_str.split('§')
+    # Split on the first occurrence of § only
+    # This ensures we correctly handle cases where the content itself contains §
+    parts = input_str.split('§', 1)
     if len(parts) != 2:
         raise ValueError("Input must be in format 'file_path§content'")
 

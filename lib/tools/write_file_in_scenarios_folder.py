@@ -16,7 +16,9 @@ def write_file_in_scenarios_folder(caller_id: str, input_str: str) -> str:
         ValueError: If path tries to escape scenarios directory, input format is invalid,
                    or agent_name doesn't match an existing agent subfolder
     """
-    parts = input_str.split('§')
+    # Split on the first two occurrences of § to get the three parts
+    # This ensures we correctly handle cases where the content itself contains §
+    parts = input_str.split('§', 2)
     if len(parts) != 3:
         raise ValueError("Input must be in format 'agent_name§file_path§content'")
 

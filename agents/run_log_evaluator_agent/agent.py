@@ -16,4 +16,5 @@ def create_agent(manifesto: str, memory: str) -> Agent:
             'LIST_AGENTS': list_agents,
         },
         name="RunLogEvaluatorAgent",
+        model="openrouter/google/gemini-pro-1.5"
     )

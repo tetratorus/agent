@@ -1,5 +1,5 @@
 {
   "name": "AgentStructurerAgent",
-  "description": "Creates an agent that takes a manifesto as input and sets up the necessary folder and file structure for new agents. This agent takes a manifesto as input and: 1. Parses the manifesto to understand required files and structure 2. Creates the necessary folders and files for the new agent 3. Ensures the agent.py file follows the correct structure 4. Places the manifesto in the correct location. The agent only uses existing tools and doesn't redefine default tools. It verifies its work by checking the created files before completion.",
+  "description": "Creates an agent that takes a manifesto as input and sets up the necessary folder and file structure for new agents. This agent takes a manifesto as input and: 1. Parses the manifesto to understand required files and structure 2. Creates the necessary folders and files for the new agent 3. Ensures the config.json file follows the correct structure 4. Places the manifesto in the correct location. The agent only uses existing tools and doesn't include default tools in the config. It verifies its work by checking the created files before completion.",
   "tools": ["LIST_TOOLS", "READ_FILE_IN_AGENTS_SUPERFOLDER", "LIST_FILES_IN_AGENTS_SUPERFOLDER", "WRITE_FILE_IN_AGENTS_SUPERFOLDER"]
 }

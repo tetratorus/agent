@@ -2,5 +2,6 @@
   "name": "RunLogEvaluatorAgent",
   "description": "Creates a Run Log Evaluator Agent. This agent analyzes run logs to identify any major logical flaws or oversights.",
   "tools": ["READ_AGENT_RUN_LOG", "LIST_AGENT_RUN_LOGS", "LIST_AGENTS"],
-  "model": "openrouter/google/gemini-pro-1.5"
+  "model": "openrouter/google/gemini-pro-1.5",
+  "max_tokens": 2000000
 }

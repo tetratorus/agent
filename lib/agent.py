@@ -51,4 +51,7 @@ def create_agent(
    if 'model' in config:
        agent_params["model"] = config['model']
 
+   if 'max_tokens' in config:
+       agent_params["max_tokens"] = config['max_tokens']
+
    return Agent(**agent_params)

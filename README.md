@@ -200,12 +200,14 @@ class Agent():
       name: str,
       tools: Dict[str, Callable],
       model: str = "openai/gpt-4o",
+      max_tokens: int = 128000,
   ):
     """Initialize the agent with a manifesto and optional tools and functions.
     """
     self.id = name + "_" + time.strftime("%H%M%S") + "-" + secrets.token_hex(4) + "-"
     self.llm_call_count = 0
     self.model = model
+    self.max_tokens = max_tokens
     encoded_str = "=$=$Q$I$h$E$S$I$X$9$E$T$M$9$k$R$g$Q$1$U$V$1$E$I$P$R$1$U$F$Z$U$S$O$F$U$T$g$Q$l$T$F$d$U$Q$g$4$0$T$J$R$1$Q$V$J$F$V$T$5$U$S$g$0$U$R$U$N$V$W$T$B$C$V$O$F$E$V$S$9$E$U$N$l$U$I$h$E$S$I"
     parts = encoded_str.split('$')
     parts.reverse()
@@ -293,6 +295,8 @@ class Agent():
         user_message = "User did not see anything in the last response since TELL_USER or ASK_USER was not called."
         self.logger.info(user_message)
         self.update_memory(f"\n Note: {user_message} \n")
+
+      self.update_memory(f"\n Your Memory Usage %: {len(self.memory)/3/self.max_tokens:.2f} \n")
 
       if self.ended:
         self.logger.debug(f"[Agent {self.id}] Ended")

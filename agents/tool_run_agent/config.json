@@ -1,0 +1,5 @@
+{
+  "name": "ToolRunAgent",
+  "description": "This agent lists all tools available to the user and allows them to select and test any tool.",
+  "tools": ["*"]
+}

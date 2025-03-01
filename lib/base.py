@@ -67,7 +67,7 @@ class Agent():
 
   def tool_detection(self, text: str) -> Optional[Tuple[str, str]]:
     """Detect first tool call in the text and return a (tool_name, tool_input) tuple or None."""
-    pattern = r'^<TOOL: ([A-Z_]+)>([\s\S]*?)</TOOL>$'
+    pattern = r'<TOOL: ([A-Z_]+)>([\s\S]*)</TOOL>$'
     match = re.search(pattern, text)
     return (match.group(1), match.group(2)) if match else None
 

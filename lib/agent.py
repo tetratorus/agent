@@ -14,7 +14,15 @@ def create_agent(
    tools_dict = {}
    tools_dir = os.path.join(os.path.dirname(__file__), 'tools')
    
-   for tool_name in config['tools']:
+   # Handle wildcard "*" to include all tools
+   if "*" in config['tools']:
+       # Get all Python files in the tools directory
+       tool_files = [f[:-3].upper() for f in os.listdir(tools_dir) if f.endswith('.py')]
+       tools_to_load = tool_files
+   else:
+       tools_to_load = config['tools']
+   
+   for tool_name in tools_to_load:
        # Convert tool name to lowercase filename
        filename = tool_name.lower() + '.py'
        filepath = os.path.join(tools_dir, filename)

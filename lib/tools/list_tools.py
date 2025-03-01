@@ -35,6 +35,8 @@ def list_tools(caller_id: str, _: str = '') -> str:
                         f"Documentation: {doc}"
                     )
 
+        # Sort the tool_info list alphabetically
+        tool_info.sort()
         return '§'.join(tool_info) if tool_info else 'No tools found'
 
     except Exception as e:

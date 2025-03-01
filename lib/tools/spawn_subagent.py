@@ -35,7 +35,7 @@ def spawn_subagent(caller_id: str, input_str: str) -> str:
 
     if not config_file.exists():
         raise ValueError(f"Agent config for {agent_name} not found")
-    
+
     # Load the agent config
     with open(config_file, 'r') as f:
         config = json.load(f)
@@ -109,6 +109,10 @@ def spawn_subagent(caller_id: str, input_str: str) -> str:
             try:
                 agent.run()
             except Exception as e:
+                # tell parent
+                with open(agent_to_caller, 'a') as f:
+                    f.write(f"Error: {str(e)}\n")
+                    f.flush()
                 agent.logger.error(f"Agent thread error: {str(e)}")
 
         agent_thread = threading.Thread(target=run_agent_thread, daemon=True)

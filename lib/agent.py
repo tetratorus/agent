@@ -1,7 +1,6 @@
 from .base import Agent
 import os
 import importlib.util
-import sys
 
 def create_agent(
     config: dict,
@@ -13,7 +12,7 @@ def create_agent(
    # Create a dictionary of tools by importing them from the tools directory
    tools_dict = {}
    tools_dir = os.path.join(os.path.dirname(__file__), 'tools')
-   
+
    # Handle wildcard "*" to include all tools
    if "*" in config['tools']:
        # Get all Python files in the tools directory
@@ -21,12 +20,12 @@ def create_agent(
        tools_to_load = tool_files
    else:
        tools_to_load = config['tools']
-   
+
    for tool_name in tools_to_load:
        # Convert tool name to lowercase filename
        filename = tool_name.lower() + '.py'
        filepath = os.path.join(tools_dir, filename)
-       
+
        if os.path.exists(filepath):
            # Import the module dynamically
            module_name = f"lib.tools.{tool_name.lower()}"
@@ -34,7 +33,7 @@ def create_agent(
            if spec and spec.loader:
                module = importlib.util.module_from_spec(spec)
                spec.loader.exec_module(module)
-               
+
                # Get the function with the same name as the file (without .py)
                func_name = tool_name.lower()
                if hasattr(module, func_name):

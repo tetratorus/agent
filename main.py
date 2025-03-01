@@ -233,8 +233,12 @@ def main():
         agent_logger.propagate = False
 
         agent_logger.info(f"Running Agent: {display_name}")
-        agent = agent_factory(manifesto=manifesto, memory="")
-        agent.run()
+        try:
+            agent = agent_factory(manifesto=manifesto, memory="")
+            agent.run()
+        except Exception as e:
+            agent_logger.debug(f"Agent execution failed: {str(e)}", exc_info=True)
+            print(f"Error running agent: {str(e)}")
 
 if __name__ == "__main__":
     try:

@@ -30,29 +30,14 @@ The simplest way to run an agent is through the CLI:
 python main.py
 ```
 
-## Example agent.py
+## Example config.json
 
-```python
-from lib.base import Agent
-from lib.tools.search import search
-from lib.tools.open_url import open_url
-
-def create_agent(
-    manifesto: str,
-    memory: str,
-) -> Agent:
-    """Creates an example agent
-    This agent is an example agent that follows the instructions given to it by the user.
-    It has access to the SEARCH tool to search for information.
-    """
-    return Agent(
-        manifesto=manifesto,
-        memory=memory,
-        tools={
-            'SEARCH': search,
-        },
-        name="ExampleAgent",
-    )
+```json
+{
+  "name": "ExampleAgent",
+  "description": "This agent is an example agent that follows the instructions given to it by the user. It has access to the SEARCH tool to search for information.",
+  "tools": ["SEARCH"],
+}
 ```
 
 ## Example manifesto
@@ -142,26 +127,27 @@ END OF EXAMPLE.
 agent/
 ├── lib/
 │   ├── base.py      # Core agent implementation
-│   ├── debug.py     # Debugging utilities
-│   ├── meta.py      # Meta-programming utilities
-│   └── tools/       # Tool implementations
+│   ├── agent.py     # Central create agent function
+│   └── tools/       # Tools
 │       ├── list_tools.py
 │       ├── open_url.py
 │       └── search.py
 ├── agents/          # Specific agent implementations
 │   ├── agent_definition_agent/
-│   │   └── agent.py
+│   │   └── config.json
+│   │   └── manifestos/
+│   │       └── default_manifesto.txt
 │   └── research_agent/
-│       ├── agent.py
-│       ├── manifestos/
-│       │   └── default_manifesto.txt
-│       └── runs/
+│       ├── config.json
+│       └── manifestos/
+│          └── default_manifesto.txt
 ├── scenarios/       # Fixed scenarios for evaluating agents
 ├── chats/           # Inter-agent message logs
+├── runs/            # Run logs
 ├── clean.py         # Cleanup script
-├── main.py         # Main runner with CLI interface
+├── main.py          # Main runner with CLI interface
 ├── requirements.txt # Dependencies
-└── README.md       # Project description and instructions
+└── README.md        # Project description and instructions
 ```
 
 <details>

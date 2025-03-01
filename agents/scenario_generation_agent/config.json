@@ -1,0 +1,5 @@
+{
+  "name": "ScenarioGenerationAgent",
+  "description": "Creates a Scenario Generation Agent. This agent is designed to generate detailed scenario texts for target agents.",
+  "tools": ["LIST_AGENTS", "LIST_FILES_IN_AGENTS_SUPERFOLDER", "READ_FILE_IN_AGENTS_SUPERFOLDER", "LIST_FILES_IN_SCENARIOS_FOLDER", "READ_FILE_IN_SCENARIOS_FOLDER", "WRITE_FILE_IN_SCENARIOS_FOLDER"]
+}

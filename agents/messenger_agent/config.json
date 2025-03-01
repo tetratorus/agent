@@ -1,0 +1,5 @@
+{
+  "name": "MessengerAgent",
+  "description": "Creates a Messenger Agent that coordinates tasks between users and subagents. This agent facilitates communication between the user and other agents by: 1. Listing available agents to understand their capabilities 2. Spawning appropriate subagents based on the user's goal 3. Passing messages between subagents to accomplish tasks 4. Relaying final information back to the user. The agent develops a plan leveraging the capabilities of multiple subagents and manages the communication flow between them.",
+  "tools": ["LIST_AGENTS", "SPAWN_SUBAGENT", "LISTEN_TO_SUBAGENT", "RESPOND_TO_SUBAGENT"]
+}

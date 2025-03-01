@@ -96,17 +96,17 @@ class StreamingLogger(logging.Handler):
         """Set the log level for terminal output only."""
         self.terminal_level = level
 
-def get_agent_factory(agent_name: str, silent: bool = False) -> Optional[callable]:
-    """Import and return the create_agent function from an agent module."""
+def get_agent_config(agent_name: str, silent: bool = False) -> Optional[Dict[str, Any]]:
+    """Load and return the agent configuration from config.json."""
+    config_path = os.path.join(os.path.dirname(__file__), "agents", agent_name, "config.json")
     try:
-        module = importlib.import_module(f"agents.{agent_name}.agent")
-        if hasattr(module, 'create_agent'):
-            return module.create_agent
-    except ImportError:
+        import json
+        with open(config_path, 'r') as f:
+            return json.load(f)
+    except (FileNotFoundError, json.JSONDecodeError):
         if not silent:
-            print(f"Could not load agent for {agent_name}")
+            print(f"Could not load config for {agent_name}")
         return None
-    return None
 
 def get_available_agents() -> List[Tuple[str, Optional[str]]]:
     """Get list of available agents and their descriptions."""
@@ -114,8 +114,8 @@ def get_available_agents() -> List[Tuple[str, Optional[str]]]:
     agents_dir = os.path.join(os.path.dirname(__file__), "agents")
     for item in os.listdir(agents_dir):
         if os.path.isdir(os.path.join(agents_dir, item)) and not item.startswith('__'):
-            agent_factory = get_agent_factory(item, silent=True)
-            description = agent_factory.__doc__ if agent_factory and agent_factory.__doc__ else None
+            config = get_agent_config(item, silent=True)
+            description = config.get('description') if config else None
             agents.append((item, description))
     return sorted(agents, key=lambda x: x[0])
 
@@ -154,11 +154,11 @@ def main():
         print(description.strip())
     print()
 
-    # Load and run agent
+    # Load agent config
     print(f"Loading agent: {agent_name}")
-    agent_factory = get_agent_factory(agent_name)
-    if not agent_factory:
-        print(f"Could not load the agent for {agent_name}")
+    agent_config = get_agent_config(agent_name)
+    if not agent_config:
+        print(f"Could not load the config for {agent_name}")
         return
 
     # Select mode
@@ -234,7 +234,15 @@ def main():
 
         agent_logger.info(f"Running Agent: {display_name}")
         try:
-            agent = agent_factory(manifesto=manifesto, memory="")
+            # Import the central create_agent function
+            from lib.agent import create_agent
+            
+            # Create agent using the config
+            agent = create_agent(
+                config=agent_config,
+                manifesto=manifesto,
+                memory=""
+            )
             agent.run()
         except Exception as e:
             agent_logger.debug(f"Agent execution failed: {str(e)}", exc_info=True)

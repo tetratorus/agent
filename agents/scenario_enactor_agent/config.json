@@ -1,0 +1,5 @@
+{
+  "name": "ScenarioEnactorAgent",
+  "description": "Creates a Scenario Enactor Agent. This agent enacts scenarios by listing, selecting, and roleplaying through available scenarios, facilitating automatic testing of agents by simulating realistic situations.",
+  "tools": ["LIST_AGENTS", "LIST_FILES_IN_SCENARIOS_FOLDER", "READ_FILE_IN_SCENARIOS_FOLDER"]
+}

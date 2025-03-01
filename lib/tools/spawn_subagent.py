@@ -3,6 +3,8 @@ from pathlib import Path
 import time
 import logging
 import threading
+import json
+from lib.agent import create_agent
 
 def spawn_subagent(caller_id: str, input_str: str) -> str:
     """Spawn a new instance of a subagent that communicates via a chat file.
@@ -29,18 +31,14 @@ def spawn_subagent(caller_id: str, input_str: str) -> str:
 
     agents_dir = Path(__file__).parent.parent.parent / "agents"
     agent_dir = agents_dir / agent_name
-    agent_file = agent_dir / "agent.py"
+    config_file = agent_dir / "config.json"
 
-    if not agent_file.exists():
-        raise ValueError(f"Agent {agent_name} not found")
-
-    # Import the agent module
-    spec = importlib.util.spec_from_file_location("agent", str(agent_file))
-    if not spec or not spec.loader:
-        raise ImportError(f"Could not load agent module for {agent_name}")
-
-    module = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(module)
+    if not config_file.exists():
+        raise ValueError(f"Agent config for {agent_name} not found")
+    
+    # Load the agent config
+    with open(config_file, 'r') as f:
+        config = json.load(f)
 
     # Create the agent instance
     try:
@@ -51,7 +49,8 @@ def spawn_subagent(caller_id: str, input_str: str) -> str:
 
         manifesto = manifesto_file.read_text()
 
-        agent = module.create_agent(
+        agent = create_agent(
+            config=config,
             manifesto=manifesto,
             memory=""
         )

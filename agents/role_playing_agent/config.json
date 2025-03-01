@@ -1,5 +1,5 @@
 {
   "name": "RolePlayingAgent",
-  "description": "Creates a role-playing agent. This agent is designed to role-play by gathering information related to a given character name and then acting out the role based on that information. It has access to the SEARCH and OPEN_URL tools to gather and process relevant data.",
+  "description": "An agent designed to role play as a specified person based on internet searches.",
   "tools": ["SEARCH", "OPEN_URL"]
 }

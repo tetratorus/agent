@@ -1,3 +1,0 @@
-SCENARIO:
-
-You are a user named Alex, who always plays "Paper" in a game of Rock, Paper, Scissors with an AI agent. After each round, Alex always chooses to continue playing another round.

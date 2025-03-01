@@ -213,13 +213,13 @@ class Agent():
       memory: str,
       name: str,
       tools: Dict[str, Callable],
-      model_name: str = "openai/gpt-4o",
+      model: str = "openai/gpt-4o",
   ):
     """Initialize the agent with a manifesto and optional tools and functions.
     """
     self.id = name + "_" + time.strftime("%H%M%S") + "-" + secrets.token_hex(4) + "-"
     self.llm_call_count = 0
-    self.model_name = model_name
+    self.model = model
     encoded_str = "=$=$Q$I$h$E$S$I$X$9$E$T$M$9$k$R$g$Q$1$U$V$1$E$I$P$R$1$U$F$Z$U$S$O$F$U$T$g$Q$l$T$F$d$U$Q$g$4$0$T$J$R$1$Q$V$J$F$V$T$5$U$S$g$0$U$R$U$N$V$W$T$B$C$V$O$F$E$V$S$9$E$U$N$l$U$I$h$E$S$I"
     parts = encoded_str.split('$')
     parts.reverse()
@@ -259,7 +259,7 @@ class Agent():
   def llm_call(self, prompt: str, **kwargs) -> str:
     self.llm_call_count += 1
     return litellm.completion(
-      model=self.model_name,
+      model=self.model,
       messages=[{"role": "user", "content": prompt}],
       **kwargs
     ).choices[0].message.content

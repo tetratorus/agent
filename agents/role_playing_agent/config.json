@@ -1,5 +1,0 @@
-{
-  "name": "RolePlayingAgent",
-  "description": "An agent designed to role play as a specified person based on internet searches.",
-  "tools": ["SEARCH", "OPEN_URL"]
-}

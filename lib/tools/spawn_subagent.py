@@ -6,6 +6,9 @@ import threading
 import json
 from lib.agent import create_agent
 
+# Store last content per agent communication channel
+_last_content = {}
+
 def spawn_subagent(caller_id: str, input_str: str) -> str:
     """Spawn a new instance of a subagent that communicates via a chat file.
 
@@ -80,17 +83,24 @@ def spawn_subagent(caller_id: str, input_str: str) -> str:
                 f.flush()
             agent.logger.debug(f"[SUBAGENT_ASK_USER] {message}")
 
+            # Create a unique key for this communication channel
+            channel_key = f"{agent_id}_from_{caller_id}"
+            
             # Then wait for new content
             start_time = time.time()
-            with open(caller_to_agent, 'r') as f:
-                last_content = f.read()
+            
+            # Get last content from global dictionary or read from file if first time
+            if channel_key not in _last_content:
+                with open(caller_to_agent, 'r') as f:
+                    _last_content[channel_key] = f.read()
 
             while True:
                 with open(caller_to_agent, 'r') as f:
                     current_content = f.read()
-                if current_content != last_content:
+                if current_content != _last_content[channel_key]:
                     # Return just the new content
-                    new_content = current_content[len(last_content):].strip()
+                    new_content = current_content[len(_last_content[channel_key]):].strip()
+                    _last_content[channel_key] = current_content
                     agent.logger.info(f"[PARENT_RESPONSE] {new_content}")
                     return new_content
 

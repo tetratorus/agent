@@ -1,9 +1,8 @@
 from pathlib import Path
 import time
-import hashlib
 
-# Store last content hash per caller_id
-_last_content_hash = {}
+# Store last content per caller_id
+_last_content = {}
 
 def listen_to_subagent(caller_id: str, agent_id: str) -> str:
     """Listen to incoming messages from an agent's chat file
@@ -14,7 +13,7 @@ def listen_to_subagent(caller_id: str, agent_id: str) -> str:
         agent_id (str): The ID of the agent to read messages from
 
     Returns:
-        str: The content of the chat file
+        str: The new content of the chat file (only the diff since last call)
     """
 
     chats_dir = Path(__file__).parent.parent.parent / 'chats'
@@ -24,16 +23,21 @@ def listen_to_subagent(caller_id: str, agent_id: str) -> str:
         raise FileNotFoundError(f"No messages found from agent {agent_id}")
 
     caller_key = f"{caller_id}:{agent_id}"
-    last_content = _last_content_hash.get(caller_key)
+    last_content = _last_content.get(caller_key)
 
     # Keep checking for new content if we've seen this content before
     start_time = time.time()
     while True:
         current_content = chat_path.read_text()
-        current_hash = hashlib.sha256(current_content.encode()).hexdigest()
-        if last_content is None or current_hash != last_content:
-            _last_content_hash[caller_key] = current_hash
+        if last_content is None:
+            # First time reading, return all content
+            _last_content[caller_key] = current_content
             return current_content
+        elif current_content != last_content:
+            # Return only the new content (diff)
+            new_content = current_content[len(last_content):].strip()
+            _last_content[caller_key] = current_content
+            return new_content
 
         if time.time() - start_time > 300:  # 5 minute timeout
             raise TimeoutError("No new messages found, feel free to call this function again to await new messages")

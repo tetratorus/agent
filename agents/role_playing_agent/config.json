@@ -1,0 +1,5 @@
+{
+  "name": "RolePlayingAgent",
+  "description": "This agent is designed to role play based on real people, using internet searches and URL content retrieval for information gathering.",
+  "tools": ["SEARCH", "OPEN_URL"]
+}

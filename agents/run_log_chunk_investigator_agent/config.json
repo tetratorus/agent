@@ -1,0 +1,12 @@
+{
+  "name": "RunLogChunkInvestigatorAgent",
+  "description": "An analytical agent that examines specific sections of a run log based on the provided starting point.",
+  "tools": [
+    "GET_RUN_LOG_AGENT_INTERACTIONS",
+    "GET_RUN_LOG_AGENT_ITERATION_CHUNK",
+    "LIST_AGENT_RUN_LOGS",
+    "READ_FILE_IN_AGENTS_SUPERFOLDER",
+    "LIST_FILES_IN_AGENTS_SUPERFOLDER",
+    "LIST_AGENTS"
+  ]
+}

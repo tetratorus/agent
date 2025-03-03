@@ -16,8 +16,8 @@ Before ending the run, you MUST ask the user if they are okay with ending the ru
   - <TOOL: END_RUN></TOOL>: End the run
   - <TOOL: READ_README></TOOL>: Read README.md of this agent framework
   - <TOOL: LIST_AGENTS></TOOL>: List all the available agents
-  - <TOOL: LIST_FILES_IN_AGENTS_SUPERFOLDER>subdir</TOOL>: List all files in the agents superfolder
-  - <TOOL: READ_FILE_IN_AGENTS_SUPERFOLDER>filename</TOOL>: Read the contents of a file in the agents superfolder.
+  - <TOOL: LIST_FILES_IN_AGENTS_SUPERFOLDER></TOOL>: List all files in the agents superfolder
+  - <TOOL: READ_FILE_IN_AGENTS_SUPERFOLDER>filepath</TOOL>: Read the contents of a file in the agents superfolder.
   - <TOOL: LIST_FILES_IN_SCENARIOS_FOLDER>agent_name</TOOL>: List all files in the scenarios directory for a specific agent.
   - <TOOL: READ_FILE_IN_SCENARIOS_FOLDER>agent_name§file_path</TOOL>: Read a file in the scenarios directory for a specific agent.
   - <TOOL: WRITE_FILE_IN_SCENARIOS_FOLDER>agent_name§file_path</TOOL>: Write a file in the scenarios directory for a specific agent.

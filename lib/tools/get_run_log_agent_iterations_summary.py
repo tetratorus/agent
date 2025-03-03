@@ -3,7 +3,9 @@ import os
 import re
 from typing import Dict
 
-def get_run_log_agent_iterations(caller_id: str, input_str: str) -> str:
+def get_run_log_agent_iterations_summary(caller_id: str, input_str: str) -> str:
+    """Return a summary of the all agent and subagents iterations found in a run log."""
+
     # input str is agent_name and run_log_name
     parts = input_str.split("§")
     if len(parts) < 2:
@@ -30,25 +32,25 @@ def get_run_log_agent_iterations(caller_id: str, input_str: str) -> str:
 
         # Find all agent IDs and their max iterations
         iterations = {}
-        
+
         # Pattern to match agent IDs in the format: PascalCaseNameAgent_HHMMSS-hextoken-
         # Example: AgentCreatorAgent_145648-560d4e50-
         # Look for "Agent Iterations N" pattern which is the standard format in logs
         pattern = r'\[([A-Z][a-z0-9]*(?:[A-Z][a-z0-9]*)*Agent_\d{6}-[0-9a-f]{8}-) - LLM Response - Agent Iterations (\d+)\]'
-        
+
         # Find all matches and keep track of the maximum iteration for each agent
         for match in re.finditer(pattern, run_log_content):
             agent_id, iteration = match.groups()
             iterations[agent_id] = max(int(iteration), iterations.get(agent_id, 0))
-        
+
         # Format the results
         if not iterations:
             return "No agent iterations found in the run log."
-        
+
         result = "Agent Iterations:\n"
         for agent_id, max_iteration in sorted(iterations.items()):
             result += f"{agent_id}: Max Iteration: {max_iteration}\n"
-        
+
         return result
 
     except Exception as e:

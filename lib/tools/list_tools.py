@@ -29,8 +29,11 @@ def list_tools(caller_id: str, _: str = '') -> str:
                     doc = inspect.getdoc(func) or 'No documentation available'
                     sig = str(inspect.signature(func))
 
+                    # Convert function name to uppercase for tool name format
+                    tool_name = func_name.upper()
                     tool_info.append(
                         f"File: {file_name}\n"
+                        f"Tool: {tool_name}\n"
                         f"Function: {func_name}{sig}\n"
                         f"Documentation: {doc}"
                     )

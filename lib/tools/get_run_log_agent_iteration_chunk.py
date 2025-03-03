@@ -4,6 +4,20 @@ from typing import Dict, List, Tuple
 from pathlib import Path
 
 def get_run_log_agent_iteration_chunk(caller_id: str, input_str: str, banner_index: int = -1) -> str:
+    """Extract a specific agent iteration chunk from a run log file.
+    
+    Args:
+        caller_id: ID of the calling agent
+        input_str: String in format 'agent_name§run_log_name§agent_Id§iteration_number'
+                   agent_name: Name of the agent folder where the run log is stored
+                   run_log_name: Name of the run log file
+                   agent_Id: ID of the agent within the run log to extract iterations for
+                   iteration_number: Iteration number to extract
+        banner_index: Optional index of which banner instance to use (default: -1, uses last banner)
+    
+    Returns:
+        Content of the specified agent iteration chunk, or an error message
+    """
     def filter_content_by_agent_id(content: str, agent_id: str) -> str:
         """Filter content to only include lines related to the specified agent ID.
 
@@ -39,7 +53,7 @@ def get_run_log_agent_iteration_chunk(caller_id: str, input_str: str, banner_ind
 
         return '\n'.join(filtered_lines)
 
-    # input str is agent_name§run_log_name§agent_Id§iteration_number
+    # Parse the input string format agent_name§run_log_name§agent_Id§iteration_number
     parts = input_str.split('§')
     if len(parts) != 4:
         return "Error: Input should be in format 'agent_name§run_log_name§agent_Id§iteration_number'"

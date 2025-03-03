@@ -15,7 +15,7 @@ Before ending the run, you MUST ask user if they are ok with ending the run.
   - <TOOL: END_RUN></TOOL>: End the run.
   - <TOOL: READ_README></TOOL>: Read README.md of this agent framework
   - <TOOL: GET_RUN_LOG_AGENT_INTERACTIONS>agent_name§log_file_name</TOOL>: Extract agent interactions from a run log file.
-  - <TOOL: GET_RUN_LOG_AGENT_ITERATION_CHUNK>agent_name§log_file_name</TOOL>: Retrieve a specific iteration chunk from the run log.
+  - <TOOL: GET_RUN_LOG_AGENT_ITERATION_CHUNK>agent_name§log_file_name§agent_Id§iteration_number</TOOL>: Retrieve a specific iteration chunk from the run log.
   - <TOOL: LIST_AGENT_RUN_LOGS>agent_name</TOOL>: List all run log files for a specific agent.
   - <TOOL: READ_FILE_IN_AGENTS_SUPERFOLDER>filename</TOOL>: Read the contents of a file in the agents superfolder
   - <TOOL: LIST_FILES_IN_AGENTS_SUPERFOLDER>subdir</TOOL>: List all files in the agents superfolder
